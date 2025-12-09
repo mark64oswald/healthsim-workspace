@@ -1,132 +1,318 @@
 ---
-name: HealthSim Skills
-description: Skills-first synthetic healthcare data generation system. Generates realistic patient records, insurance claims, and pharmacy data for testing healthcare applications.
+name: healthsim
+description: "HealthSim generates realistic synthetic healthcare data for testing EMR systems, claims processing, pharmacy benefits, and analytics. Use for ANY request involving: (1) synthetic patients, clinical data, or medical records, (2) healthcare claims, billing, or adjudication, (3) pharmacy prescriptions, formularies, or drug utilization, (4) HL7v2, FHIR, X12, or NCPDP formatted output, (5) healthcare testing scenarios or sample data generation."
 ---
 
-# HealthSim Skills
+# HealthSim - Synthetic Healthcare Data Generation
 
-A comprehensive synthetic healthcare data generation system built as Claude Skills.
+## Overview
+
+HealthSim generates realistic synthetic healthcare data through natural conversation. Rather than writing code or configuration files, describe what you need and Claude generates appropriate data.
+
+**Products:**
+
+| Product | Domain | What It Generates |
+|---------|--------|-------------------|
+| **PatientSim** | Clinical/EMR | Patients, encounters, diagnoses, procedures, labs, vitals, medications |
+| **MemberSim** | Payer/Claims | Members, professional claims, facility claims, payments, accumulators |
+| **RxMemberSim** | Pharmacy/PBM | Prescriptions, pharmacy claims, formularies, DUR alerts, prior auths |
 
 ## Quick Start
 
-Tell me what you need:
+### Generate Clinical Data
 
-- **"Generate 5 patients with diabetes"** → PatientSim scenario
-- **"Create insurance claims for a hospital stay"** → MemberSim scenario
-- **"Generate pharmacy claims with prior auth"** → RxMemberSim scenario
-- **"I need FHIR R4 output"** → Any scenario with format specification
+**Request:** "Generate a 65-year-old diabetic patient with hypertension"
 
-## Skill Navigation
+Claude will produce a patient with:
+- Demographics (age 65, realistic name/address)
+- Diagnoses (E11.9 Type 2 diabetes, I10 hypertension)
+- Medications (metformin, lisinopril)
+- Labs (A1C, BMP with values in expected ranges)
+- Comorbidities (likely hyperlipidemia, possible obesity)
 
-### Reference Skills (Foundational Knowledge)
+### Generate Claims
 
-These skills contain domain knowledge used by all scenario skills:
+**Request:** "Create a professional claim for an office visit"
 
-| Reference | Purpose | Use When |
-|-----------|---------|----------|
-| [data-models.md](references/data-models.md) | Entity schemas (Patient, Claim, Prescription) | Need field definitions, types, constraints |
-| [validation-rules.md](references/validation-rules.md) | Validation framework | Checking data coherence, clinical validity |
-| [code-systems.md](references/code-systems.md) | ICD-10, CPT, LOINC, NDC codes | Need realistic medical codes |
-| [generation-patterns.md](references/generation-patterns.md) | ID formats, distributions, seeds | Controlling randomization |
+Claude will produce:
+- Claim header (provider NPI, member ID, service date)
+- Service lines (CPT 99213/99214, charges)
+- Diagnoses (ICD-10 codes)
+- Adjudication (allowed, paid, patient responsibility)
 
-### Scenario Skills (Data Generators)
+### Generate Pharmacy Data
 
-Each scenario skill generates a specific type of healthcare data:
+**Request:** "Generate a pharmacy claim that triggers a drug interaction alert"
 
-| Scenario | Domain | Primary Output |
-|----------|--------|----------------|
-| [patientsim/](scenarios/patientsim/) | Clinical EHR | Patients, encounters, diagnoses, labs, vitals |
-| [membersim/](scenarios/membersim/) | Insurance Claims | Members, claims, payments, accumulators |
-| [rxmembersim/](scenarios/rxmembersim/) | Pharmacy Benefits | Prescriptions, pharmacy claims, formulary |
+Claude will produce:
+- Prescription details (NDC, quantity, days supply)
+- Pharmacy claim (BIN, PCN, cardholder ID)
+- DUR alert (DD code, clinical significance, recommendation)
+- Claim response (approved with warning or rejected)
 
-### Output Formats
+## Scenario Skills
 
-| Format | File | Use Case |
-|--------|------|----------|
-| FHIR R4 | [formats/fhir-r4.md](formats/fhir-r4.md) | Interoperability, EHR integration |
-| X12 837/835 | [formats/x12.md](formats/x12.md) | Claims submission/remittance |
-| NCPDP | [formats/ncpdp.md](formats/ncpdp.md) | Pharmacy claims |
-| Flat Files | [formats/flat.md](formats/flat.md) | Data warehouse, analytics |
+### PatientSim Scenarios
 
-## Request Routing
+Load these for clinical data generation:
 
-Based on your request, I'll route to the appropriate skill:
+| Scenario | Use When | Key Elements |
+|----------|----------|--------------|
+| **Diabetes Management** | diabetic, A1C, glucose, metformin, insulin | Disease progression, medication escalation, complications |
+| **Heart Failure** | CHF, HFrEF, BNP, ejection fraction | NYHA classification, GDMT therapy, decompensation |
+| **Chronic Kidney Disease** | CKD, eGFR, dialysis, nephrology | CKD staging, progression, comorbidities |
+| **Sepsis/Acute Care** | sepsis, infection, ICU, critical | Sepsis criteria, antibiotic protocols, ICU stay |
 
+See: [scenarios/patientsim/](scenarios/patientsim/) for detailed skills
+
+### MemberSim Scenarios
+
+Load these for claims and payer data:
+
+| Scenario | Use When | Key Elements |
+|----------|----------|--------------|
+| **Professional Claims** | office visit, 837P, physician claim | E&M coding, place of service, adjudication |
+| **Facility Claims** | hospital, inpatient, 837I, DRG | Revenue codes, DRG assignment, LOS |
+| **Prior Authorization** | prior auth, pre-cert, authorization | Request/response workflow, approval criteria |
+| **Accumulator Tracking** | deductible, OOP, accumulator | Year-to-date tracking, family vs individual |
+| **Value-Based Care** | quality measures, VBC, HEDIS | Attribution, measure compliance, incentives |
+
+See: [scenarios/membersim/](scenarios/membersim/) for detailed skills
+
+### RxMemberSim Scenarios
+
+Load these for pharmacy and PBM data:
+
+| Scenario | Use When | Key Elements |
+|----------|----------|--------------|
+| **Retail Pharmacy** | prescription fill, retail, copay | New/refill, pricing, patient pay |
+| **Specialty Pharmacy** | specialty drug, biologics, hub | Limited distribution, PA, patient support |
+| **DUR Alerts** | drug interaction, DUR, therapeutic dup | Alert types, severity, override |
+| **Formulary Management** | formulary, tier, coverage | Tier structure, PA requirements, alternatives |
+| **Prior Authorization** | pharmacy PA, step therapy | Clinical criteria, approval workflow |
+| **Manufacturer Programs** | copay card, patient assistance | Copay assistance, rebates |
+
+See: [scenarios/rxmembersim/](scenarios/rxmembersim/) for detailed skills
+
+## Output Formats
+
+### Default: JSON
+
+By default, Claude outputs data as JSON objects that match the canonical data model.
+
+### Healthcare Standards
+
+Request specific formats:
+
+| Format | Request Phrases | Use Case |
+|--------|-----------------|----------|
+| **FHIR R4** | "as FHIR", "FHIR bundle", "FHIR resources" | Interoperability, modern APIs |
+| **HL7v2** | "as HL7", "ADT message", "HL7v2" | Legacy EMR integration |
+| **X12 837** | "as 837", "X12 claim", "EDI format" | Claims submission |
+| **X12 835** | "as 835", "remittance", "ERA" | Payment posting |
+| **NCPDP D.0** | "as NCPDP", "pharmacy claim format" | Pharmacy transactions |
+
+See: [formats/](formats/) for transformation skills
+
+### Export Formats
+
+| Format | Request Phrases |
+|--------|-----------------|
+| **CSV** | "as CSV", "save to CSV", "spreadsheet" |
+| **Parquet** | "as Parquet", "for analytics" |
+| **SQL INSERT** | "as SQL", "INSERT statements" |
+
+## Generation Parameters
+
+### Demographics
+
+| Parameter | Default | Options |
+|-----------|---------|---------|
+| **age_range** | 18-90 | Any range, e.g., "pediatric (0-17)", "senior (65+)" |
+| **gender** | weighted (49% M, 51% F) | "male", "female", specific distribution |
+| **count** | 1 | Any number, batches for large counts |
+
+### Clinical (PatientSim)
+
+| Parameter | Options |
+|-----------|---------|
+| **conditions** | diabetes, heart failure, CKD, hypertension, COPD, etc. |
+| **severity** | mild, moderate, severe, well-controlled, poorly-controlled |
+| **complications** | with/without specific complications |
+
+### Claims (MemberSim)
+
+| Parameter | Options |
+|-----------|---------|
+| **claim_type** | professional, institutional, dental |
+| **claim_status** | paid, denied, pending, partial |
+| **network_status** | in-network, out-of-network |
+
+### Pharmacy (RxMemberSim)
+
+| Parameter | Options |
+|-----------|---------|
+| **fill_type** | new, refill |
+| **drug_type** | generic, brand, specialty |
+| **dur_alerts** | none, warning, reject |
+
+## Reproducibility
+
+For consistent results across sessions:
+
+**Request:** "Generate 10 patients using seed 42"
+
+Claude will:
+1. Use seed 42 for all random selections
+2. Generate identical output if same parameters used
+3. Note the seed in output for reference
+
+## Validation
+
+Claude automatically validates generated data for:
+
+- **Structural**: Required fields, data types, formats
+- **Temporal**: Date ordering (discharge after admission, etc.)
+- **Referential**: Foreign key relationships
+- **Clinical**: Age-appropriate conditions, gender-appropriate conditions
+- **Business**: Valid code combinations, realistic pricing
+
+Request explicit validation: "Validate this patient data"
+
+## Reference Data
+
+For code lookups and documentation:
+
+- [Data Models](references/data-models.md) - Entity schemas
+- [Code Systems](references/code-systems.md) - ICD-10, CPT, LOINC, NDC
+- [Validation Rules](references/validation-rules.md) - All validation rules
+- [Generation Patterns](references/generation-patterns.md) - Distributions, seeds
+
+## Examples
+
+### Example 1: Simple Patient
+
+**Request:** "Generate a patient"
+
+**Output:**
+```json
+{
+  "mrn": "MRN00000001",
+  "name": {
+    "given_name": "John",
+    "family_name": "Smith"
+  },
+  "birth_date": "1975-03-15",
+  "gender": "M",
+  "address": {
+    "street_address": "123 Main Street",
+    "city": "Springfield",
+    "state": "IL",
+    "postal_code": "62701"
+  }
+}
 ```
-Patient/clinical data → scenarios/patientsim/
-Insurance claims     → scenarios/membersim/
-Pharmacy/Rx data     → scenarios/rxmembersim/
-Code lookups         → references/code-systems.md
-Schema questions     → references/data-models.md
+
+### Example 2: Clinical Scenario
+
+**Request:** "Generate a 58-year-old female with poorly controlled Type 2 diabetes"
+
+**Output:**
+```json
+{
+  "patient": {
+    "mrn": "MRN00000002",
+    "name": { "given_name": "Maria", "family_name": "Garcia" },
+    "birth_date": "1967-08-22",
+    "gender": "F"
+  },
+  "diagnoses": [
+    { "code": "E11.65", "description": "Type 2 diabetes with hyperglycemia" },
+    { "code": "I10", "description": "Essential hypertension" },
+    { "code": "E78.5", "description": "Hyperlipidemia" }
+  ],
+  "medications": [
+    { "name": "Metformin", "dose": "1000 mg", "frequency": "BID" },
+    { "name": "Glipizide", "dose": "10 mg", "frequency": "BID" },
+    { "name": "Lisinopril", "dose": "20 mg", "frequency": "QD" }
+  ],
+  "labs": [
+    { "test": "HbA1c", "value": "9.8", "unit": "%", "flag": "H" },
+    { "test": "Glucose", "value": "245", "unit": "mg/dL", "flag": "H" },
+    { "test": "Creatinine", "value": "1.2", "unit": "mg/dL" }
+  ]
+}
 ```
 
-## Common Parameters
+### Example 3: Professional Claim
 
-All generation requests support these parameters:
+**Request:** "Generate a paid professional claim for an office visit"
 
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `count` | Number of records to generate | 1 |
-| `seed` | Random seed for reproducibility | None (random) |
-| `format` | Output format (json, fhir, x12, csv) | json |
-| `include_related` | Generate related records | true |
-
-## Example Requests
-
-### Simple Patient Generation
-```
-Generate 3 patients aged 40-60 with hypertension
-```
-
-### Complex Clinical Scenario
-```
-Generate a diabetic patient with:
-- 2 years of quarterly visits
-- A1C labs trending from 8.5 to 7.0
-- Metformin prescription with refills
-- Output as FHIR R4 Bundle
-```
-
-### Insurance Claims Scenario
-```
-Generate insurance claims for:
-- Member with family plan
-- Hospital admission (3 days)
-- Include professional and facility claims
-- Show payment adjudication
-```
-
-### Pharmacy Scenario
-```
-Generate pharmacy claims showing:
-- Brand drug requiring prior auth
-- Initial rejection and approval
-- 90-day mail order fill
+**Output:**
+```json
+{
+  "claim": {
+    "claim_id": "CLM20250115000001",
+    "claim_type": "PROFESSIONAL",
+    "member_id": "MEM001234",
+    "provider_npi": "1234567890",
+    "service_date": "2025-01-15",
+    "place_of_service": "11",
+    "principal_diagnosis": "E11.9",
+    "claim_lines": [
+      {
+        "line_number": 1,
+        "procedure_code": "99214",
+        "charge_amount": 175.00,
+        "units": 1
+      }
+    ]
+  },
+  "adjudication": {
+    "status": "paid",
+    "allowed_amount": 125.00,
+    "paid_amount": 100.00,
+    "deductible": 0.00,
+    "copay": 25.00,
+    "coinsurance": 0.00
+  }
+}
 ```
 
-## Architecture
+### Example 4: Pharmacy Claim with DUR
 
+**Request:** "Generate a pharmacy claim that gets rejected for early refill"
+
+**Output:**
+```json
+{
+  "claim": {
+    "claim_id": "RX20250115000001",
+    "transaction_code": "B1",
+    "ndc": "00071015523",
+    "drug_name": "Atorvastatin 20mg",
+    "quantity": 30,
+    "days_supply": 30,
+    "service_date": "2025-01-15"
+  },
+  "response": {
+    "status": "rejected",
+    "reject_code": "79",
+    "reject_message": "Refill Too Soon",
+    "dur_alert": {
+      "type": "ER",
+      "message": "Refill 12 days early (before 80% used)",
+      "previous_fill_date": "2024-12-27",
+      "days_early": 12
+    }
+  }
+}
 ```
-SKILL.md (this file - entry point)
-├── references/           # Domain knowledge
-│   ├── data-models.md   # Entity schemas
-│   ├── validation-rules.md
-│   ├── code-systems.md
-│   └── generation-patterns.md
-├── scenarios/           # Data generators
-│   ├── patientsim/     # Clinical data
-│   ├── membersim/      # Insurance claims
-│   └── rxmembersim/    # Pharmacy
-└── formats/            # Output transformers
-    ├── fhir-r4.md
-    ├── x12.md
-    └── ncpdp.md
-```
 
-## Principles
+## Tips
 
-1. **Clinically Coherent**: Generated data maintains medical logic (diagnoses match procedures, labs support diagnoses)
-2. **Temporally Consistent**: Timelines make sense (no prescriptions before diagnosis)
-3. **Configurable Realism**: Control complexity, edge cases, and error scenarios
-4. **Reproducible**: Same seed produces identical output
-5. **Format Flexible**: Generate once, output in any format
+1. **Be specific**: "diabetic patient with A1C of 9.5" beats "sick patient"
+2. **Request format early**: "Generate as FHIR..." rather than converting after
+3. **Use seeds**: For reproducible test data across sessions
+4. **Batch large requests**: "Generate 100 in batches of 20"
+5. **Validate sensitive data**: Request validation for production-like scenarios

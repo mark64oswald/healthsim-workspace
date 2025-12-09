@@ -1,62 +1,40 @@
 # Data Models Reference
 
-Canonical entity schemas for all HealthSim data types. All scenarios use these models to ensure consistency.
+Canonical entity schemas for all HealthSim data types. Extracted from Domain Knowledge Base Section 2.
 
 ## Table of Contents
 
-- [Clinical Entities](#clinical-entities)
-  - [Person](#person)
-  - [Patient](#patient)
-  - [Encounter](#encounter)
-  - [Diagnosis](#diagnosis)
-  - [Procedure](#procedure)
-  - [Medication](#medication)
-  - [LabResult](#labresult)
-  - [VitalSign](#vitalsign)
-- [Insurance Entities](#insurance-entities)
-  - [Member](#member)
-  - [Plan](#plan)
-  - [Claim](#claim)
-  - [ClaimLine](#claimline)
-  - [Payment](#payment)
-  - [Accumulator](#accumulator)
-- [Pharmacy Entities](#pharmacy-entities)
-  - [Prescription](#prescription)
-  - [PharmacyClaim](#pharmacyclaim)
-  - [ClaimResponse](#claimresponse)
-  - [FormularyDrug](#formularydrug)
+- [Core Person Model](#core-person-model)
+- [PatientSim Models](#patientsim-models)
+- [MemberSim Models](#membersim-models)
+- [RxMemberSim Models](#rxmembersim-models)
 
 ---
 
-## Clinical Entities
+## Core Person Model
 
-### Person
-
-Base demographic entity inherited by Patient and Member.
+The foundational person entity shared across all products:
 
 ```json
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Person",
   "type": "object",
   "required": ["id", "name", "birth_date", "gender"],
   "properties": {
     "id": {
       "type": "string",
-      "description": "Unique identifier",
-      "pattern": "^[A-Z0-9]{8,12}$"
+      "description": "Unique identifier"
     },
     "name": {
       "type": "object",
-      "required": ["family", "given"],
+      "required": ["given_name", "family_name"],
       "properties": {
-        "family": { "type": "string", "minLength": 1 },
-        "given": {
-          "type": "array",
-          "items": { "type": "string" },
-          "minItems": 1
-        },
-        "prefix": { "type": "string" },
-        "suffix": { "type": "string" }
+        "given_name": { "type": "string" },
+        "middle_name": { "type": "string" },
+        "family_name": { "type": "string" },
+        "suffix": { "type": "string" },
+        "prefix": { "type": "string" }
       }
     },
     "birth_date": {
@@ -66,1449 +44,596 @@ Base demographic entity inherited by Patient and Member.
     },
     "gender": {
       "type": "string",
-      "enum": ["male", "female", "other", "unknown"]
+      "enum": ["M", "F", "O", "U"],
+      "description": "M=Male, F=Female, O=Other, U=Unknown"
     },
     "address": {
       "type": "object",
       "properties": {
-        "line": { "type": "array", "items": { "type": "string" } },
+        "street_address": { "type": "string" },
+        "street_address_2": { "type": "string" },
         "city": { "type": "string" },
         "state": { "type": "string", "pattern": "^[A-Z]{2}$" },
-        "postal_code": { "type": "string", "pattern": "^[0-9]{5}(-[0-9]{4})?$" },
+        "postal_code": { "type": "string" },
         "country": { "type": "string", "default": "US" }
       }
     },
-    "phone": {
-      "type": "string",
-      "pattern": "^[0-9]{3}-[0-9]{3}-[0-9]{4}$"
+    "contact": {
+      "type": "object",
+      "properties": {
+        "phone": { "type": "string" },
+        "phone_mobile": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
+      }
     },
-    "email": {
-      "type": "string",
-      "format": "email"
-    },
-    "ssn": {
-      "type": "string",
-      "pattern": "^[0-9]{3}-[0-9]{2}-[0-9]{4}$",
-      "description": "Social Security Number (synthetic)"
-    },
-    "race": {
-      "type": "string",
-      "enum": ["white", "black", "asian", "native", "pacific", "other", "unknown"]
-    },
-    "ethnicity": {
-      "type": "string",
-      "enum": ["hispanic", "non-hispanic", "unknown"]
-    },
-    "language": {
-      "type": "string",
-      "default": "en"
-    }
+    "deceased": { "type": "boolean", "default": false },
+    "death_date": { "type": "string", "format": "date" }
   }
 }
 ```
 
-### Patient
+---
 
-Clinical patient entity extending Person with medical context.
+## PatientSim Models
+
+### Patient (extends Person)
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
+  "title": "Patient",
   "allOf": [{ "$ref": "#/definitions/Person" }],
-  "required": ["mrn", "id", "name", "birth_date", "gender"],
   "properties": {
     "mrn": {
       "type": "string",
       "description": "Medical Record Number",
-      "pattern": "^MRN[0-9]{8}$"
+      "minLength": 1
     },
-    "identifiers": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "system": { "type": "string", "format": "uri" },
-          "value": { "type": "string" }
-        }
-      }
-    },
-    "active": {
-      "type": "boolean",
-      "default": true
-    },
-    "deceased": {
-      "type": "boolean",
-      "default": false
-    },
-    "deceased_date": {
+    "ssn": {
       "type": "string",
-      "format": "date"
+      "pattern": "^\\d{9}$",
+      "description": "Social Security Number (9 digits, no dashes)"
     },
-    "marital_status": {
+    "race": {
       "type": "string",
-      "enum": ["single", "married", "divorced", "widowed", "unknown"]
+      "description": "Race/ethnicity"
     },
-    "primary_care_provider": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "name": { "type": "string" }
-      }
+    "language": {
+      "type": "string",
+      "default": "en",
+      "description": "Preferred language code"
     },
-    "emergency_contact": {
-      "type": "object",
-      "properties": {
-        "name": { "type": "string" },
-        "relationship": { "type": "string" },
-        "phone": { "type": "string" }
-      }
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
     }
-  }
+  },
+  "required": ["mrn"]
 }
 ```
 
 ### Encounter
 
-A clinical interaction between patient and provider.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Encounter",
   "type": "object",
-  "required": ["id", "patient_id", "type", "status", "period"],
+  "required": ["encounter_id", "patient_mrn", "class_code", "status", "admission_time"],
   "properties": {
-    "id": {
+    "encounter_id": { "type": "string", "minLength": 1 },
+    "patient_mrn": { "type": "string", "minLength": 1 },
+    "class_code": {
       "type": "string",
-      "pattern": "^ENC[0-9]{10}$"
-    },
-    "patient_id": {
-      "type": "string",
-      "description": "Reference to Patient.mrn"
-    },
-    "type": {
-      "type": "string",
-      "enum": ["ambulatory", "emergency", "inpatient", "observation", "virtual"],
-      "description": "Encounter class"
+      "enum": ["I", "O", "E", "U", "OBS"],
+      "description": "I=Inpatient, O=Outpatient, E=Emergency, U=Urgent, OBS=Observation"
     },
     "status": {
       "type": "string",
-      "enum": ["planned", "arrived", "in-progress", "finished", "cancelled"]
+      "enum": ["planned", "arrived", "in-progress", "on-hold", "finished", "cancelled"]
     },
-    "period": {
-      "type": "object",
-      "required": ["start"],
-      "properties": {
-        "start": { "type": "string", "format": "date-time" },
-        "end": { "type": "string", "format": "date-time" }
-      }
-    },
-    "reason": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "string" },
-          "system": { "type": "string" },
-          "display": { "type": "string" }
-        }
-      }
-    },
-    "location": {
-      "type": "object",
-      "properties": {
-        "facility_name": { "type": "string" },
-        "facility_npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "department": { "type": "string" },
-        "room": { "type": "string" },
-        "bed": { "type": "string" }
-      }
-    },
-    "provider": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "name": { "type": "string" },
-        "specialty": { "type": "string" }
-      }
-    },
-    "service_type": {
-      "type": "string",
-      "description": "Service category code"
-    },
-    "place_of_service": {
-      "type": "string",
-      "pattern": "^[0-9]{2}$",
-      "description": "CMS Place of Service code"
-    },
-    "admission": {
-      "type": "object",
-      "description": "For inpatient encounters",
-      "properties": {
-        "admit_source": { "type": "string" },
-        "admit_type": { "type": "string" },
-        "discharge_disposition": { "type": "string" },
-        "drg": {
-          "type": "object",
-          "properties": {
-            "code": { "type": "string" },
-            "description": { "type": "string" },
-            "weight": { "type": "number" }
-          }
-        }
-      }
-    },
-    "diagnoses": {
-      "type": "array",
-      "items": { "$ref": "#/definitions/Diagnosis" }
-    },
-    "procedures": {
-      "type": "array",
-      "items": { "$ref": "#/definitions/Procedure" }
-    }
+    "admission_time": { "type": "string", "format": "date-time" },
+    "discharge_time": { "type": "string", "format": "date-time" },
+    "facility": { "type": "string" },
+    "department": { "type": "string" },
+    "room": { "type": "string" },
+    "bed": { "type": "string" },
+    "chief_complaint": { "type": "string" },
+    "admitting_diagnosis": { "type": "string" },
+    "discharge_disposition": { "type": "string" },
+    "attending_physician": { "type": "string" },
+    "admitting_physician": { "type": "string" }
   }
 }
 ```
+
+**Encounter Class Codes:**
+
+| Code | Description | Typical Duration |
+|------|-------------|------------------|
+| I | Inpatient | 1-14 days |
+| O | Outpatient | 15-60 minutes |
+| E | Emergency | 1-12 hours |
+| U | Urgent Care | 30 min - 2 hours |
+| OBS | Observation | 8-48 hours |
 
 ### Diagnosis
 
-A clinical diagnosis assigned to a patient.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Diagnosis",
   "type": "object",
-  "required": ["code", "system", "display"],
+  "required": ["code", "description", "patient_mrn", "diagnosed_date"],
   "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^DX[0-9]{10}$"
-    },
-    "patient_id": { "type": "string" },
-    "encounter_id": { "type": "string" },
     "code": {
       "type": "string",
-      "description": "ICD-10-CM code",
-      "pattern": "^[A-Z][0-9]{2}(\\.[0-9A-Z]{1,4})?$"
+      "description": "ICD-10 diagnosis code"
     },
-    "system": {
-      "type": "string",
-      "const": "http://hl7.org/fhir/sid/icd-10-cm"
-    },
-    "display": {
-      "type": "string",
-      "description": "Human-readable diagnosis name"
-    },
+    "description": { "type": "string" },
     "type": {
       "type": "string",
-      "enum": ["principal", "admitting", "secondary", "working", "billing"],
-      "default": "secondary"
+      "enum": ["admitting", "working", "final", "differential"],
+      "default": "final"
     },
-    "rank": {
-      "type": "integer",
-      "minimum": 1,
-      "description": "Diagnosis sequence number"
-    },
-    "onset_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "abatement_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Resolution date if resolved"
-    },
-    "status": {
-      "type": "string",
-      "enum": ["active", "resolved", "inactive", "recurrence"]
-    },
-    "verification": {
-      "type": "string",
-      "enum": ["confirmed", "provisional", "differential", "refuted"]
-    },
-    "poa": {
-      "type": "string",
-      "enum": ["Y", "N", "U", "W", "1"],
-      "description": "Present on Admission indicator"
-    }
-  }
-}
-```
-
-### Procedure
-
-A clinical procedure performed on a patient.
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["code", "system", "display", "performed_date"],
-  "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^PRC[0-9]{10}$"
-    },
-    "patient_id": { "type": "string" },
+    "patient_mrn": { "type": "string" },
     "encounter_id": { "type": "string" },
-    "code": {
-      "type": "string",
-      "description": "CPT or ICD-10-PCS code"
-    },
-    "system": {
-      "type": "string",
-      "enum": [
-        "http://www.ama-assn.org/go/cpt",
-        "http://hl7.org/fhir/sid/icd-10-pcs",
-        "http://snomed.info/sct"
-      ]
-    },
-    "display": { "type": "string" },
-    "performed_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "performer": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" },
-        "role": { "type": "string" }
-      }
-    },
-    "body_site": {
-      "type": "object",
-      "properties": {
-        "code": { "type": "string" },
-        "display": { "type": "string" }
-      }
-    },
-    "outcome": {
-      "type": "string",
-      "enum": ["successful", "unsuccessful", "partial"]
-    },
-    "modifiers": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^[0-9A-Z]{2}$"
-      },
-      "description": "CPT modifier codes"
-    },
-    "units": {
-      "type": "integer",
-      "minimum": 1,
-      "default": 1
-    }
+    "diagnosed_date": { "type": "string", "format": "date" },
+    "resolved_date": { "type": "string", "format": "date" }
   }
 }
 ```
 
 ### Medication
 
-A medication prescribed or administered to a patient.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Medication",
   "type": "object",
-  "required": ["patient_id", "medication", "status"],
+  "required": ["name", "dose", "route", "frequency", "patient_mrn", "start_date"],
   "properties": {
-    "id": {
+    "name": { "type": "string" },
+    "code": { "type": "string", "description": "RxNorm or NDC code" },
+    "dose": { "type": "string", "description": "e.g., '500 mg', '10 units'" },
+    "route": {
       "type": "string",
-      "pattern": "^MED[0-9]{10}$"
+      "description": "PO, IV, IM, SubQ, INH, etc."
     },
-    "patient_id": { "type": "string" },
+    "frequency": {
+      "type": "string",
+      "description": "QD, BID, TID, QID, PRN, Q8H, etc."
+    },
+    "patient_mrn": { "type": "string" },
     "encounter_id": { "type": "string" },
-    "medication": {
-      "type": "object",
-      "required": ["name"],
-      "properties": {
-        "name": { "type": "string" },
-        "rxnorm": {
-          "type": "string",
-          "pattern": "^[0-9]+$"
-        },
-        "ndc": {
-          "type": "string",
-          "pattern": "^[0-9]{11}$"
-        },
-        "strength": { "type": "string" },
-        "form": {
-          "type": "string",
-          "enum": ["tablet", "capsule", "liquid", "injection", "patch", "inhaler", "cream", "drops"]
-        }
-      }
-    },
+    "start_date": { "type": "string", "format": "date-time" },
+    "end_date": { "type": "string", "format": "date-time" },
     "status": {
       "type": "string",
-      "enum": ["active", "completed", "stopped", "on-hold", "cancelled"]
+      "enum": ["active", "completed", "stopped", "on-hold"],
+      "default": "active"
     },
-    "intent": {
-      "type": "string",
-      "enum": ["order", "plan", "proposal"]
-    },
-    "dosage": {
-      "type": "object",
-      "properties": {
-        "text": { "type": "string" },
-        "dose_quantity": { "type": "number" },
-        "dose_unit": { "type": "string" },
-        "frequency": { "type": "string" },
-        "route": {
-          "type": "string",
-          "enum": ["oral", "intravenous", "intramuscular", "subcutaneous", "topical", "inhalation", "ophthalmic", "otic"]
-        },
-        "as_needed": { "type": "boolean", "default": false },
-        "max_dose_per_period": { "type": "string" }
-      }
-    },
-    "prescriber": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" }
-      }
-    },
-    "dispense": {
-      "type": "object",
-      "properties": {
-        "quantity": { "type": "number" },
-        "days_supply": { "type": "integer" },
-        "refills_allowed": { "type": "integer" },
-        "refills_remaining": { "type": "integer" }
-      }
-    },
-    "effective_period": {
-      "type": "object",
-      "properties": {
-        "start": { "type": "string", "format": "date" },
-        "end": { "type": "string", "format": "date" }
-      }
-    },
-    "reason": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "string" },
-          "display": { "type": "string" }
-        }
-      }
-    },
-    "substitution": {
-      "type": "object",
-      "properties": {
-        "allowed": { "type": "boolean" },
-        "reason": { "type": "string" }
-      }
-    }
+    "prescriber": { "type": "string" },
+    "indication": { "type": "string" }
   }
 }
 ```
 
-### LabResult
+**Common Frequency Codes:**
 
-A laboratory test result.
+| Code | Meaning |
+|------|---------|
+| QD | Once daily |
+| BID | Twice daily |
+| TID | Three times daily |
+| QID | Four times daily |
+| Q4H | Every 4 hours |
+| Q6H | Every 6 hours |
+| Q8H | Every 8 hours |
+| Q12H | Every 12 hours |
+| PRN | As needed |
+| HS | At bedtime |
+| AC | Before meals |
+| PC | After meals |
+
+### LabResult
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "LabResult",
   "type": "object",
-  "required": ["patient_id", "code", "status", "effective_date"],
+  "required": ["test_name", "value", "patient_mrn", "collected_time"],
   "properties": {
-    "id": {
+    "test_name": { "type": "string" },
+    "loinc_code": { "type": "string" },
+    "value": { "type": "string" },
+    "unit": { "type": "string" },
+    "reference_range": { "type": "string" },
+    "abnormal_flag": {
       "type": "string",
-      "pattern": "^LAB[0-9]{10}$"
+      "enum": ["H", "L", "HH", "LL", "A", "N", null],
+      "description": "H=High, L=Low, HH=Critical High, LL=Critical Low, A=Abnormal, N=Normal"
     },
-    "patient_id": { "type": "string" },
+    "patient_mrn": { "type": "string" },
     "encounter_id": { "type": "string" },
-    "code": {
-      "type": "object",
-      "required": ["code", "display"],
-      "properties": {
-        "code": { "type": "string" },
-        "system": {
-          "type": "string",
-          "default": "http://loinc.org"
-        },
-        "display": { "type": "string" }
-      }
-    },
-    "status": {
-      "type": "string",
-      "enum": ["registered", "preliminary", "final", "amended", "corrected", "cancelled"]
-    },
-    "effective_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "issued": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "value": {
-      "oneOf": [
-        {
-          "type": "object",
-          "properties": {
-            "type": { "const": "quantity" },
-            "value": { "type": "number" },
-            "unit": { "type": "string" },
-            "system": { "type": "string" },
-            "code": { "type": "string" }
-          }
-        },
-        {
-          "type": "object",
-          "properties": {
-            "type": { "const": "string" },
-            "value": { "type": "string" }
-          }
-        },
-        {
-          "type": "object",
-          "properties": {
-            "type": { "const": "codeable" },
-            "code": { "type": "string" },
-            "display": { "type": "string" }
-          }
-        }
-      ]
-    },
-    "reference_range": {
-      "type": "object",
-      "properties": {
-        "low": { "type": "number" },
-        "high": { "type": "number" },
-        "unit": { "type": "string" },
-        "text": { "type": "string" }
-      }
-    },
-    "interpretation": {
-      "type": "string",
-      "enum": ["N", "L", "H", "LL", "HH", "A", "AA"],
-      "description": "N=Normal, L=Low, H=High, LL=Critical Low, HH=Critical High, A=Abnormal, AA=Critical Abnormal"
-    },
-    "specimen": {
-      "type": "object",
-      "properties": {
-        "type": { "type": "string" },
-        "collected_date": { "type": "string", "format": "date-time" }
-      }
-    },
-    "performer": {
-      "type": "object",
-      "properties": {
-        "lab_name": { "type": "string" },
-        "npi": { "type": "string" }
-      }
-    },
-    "note": { "type": "string" }
+    "collected_time": { "type": "string", "format": "date-time" },
+    "resulted_time": { "type": "string", "format": "date-time" },
+    "performing_lab": { "type": "string" },
+    "ordering_provider": { "type": "string" }
   }
 }
 ```
 
 ### VitalSign
 
-A patient vital sign measurement.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "VitalSign",
   "type": "object",
-  "required": ["patient_id", "type", "value", "effective_date"],
+  "required": ["patient_mrn", "observation_time"],
   "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^VIT[0-9]{10}$"
-    },
-    "patient_id": { "type": "string" },
+    "patient_mrn": { "type": "string" },
     "encounter_id": { "type": "string" },
-    "type": {
-      "type": "string",
-      "enum": ["blood_pressure", "heart_rate", "respiratory_rate", "temperature", "oxygen_saturation", "height", "weight", "bmi"]
+    "observation_time": { "type": "string", "format": "date-time" },
+    "temperature": {
+      "type": "number",
+      "minimum": 90,
+      "maximum": 110,
+      "description": "Temperature in Fahrenheit"
     },
-    "code": {
-      "type": "object",
-      "properties": {
-        "code": { "type": "string" },
-        "system": { "type": "string", "default": "http://loinc.org" },
-        "display": { "type": "string" }
-      }
+    "heart_rate": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 300,
+      "description": "Beats per minute"
     },
-    "value": {
-      "oneOf": [
-        {
-          "type": "object",
-          "description": "Single value vital",
-          "properties": {
-            "value": { "type": "number" },
-            "unit": { "type": "string" }
-          }
-        },
-        {
-          "type": "object",
-          "description": "Blood pressure (systolic/diastolic)",
-          "properties": {
-            "systolic": { "type": "number" },
-            "diastolic": { "type": "number" },
-            "unit": { "type": "string", "const": "mmHg" }
-          }
-        }
-      ]
+    "respiratory_rate": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Breaths per minute"
     },
-    "effective_date": {
-      "type": "string",
-      "format": "date-time"
+    "systolic_bp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 300,
+      "description": "mmHg"
     },
-    "status": {
-      "type": "string",
-      "enum": ["final", "amended", "entered-in-error"],
-      "default": "final"
+    "diastolic_bp": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 200,
+      "description": "mmHg"
     },
-    "method": {
-      "type": "string",
-      "description": "Measurement method"
+    "spo2": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Oxygen saturation percentage"
     },
-    "body_site": {
-      "type": "string",
-      "description": "Where measurement was taken"
-    },
-    "interpretation": {
-      "type": "string",
-      "enum": ["normal", "low", "high", "critical"]
-    }
+    "height_cm": { "type": "number", "minimum": 0, "maximum": 300 },
+    "weight_kg": { "type": "number", "minimum": 0, "maximum": 500 }
   }
 }
 ```
 
-**Vital Sign LOINC Codes:**
+**Vital Sign Reference Ranges (Adult):**
 
-| Type | LOINC | Display | Unit |
-|------|-------|---------|------|
-| blood_pressure | 85354-9 | Blood pressure panel | mmHg |
-| systolic | 8480-6 | Systolic blood pressure | mmHg |
-| diastolic | 8462-4 | Diastolic blood pressure | mmHg |
-| heart_rate | 8867-4 | Heart rate | /min |
-| respiratory_rate | 9279-1 | Respiratory rate | /min |
-| temperature | 8310-5 | Body temperature | Cel |
-| oxygen_saturation | 2708-6 | Oxygen saturation | % |
-| height | 8302-2 | Body height | cm |
-| weight | 29463-7 | Body weight | kg |
-| bmi | 39156-5 | Body mass index | kg/m2 |
+| Vital | Normal Min | Normal Max | Unit |
+|-------|------------|------------|------|
+| temperature | 97.0 | 99.5 | °F |
+| heart_rate | 60 | 100 | bpm |
+| respiratory_rate | 12 | 20 | /min |
+| systolic_bp | 90 | 140 | mmHg |
+| diastolic_bp | 60 | 90 | mmHg |
+| spo2 | 95 | 100 | % |
 
 ---
 
-## Insurance Entities
+## MemberSim Models
 
-### Member
-
-An insured individual (subscriber or dependent).
+### Member (extends Person)
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
+  "title": "Member",
   "allOf": [{ "$ref": "#/definitions/Person" }],
-  "required": ["member_id", "plan_id", "relationship", "coverage_start"],
+  "required": ["member_id", "group_id", "coverage_start", "plan_code"],
   "properties": {
-    "member_id": {
+    "member_id": { "type": "string", "description": "Unique member identifier" },
+    "subscriber_id": { "type": "string", "description": "For dependents, reference to subscriber" },
+    "relationship_code": {
       "type": "string",
-      "pattern": "^[A-Z0-9]{9,12}$",
-      "description": "Unique member identifier"
+      "enum": ["18", "01", "19"],
+      "default": "18",
+      "description": "18=Self, 01=Spouse, 19=Child"
     },
-    "subscriber_id": {
-      "type": "string",
-      "description": "Subscriber's member_id (same as member_id for subscriber)"
-    },
-    "plan_id": {
-      "type": "string",
-      "description": "Reference to Plan.id"
-    },
-    "group_number": {
-      "type": "string",
-      "description": "Employer group number"
-    },
-    "relationship": {
-      "type": "string",
-      "enum": ["self", "spouse", "child", "other"],
-      "description": "Relationship to subscriber"
-    },
-    "coverage_start": {
-      "type": "string",
-      "format": "date"
-    },
-    "coverage_end": {
-      "type": "string",
-      "format": "date"
-    },
-    "status": {
-      "type": "string",
-      "enum": ["active", "terminated", "pending"]
-    },
-    "pcp": {
-      "type": "object",
-      "description": "Primary Care Physician (for HMO)",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" }
-      }
-    },
-    "cobra": {
-      "type": "boolean",
-      "default": false,
-      "description": "COBRA continuation coverage"
-    },
-    "medicare": {
-      "type": "object",
-      "description": "Medicare coordination info",
-      "properties": {
-        "hic_number": { "type": "string" },
-        "part_a_date": { "type": "string", "format": "date" },
-        "part_b_date": { "type": "string", "format": "date" },
-        "msp_type": { "type": "string" }
-      }
-    }
-  }
-}
-```
-
-### Plan
-
-An insurance benefit plan.
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["id", "name", "type", "effective_date"],
-  "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^PLN[0-9]{6}$"
-    },
-    "name": { "type": "string" },
-    "type": {
-      "type": "string",
-      "enum": ["HMO", "PPO", "EPO", "POS", "HDHP", "Medicare", "Medicaid"]
-    },
-    "effective_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "termination_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "benefits": {
-      "type": "object",
-      "properties": {
-        "individual_deductible": { "type": "number" },
-        "family_deductible": { "type": "number" },
-        "individual_oop_max": { "type": "number" },
-        "family_oop_max": { "type": "number" },
-        "coinsurance_in_network": { "type": "number" },
-        "coinsurance_out_network": { "type": "number" }
-      }
-    },
-    "copays": {
-      "type": "object",
-      "properties": {
-        "pcp_visit": { "type": "number" },
-        "specialist_visit": { "type": "number" },
-        "urgent_care": { "type": "number" },
-        "emergency_room": { "type": "number" },
-        "generic_rx": { "type": "number" },
-        "brand_rx": { "type": "number" },
-        "specialty_rx": { "type": "number" }
-      }
-    },
-    "pharmacy_benefit": {
-      "type": "object",
-      "properties": {
-        "pbm_id": { "type": "string" },
-        "formulary_id": { "type": "string" },
-        "rx_bin": { "type": "string" },
-        "rx_pcn": { "type": "string" },
-        "rx_group": { "type": "string" }
-      }
-    },
-    "network_id": { "type": "string" },
-    "metal_level": {
-      "type": "string",
-      "enum": ["bronze", "silver", "gold", "platinum"]
-    }
+    "group_id": { "type": "string", "description": "Employer/group identifier" },
+    "coverage_start": { "type": "string", "format": "date" },
+    "coverage_end": { "type": "string", "format": "date" },
+    "plan_code": { "type": "string", "description": "Benefit plan identifier" },
+    "pcp_npi": { "type": "string", "description": "Assigned PCP NPI (for HMO plans)" }
   }
 }
 ```
 
 ### Claim
 
-An insurance claim for healthcare services.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claim",
   "type": "object",
-  "required": ["id", "member_id", "type", "status", "service_date", "lines"],
+  "required": ["claim_id", "claim_type", "member_id", "subscriber_id", "provider_npi", "service_date", "principal_diagnosis"],
   "properties": {
-    "id": {
+    "claim_id": { "type": "string" },
+    "claim_type": {
       "type": "string",
-      "pattern": "^CLM[0-9]{12}$"
+      "enum": ["PROFESSIONAL", "INSTITUTIONAL", "DENTAL", "RX"]
     },
     "member_id": { "type": "string" },
-    "patient_account_number": { "type": "string" },
-    "type": {
-      "type": "string",
-      "enum": ["professional", "institutional", "dental", "pharmacy"]
-    },
-    "status": {
-      "type": "string",
-      "enum": ["submitted", "pending", "processing", "adjudicated", "paid", "denied", "appealed"]
-    },
-    "service_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "service_end_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "received_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "billing_provider": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "name": { "type": "string" },
-        "tax_id": { "type": "string" },
-        "address": { "$ref": "#/definitions/Address" }
-      }
-    },
-    "rendering_provider": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" },
-        "specialty": { "type": "string" }
-      }
-    },
-    "facility": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" },
-        "type_code": { "type": "string" }
-      }
-    },
+    "subscriber_id": { "type": "string" },
+    "provider_npi": { "type": "string", "pattern": "^\\d{10}$" },
+    "facility_npi": { "type": "string" },
+    "service_date": { "type": "string", "format": "date" },
+    "admission_date": { "type": "string", "format": "date" },
+    "discharge_date": { "type": "string", "format": "date" },
     "place_of_service": {
       "type": "string",
-      "pattern": "^[0-9]{2}$"
+      "default": "11",
+      "description": "11=Office, 21=Inpatient, 22=Outpatient, 23=ER"
     },
-    "diagnoses": {
+    "claim_lines": {
       "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "string" },
-          "type": { "type": "string", "enum": ["principal", "admitting", "secondary"] },
-          "poa": { "type": "string" }
-        }
-      }
+      "items": { "$ref": "#/definitions/ClaimLine" }
     },
-    "drg": {
-      "type": "object",
-      "description": "For institutional claims",
-      "properties": {
-        "code": { "type": "string" },
-        "description": { "type": "string" },
-        "weight": { "type": "number" }
-      }
-    },
-    "lines": {
+    "principal_diagnosis": { "type": "string", "description": "ICD-10 code" },
+    "other_diagnoses": {
       "type": "array",
-      "items": { "$ref": "#/definitions/ClaimLine" },
-      "minItems": 1
+      "items": { "type": "string" }
     },
-    "totals": {
-      "type": "object",
-      "properties": {
-        "billed": { "type": "number" },
-        "allowed": { "type": "number" },
-        "paid": { "type": "number" },
-        "member_liability": { "type": "number" }
-      }
-    },
-    "prior_auth_number": { "type": "string" },
-    "referral_number": { "type": "string" },
-    "original_claim_id": {
-      "type": "string",
-      "description": "For adjustments/voids"
-    },
-    "frequency_code": {
-      "type": "string",
-      "enum": ["1", "7", "8"],
-      "description": "1=Original, 7=Replacement, 8=Void"
-    }
+    "authorization_number": { "type": "string" }
   }
 }
 ```
 
 ### ClaimLine
 
-A single service line item on a claim.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ClaimLine",
   "type": "object",
-  "required": ["line_number", "procedure_code", "service_date", "billed_amount"],
+  "required": ["line_number", "procedure_code", "service_date", "charge_amount"],
   "properties": {
-    "line_number": {
-      "type": "integer",
-      "minimum": 1
-    },
-    "procedure_code": {
-      "type": "string",
-      "description": "CPT/HCPCS code"
-    },
-    "procedure_code_type": {
-      "type": "string",
-      "enum": ["CPT", "HCPCS", "ICD10PCS", "CDT", "NDC"]
-    },
-    "modifiers": {
+    "line_number": { "type": "integer", "minimum": 1 },
+    "procedure_code": { "type": "string", "description": "CPT/HCPCS code" },
+    "procedure_modifiers": {
       "type": "array",
       "items": { "type": "string" },
       "maxItems": 4
     },
-    "revenue_code": {
-      "type": "string",
-      "pattern": "^[0-9]{4}$",
-      "description": "For institutional claims"
-    },
-    "service_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "service_end_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "place_of_service": { "type": "string" },
-    "units": {
-      "type": "number",
-      "minimum": 0.01
-    },
+    "service_date": { "type": "string", "format": "date" },
+    "units": { "type": "number", "default": 1 },
+    "charge_amount": { "type": "number", "description": "Billed amount in dollars" },
     "diagnosis_pointers": {
       "type": "array",
-      "items": { "type": "integer", "minimum": 1, "maximum": 12 }
+      "items": { "type": "integer" },
+      "default": [1]
     },
-    "rendering_provider_npi": { "type": "string" },
-    "billed_amount": { "type": "number" },
-    "allowed_amount": { "type": "number" },
-    "paid_amount": { "type": "number" },
-    "deductible": { "type": "number" },
-    "coinsurance": { "type": "number" },
-    "copay": { "type": "number" },
-    "cob_amount": { "type": "number" },
-    "adjustment_reason_codes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "group": { "type": "string", "enum": ["CO", "PR", "OA", "PI", "CR"] },
-          "code": { "type": "string" },
-          "amount": { "type": "number" }
-        }
-      }
-    },
-    "remark_codes": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "status": {
-      "type": "string",
-      "enum": ["paid", "denied", "adjusted", "pending"]
-    },
-    "denial_reason": { "type": "string" },
-    "ndc": {
-      "type": "string",
-      "description": "NDC for drug claims"
-    },
-    "drug_quantity": { "type": "number" },
-    "drug_unit": { "type": "string" }
+    "revenue_code": { "type": "string", "description": "For institutional claims" },
+    "ndc_code": { "type": "string", "description": "Drug code if applicable" },
+    "place_of_service": { "type": "string", "default": "11" }
   }
 }
 ```
 
-### Payment
-
-A payment record for a processed claim.
+### Plan
 
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Plan",
   "type": "object",
-  "required": ["id", "claim_id", "payment_date", "amount"],
+  "required": ["plan_code", "plan_name", "plan_type"],
   "properties": {
-    "id": {
+    "plan_code": { "type": "string" },
+    "plan_name": { "type": "string" },
+    "plan_type": {
       "type": "string",
-      "pattern": "^PMT[0-9]{12}$"
+      "enum": ["HMO", "PPO", "EPO", "POS", "HDHP"]
     },
-    "claim_id": { "type": "string" },
-    "check_number": { "type": "string" },
-    "payment_date": {
+    "coverage_type": {
       "type": "string",
-      "format": "date"
+      "enum": ["MEDICAL", "DENTAL", "VISION", "RX"],
+      "default": "MEDICAL"
     },
-    "payment_method": {
-      "type": "string",
-      "enum": ["check", "eft", "virtual_card"]
-    },
-    "amount": { "type": "number" },
-    "payee": {
-      "type": "object",
-      "properties": {
-        "npi": { "type": "string" },
-        "name": { "type": "string" },
-        "tax_id": { "type": "string" }
-      }
-    },
-    "remittance_id": {
-      "type": "string",
-      "description": "835 transaction ID"
-    },
-    "trace_number": { "type": "string" }
+    "deductible_individual": { "type": "number", "default": 500 },
+    "deductible_family": { "type": "number", "default": 1500 },
+    "oop_max_individual": { "type": "number", "default": 3000 },
+    "oop_max_family": { "type": "number", "default": 6000 },
+    "copay_pcp": { "type": "number", "default": 25 },
+    "copay_specialist": { "type": "number", "default": 50 },
+    "copay_er": { "type": "number", "default": 250 },
+    "coinsurance": { "type": "number", "default": 0.20, "description": "0.20 = 20%" },
+    "requires_pcp": { "type": "boolean", "default": false },
+    "requires_referral": { "type": "boolean", "default": false }
   }
 }
 ```
 
 ### Accumulator
 
-Member cost-sharing accumulator tracking.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Accumulator",
   "type": "object",
-  "required": ["member_id", "plan_year", "type", "amount"],
+  "required": ["member_id", "plan_year", "deductible_limit", "oop_limit"],
   "properties": {
-    "id": { "type": "string" },
     "member_id": { "type": "string" },
-    "plan_year": {
-      "type": "integer",
-      "description": "Benefit year"
-    },
-    "type": {
-      "type": "string",
-      "enum": ["individual_deductible", "family_deductible", "individual_oop", "family_oop"]
-    },
-    "network": {
-      "type": "string",
-      "enum": ["in_network", "out_of_network", "combined"]
-    },
-    "limit": {
-      "type": "number",
-      "description": "Annual maximum"
-    },
-    "amount": {
-      "type": "number",
-      "description": "Current accumulated amount"
-    },
-    "remaining": {
-      "type": "number",
-      "description": "Remaining until limit met"
-    },
-    "met_date": {
-      "type": "string",
-      "format": "date",
-      "description": "Date limit was met"
-    },
-    "last_updated": {
-      "type": "string",
-      "format": "date-time"
-    }
+    "plan_year": { "type": "integer" },
+    "deductible_applied": { "type": "number", "default": 0 },
+    "deductible_limit": { "type": "number" },
+    "oop_applied": { "type": "number", "default": 0 },
+    "oop_limit": { "type": "number" },
+    "last_updated": { "type": "string", "format": "date-time" }
   }
 }
 ```
 
 ---
 
-## Pharmacy Entities
+## RxMemberSim Models
 
 ### Prescription
 
-A medication prescription order.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Prescription",
   "type": "object",
-  "required": ["id", "patient_id", "prescriber", "medication", "written_date"],
+  "required": ["prescription_number", "ndc", "drug_name", "quantity_prescribed", "days_supply", "prescriber_npi", "written_date", "expiration_date"],
   "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^RX[0-9]{10}$"
-    },
-    "patient_id": { "type": "string" },
-    "prescriber": {
-      "type": "object",
-      "required": ["npi"],
-      "properties": {
-        "npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "name": { "type": "string" },
-        "dea": { "type": "string", "pattern": "^[A-Z]{2}[0-9]{7}$" }
-      }
-    },
-    "medication": {
-      "type": "object",
-      "required": ["name", "ndc"],
-      "properties": {
-        "name": { "type": "string" },
-        "ndc": { "type": "string", "pattern": "^[0-9]{11}$" },
-        "rxnorm": { "type": "string" },
-        "gpi": { "type": "string" },
-        "strength": { "type": "string" },
-        "form": { "type": "string" },
-        "brand_generic": { "type": "string", "enum": ["brand", "generic"] }
-      }
-    },
-    "written_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "directions": {
-      "type": "string",
-      "description": "SIG - dosing instructions"
-    },
-    "quantity": { "type": "number" },
+    "prescription_number": { "type": "string" },
+    "ndc": { "type": "string", "pattern": "^\\d{11}$" },
+    "drug_name": { "type": "string" },
+    "quantity_prescribed": { "type": "number" },
     "days_supply": { "type": "integer" },
-    "refills_authorized": { "type": "integer" },
-    "refills_remaining": { "type": "integer" },
+    "refills_authorized": { "type": "integer", "default": 0 },
+    "refills_remaining": { "type": "integer", "default": 0 },
+    "prescriber_npi": { "type": "string", "pattern": "^\\d{10}$" },
+    "prescriber_name": { "type": "string" },
+    "prescriber_dea": { "type": "string" },
+    "written_date": { "type": "string", "format": "date" },
+    "expiration_date": { "type": "string", "format": "date" },
     "daw_code": {
       "type": "string",
       "enum": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+      "default": "0",
       "description": "Dispense As Written code"
     },
-    "diagnosis": {
-      "type": "object",
-      "properties": {
-        "code": { "type": "string" },
-        "display": { "type": "string" }
-      }
+    "diagnosis_codes": {
+      "type": "array",
+      "items": { "type": "string" }
     },
-    "prior_auth": {
-      "type": "object",
-      "properties": {
-        "required": { "type": "boolean" },
-        "number": { "type": "string" },
-        "status": { "type": "string", "enum": ["approved", "denied", "pending"] },
-        "expires": { "type": "string", "format": "date" }
-      }
-    },
-    "status": {
-      "type": "string",
-      "enum": ["active", "completed", "cancelled", "expired"]
-    },
-    "controlled_substance_schedule": {
-      "type": "string",
-      "enum": ["II", "III", "IV", "V"]
-    }
+    "directions": { "type": "string" }
   }
 }
 ```
+
+**DAW Codes:**
+
+| Code | Description |
+|------|-------------|
+| 0 | No Product Selection Indicated |
+| 1 | Substitution Not Allowed by Prescriber |
+| 2 | Patient Requested Brand |
+| 3 | Pharmacist Selected |
+| 4 | Generic Not Available |
+| 5 | Brand Dispensed as Generic |
+| 6 | Override |
+| 7 | Brand Mandated by Law |
+| 8 | Generic Not Available in Marketplace |
+| 9 | Other |
 
 ### PharmacyClaim
 
-A pharmacy claim submitted for adjudication.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PharmacyClaim",
   "type": "object",
-  "required": ["id", "prescription_id", "member_id", "pharmacy", "fill_date"],
-  "properties": {
-    "id": {
-      "type": "string",
-      "pattern": "^RXCLM[0-9]{12}$"
-    },
-    "prescription_id": { "type": "string" },
-    "member_id": { "type": "string" },
-    "cardholder_id": { "type": "string" },
-    "pharmacy": {
-      "type": "object",
-      "required": ["ncpdp_id", "npi"],
-      "properties": {
-        "ncpdp_id": { "type": "string", "pattern": "^[0-9]{7}$" },
-        "npi": { "type": "string", "pattern": "^[0-9]{10}$" },
-        "name": { "type": "string" },
-        "chain_code": { "type": "string" },
-        "pharmacy_type": { "type": "string", "enum": ["retail", "mail", "specialty", "ltc"] }
-      }
-    },
-    "fill_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "fill_number": {
-      "type": "integer",
-      "description": "0=new, 1+=refill"
-    },
-    "ndc": { "type": "string", "pattern": "^[0-9]{11}$" },
-    "quantity_dispensed": { "type": "number" },
-    "days_supply": { "type": "integer" },
-    "compound_code": {
-      "type": "string",
-      "enum": ["0", "1", "2"],
-      "description": "0=not compound, 1=compound, 2=not specified"
-    },
-    "daw_code": { "type": "string" },
-    "pricing": {
-      "type": "object",
-      "properties": {
-        "ingredient_cost": { "type": "number" },
-        "dispensing_fee": { "type": "number" },
-        "sales_tax": { "type": "number" },
-        "usual_customary": { "type": "number" },
-        "gross_amount_due": { "type": "number" },
-        "patient_pay": { "type": "number" },
-        "plan_pay": { "type": "number" },
-        "copay": { "type": "number" },
-        "coinsurance": { "type": "number" },
-        "deductible": { "type": "number" }
-      }
-    },
-    "prescriber_npi": { "type": "string" },
-    "diagnosis_code": { "type": "string" },
-    "prior_auth_number": { "type": "string" },
-    "submission_clarification_code": { "type": "string" },
-    "other_coverage_code": {
-      "type": "string",
-      "enum": ["0", "1", "2", "3", "4", "8"]
-    },
-    "dur": {
-      "type": "array",
-      "description": "Drug Utilization Review results",
-      "items": {
-        "type": "object",
-        "properties": {
-          "reason_code": { "type": "string" },
-          "response_code": { "type": "string" },
-          "clinical_significance": { "type": "string" },
-          "other_prescriber_npi": { "type": "string" },
-          "other_pharmacy_ncpdp": { "type": "string" },
-          "previous_fill_date": { "type": "string", "format": "date" }
-        }
-      }
-    },
-    "bin": { "type": "string", "pattern": "^[0-9]{6}$" },
-    "pcn": { "type": "string" },
-    "group_id": { "type": "string" }
-  }
-}
-```
-
-### ClaimResponse
-
-Response from pharmacy benefit adjudication.
-
-```json
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "required": ["claim_id", "response_status", "transaction_date"],
+  "required": ["claim_id", "transaction_code", "service_date", "pharmacy_npi", "member_id", "cardholder_id", "bin", "pcn", "group_number", "prescription_number", "ndc", "quantity_dispensed", "days_supply", "prescriber_npi"],
   "properties": {
     "claim_id": { "type": "string" },
     "transaction_code": {
       "type": "string",
       "enum": ["B1", "B2", "B3"],
-      "description": "B1=billing, B2=reversal, B3=rebill"
+      "description": "B1=Billing, B2=Reversal, B3=Rebill"
     },
-    "response_status": {
-      "type": "string",
-      "enum": ["paid", "rejected", "duplicate", "captured"]
-    },
-    "transaction_date": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "authorization_number": { "type": "string" },
-    "reject_codes": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "code": { "type": "string" },
-          "field": { "type": "string" },
-          "description": { "type": "string" }
-        }
-      }
-    },
-    "approved_message_code": { "type": "string" },
-    "additional_messages": {
-      "type": "array",
-      "items": { "type": "string" }
-    },
-    "pricing": {
-      "type": "object",
-      "properties": {
-        "ingredient_cost_paid": { "type": "number" },
-        "dispensing_fee_paid": { "type": "number" },
-        "total_amount_paid": { "type": "number" },
-        "patient_pay_amount": { "type": "number" },
-        "amount_of_copay": { "type": "number" },
-        "amount_of_coinsurance": { "type": "number" },
-        "amount_applied_to_deductible": { "type": "number" },
-        "basis_of_cost": { "type": "string" },
-        "accumulated_deductible": { "type": "number" },
-        "remaining_deductible": { "type": "number" },
-        "remaining_benefit": { "type": "number" }
-      }
-    },
-    "dur_response": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "reason_for_service_code": { "type": "string" },
-          "clinical_significance_code": { "type": "string" },
-          "other_pharmacy_indicator": { "type": "string" },
-          "previous_fill_date": { "type": "string", "format": "date" },
-          "quantity_of_previous_fill": { "type": "number" },
-          "database_indicator": { "type": "string" },
-          "free_text_message": { "type": "string" }
-        }
-      }
-    },
-    "preferred_product": {
-      "type": "object",
-      "description": "Suggested alternative if applicable",
-      "properties": {
-        "ndc": { "type": "string" },
-        "name": { "type": "string" },
-        "price": { "type": "number" }
-      }
-    }
+    "service_date": { "type": "string", "format": "date" },
+    "pharmacy_npi": { "type": "string" },
+    "pharmacy_ncpdp": { "type": "string" },
+    "member_id": { "type": "string" },
+    "cardholder_id": { "type": "string" },
+    "person_code": { "type": "string" },
+    "bin": { "type": "string", "pattern": "^\\d{6}$" },
+    "pcn": { "type": "string" },
+    "group_number": { "type": "string" },
+    "prescription_number": { "type": "string" },
+    "fill_number": { "type": "integer", "minimum": 0 },
+    "ndc": { "type": "string" },
+    "quantity_dispensed": { "type": "number" },
+    "days_supply": { "type": "integer" },
+    "daw_code": { "type": "string" },
+    "compound_code": { "type": "string", "default": "0" },
+    "prescriber_npi": { "type": "string" },
+    "ingredient_cost_submitted": { "type": "number" },
+    "dispensing_fee_submitted": { "type": "number" },
+    "usual_customary_charge": { "type": "number" },
+    "gross_amount_due": { "type": "number" },
+    "prior_auth_number": { "type": "string" },
+    "prior_auth_type": { "type": "string" },
+    "dur_pps_code_counter": { "type": "integer", "default": 0 },
+    "dur_reason_for_service": { "type": "string" },
+    "dur_professional_service": { "type": "string" },
+    "dur_result_of_service": { "type": "string" }
   }
 }
 ```
 
 ### FormularyDrug
 
-A drug in the plan formulary.
-
 ```json
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FormularyDrug",
   "type": "object",
-  "required": ["ndc", "formulary_id", "tier", "status"],
+  "required": ["ndc", "gpi", "drug_name", "tier", "covered"],
   "properties": {
-    "ndc": {
-      "type": "string",
-      "pattern": "^[0-9]{11}$"
-    },
-    "formulary_id": { "type": "string" },
-    "gpi": {
-      "type": "string",
-      "description": "Generic Product Identifier"
-    },
-    "rxnorm": { "type": "string" },
+    "ndc": { "type": "string" },
+    "gpi": { "type": "string", "description": "Generic Product Identifier" },
     "drug_name": { "type": "string" },
-    "generic_name": { "type": "string" },
-    "brand_generic": {
-      "type": "string",
-      "enum": ["brand", "generic"]
-    },
-    "tier": {
-      "type": "integer",
-      "minimum": 1,
-      "maximum": 6,
-      "description": "Formulary tier (1=generic, 2=preferred brand, etc.)"
-    },
-    "status": {
-      "type": "string",
-      "enum": ["formulary", "non_formulary", "excluded"]
-    },
-    "quantity_limit": {
-      "type": "object",
-      "properties": {
-        "applies": { "type": "boolean" },
-        "amount": { "type": "number" },
-        "days": { "type": "integer" }
-      }
-    },
-    "step_therapy": {
-      "type": "object",
-      "properties": {
-        "required": { "type": "boolean" },
-        "step_drugs": {
-          "type": "array",
-          "items": { "type": "string" }
-        }
-      }
-    },
-    "prior_auth": {
-      "type": "object",
-      "properties": {
-        "required": { "type": "boolean" },
-        "criteria": { "type": "string" }
-      }
-    },
-    "specialty": {
-      "type": "boolean",
-      "description": "Specialty pharmacy required"
-    },
-    "maintenance": {
-      "type": "boolean",
-      "description": "Maintenance medication"
-    },
-    "dea_schedule": {
-      "type": "string",
-      "enum": ["II", "III", "IV", "V"]
-    },
-    "effective_date": {
-      "type": "string",
-      "format": "date"
-    },
-    "termination_date": {
-      "type": "string",
-      "format": "date"
-    }
+    "tier": { "type": "integer", "minimum": 1, "maximum": 5 },
+    "covered": { "type": "boolean", "default": true },
+    "requires_pa": { "type": "boolean", "default": false },
+    "requires_step_therapy": { "type": "boolean", "default": false },
+    "step_therapy_group": { "type": "string" },
+    "quantity_limit": { "type": "integer" },
+    "quantity_limit_days": { "type": "integer" },
+    "max_days_supply": { "type": "integer" },
+    "min_age": { "type": "integer" },
+    "max_age": { "type": "integer" },
+    "gender_restriction": { "type": "string", "enum": ["M", "F", null] }
   }
 }
 ```
 
+**Formulary Tier Structure:**
+
+| Tier | Name | Typical Copay |
+|------|------|---------------|
+| 1 | Preferred Generic | $10 |
+| 2 | Non-Preferred Generic | $25 |
+| 3 | Preferred Brand | $50 |
+| 4 | Non-Preferred Brand | $80 |
+| 5 | Specialty | 25% coinsurance |
+
 ---
 
-## Field Naming Conventions
+## Required Fields Summary
 
-| Convention | Example | Usage |
-|------------|---------|-------|
-| snake_case | `member_id` | All field names |
-| Singular | `diagnosis` | Single value fields |
-| Plural | `diagnoses` | Array fields |
-| _id suffix | `patient_id` | Foreign key references |
-| _date suffix | `service_date` | Date fields |
-| _code suffix | `procedure_code` | Code values |
+| Entity | Required Fields |
+|--------|-----------------|
+| Person | id, name.given_name, name.family_name, birth_date, gender |
+| Patient | Person fields + mrn |
+| Encounter | encounter_id, patient_mrn, class_code, status, admission_time |
+| Diagnosis | code, description, patient_mrn, diagnosed_date |
+| Medication | name, dose, route, frequency, patient_mrn, start_date |
+| LabResult | test_name, value, patient_mrn, collected_time |
+| Member | Person fields + member_id, group_id, coverage_start, plan_code |
+| Claim | claim_id, claim_type, member_id, provider_npi, service_date, principal_diagnosis |
+| PharmacyClaim | claim_id, service_date, pharmacy_npi, member_id, ndc, quantity_dispensed |
 
-## Common Field Patterns
+## Referential Integrity
 
-### Identifiers
-- Internal IDs: `{PREFIX}{DIGITS}` (e.g., `MRN00001234`, `CLM000000001234`)
-- External IDs: Standard formats (NPI: 10 digits, NDC: 11 digits)
-
-### Dates
-- Date only: `YYYY-MM-DD` (ISO 8601)
-- DateTime: `YYYY-MM-DDTHH:MM:SSZ` (ISO 8601 with timezone)
-
-### Money
-- All monetary values are `number` type
-- Always in USD
-- Two decimal precision (stored as float)
-
-### Codes
-- Always paired with `system` URI when standard terminology
-- Include `display` for human readability
+| Source | Target | Required |
+|--------|--------|----------|
+| Encounter.patient_mrn | Patient.mrn | Yes |
+| Diagnosis.patient_mrn | Patient.mrn | Yes |
+| Diagnosis.encounter_id | Encounter.encounter_id | No |
+| Medication.patient_mrn | Patient.mrn | Yes |
+| LabResult.patient_mrn | Patient.mrn | Yes |
+| Claim.member_id | Member.member_id | Yes |
+| Member.subscriber_id | Member.member_id | No (dependents only) |
+| PharmacyClaim.member_id | Member.member_id | Yes |
