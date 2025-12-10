@@ -58,6 +58,7 @@ Load these for clinical data generation:
 
 | Scenario | Use When | Key Elements |
 |----------|----------|--------------|
+| **ADT Workflow** | admission, discharge, transfer, patient movement | A01/A02/A03 events, bed management, census |
 | **Diabetes Management** | diabetic, A1C, glucose, metformin, insulin | Disease progression, medication escalation, complications |
 | **Heart Failure** | CHF, HFrEF, BNP, ejection fraction | NYHA classification, GDMT therapy, decompensation |
 | **Chronic Kidney Disease** | CKD, eGFR, dialysis, nephrology | CKD staging, progression, comorbidities |
