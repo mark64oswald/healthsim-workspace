@@ -399,6 +399,166 @@ TRN20250115002,2025-01-15,MEM999999999,John Doe,1970-05-15,1234567890,Springfiel
 | deductible_remaining | decimal | Remaining deductible |
 | oop_remaining | decimal | Remaining out-of-pocket |
 
+### rx_members.csv
+
+```csv
+member_id,cardholder_id,bin,pcn,group_number,person_code,given_name,family_name,birth_date,gender,rx_plan_code,coverage_start,coverage_end,relationship_code,subscriber_id,mail_order_eligible,specialty_eligible
+MEM001234567,ABC123456789,003858,A4,RX1234,01,Michael,Johnson,1985-03-15,M,RX-COMMERCIAL-3TIER,2025-02-01,,18,,Y,Y
+MEM001234568,ABC123456789,003858,A4,RX1234,02,Sarah,Johnson,1987-07-22,F,RX-COMMERCIAL-3TIER,2025-02-01,,01,MEM001234567,Y,Y
+MEM001234569,ABC123456789,003858,A4,RX1234,03,Emma,Johnson,2015-11-10,F,RX-COMMERCIAL-3TIER,2025-02-01,,19,MEM001234567,Y,Y
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| member_id | string | Unique member identifier |
+| cardholder_id | string | ID on pharmacy card |
+| bin | string | Bank Identification Number (6 digits) |
+| pcn | string | Processor Control Number |
+| group_number | string | Pharmacy group number |
+| person_code | string | 01=subscriber, 02=spouse, 03+=children |
+| given_name | string | First name |
+| family_name | string | Last name |
+| birth_date | date | YYYY-MM-DD |
+| gender | string | M, F, O, U |
+| rx_plan_code | string | Pharmacy plan identifier |
+| coverage_start | date | Coverage effective date |
+| coverage_end | date | Coverage termination date |
+| relationship_code | string | 18=Self, 01=Spouse, 19=Child |
+| subscriber_id | string | Subscriber member ID (if dependent) |
+| mail_order_eligible | string | Y/N |
+| specialty_eligible | string | Y/N |
+
+### rx_plans.csv
+
+```csv
+rx_plan_code,plan_name,plan_type,formulary_id,rx_deductible,rx_oop_max,combined_with_medical_oop,tier1_retail_30,tier1_mail_90,tier2_retail_30,tier2_mail_90,tier3_retail_30,tier3_mail_90,specialty_coinsurance,specialty_max_per_fill
+RX-COMMERCIAL-3TIER,Commercial 3-Tier Formulary,commercial,FORM2025-A,0.00,2500.00,N,10.00,20.00,35.00,70.00,60.00,120.00,25,250.00
+RX-PARTD-STD,Medicare Part D Standard,medicare_d,FORM2025-PARTD,590.00,8000.00,N,5.00,,15.00,,47.00,,,
+RX-HDHP-HSA,HDHP Pharmacy Benefit,commercial,FORM2025-HDHP,1600.00,7000.00,Y,10.00,20.00,40.00,80.00,30,60,20,200.00
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| rx_plan_code | string | Unique plan identifier |
+| plan_name | string | Plan display name |
+| plan_type | string | commercial, medicare_d, medicaid |
+| formulary_id | string | Associated formulary |
+| rx_deductible | decimal | Pharmacy deductible |
+| rx_oop_max | decimal | Pharmacy out-of-pocket max |
+| combined_with_medical_oop | string | Y/N |
+| tier1_retail_30 | decimal | Tier 1 30-day retail copay |
+| tier1_mail_90 | decimal | Tier 1 90-day mail copay |
+| tier2_retail_30 | decimal | Tier 2 30-day retail copay |
+| tier2_mail_90 | decimal | Tier 2 90-day mail copay |
+| tier3_retail_30 | decimal | Tier 3 30-day retail copay |
+| tier3_mail_90 | decimal | Tier 3 90-day mail copay |
+| specialty_coinsurance | integer | Specialty coinsurance % |
+| specialty_max_per_fill | decimal | Max copay per specialty fill |
+
+### rx_accumulators.csv
+
+```csv
+member_id,rx_plan_code,plan_year,rx_deductible_applied,rx_deductible_limit,rx_deductible_met,rx_oop_applied,rx_oop_limit,rx_oop_met,specialty_ytd,daw_penalty_ytd,part_d_phase,troop_applied,as_of_date
+MEM001234567,RX-COMMERCIAL-3TIER,2025,250.00,250.00,Y,875.00,2500.00,N,750.00,45.00,,,2025-06-15
+MBI1234567890,RX-PARTD-STD,2025,590.00,590.00,Y,,,N,,,coverage_gap,6125.00,2025-09-15
+MEM001234568,RX-HDHP-HSA,2025,320.00,1600.00,N,450.00,7000.00,N,,,,2025-06-15
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| member_id | string | Member identifier |
+| rx_plan_code | string | Pharmacy plan identifier |
+| plan_year | integer | Benefit year |
+| rx_deductible_applied | decimal | Deductible amount used |
+| rx_deductible_limit | decimal | Deductible limit |
+| rx_deductible_met | string | Y/N |
+| rx_oop_applied | decimal | OOP amount used |
+| rx_oop_limit | decimal | OOP limit |
+| rx_oop_met | string | Y/N |
+| specialty_ytd | decimal | Specialty drugs YTD paid |
+| daw_penalty_ytd | decimal | DAW penalties YTD |
+| part_d_phase | string | deductible, icl, coverage_gap, catastrophic |
+| troop_applied | decimal | True Out-of-Pocket (Part D) |
+| as_of_date | date | Accumulator snapshot date |
+
+### pharmacy_prior_auth.csv
+
+```csv
+pa_id,member_id,ndc,drug_name,pa_type,status,request_date,decision_date,urgency,effective_date,expiration_date,override_code,denial_reason_code,prescriber_npi,prescriber_name
+RX-PA-2025-0001234,MEM001234567,00074437909,Humira 40mg/0.4ml Pen,specialty,approved,2025-01-15,2025-01-17,standard,2025-01-17,2026-01-17,PA12345678,,1234567890,Dr. Emily Chen
+RX-PA-2025-0001235,MEM001234568,00597024101,Repatha 140mg Pen,step_therapy_override,denied,2025-01-15,2025-01-17,standard,,,STEP_THERAPY_NOT_MET,1234567891,Dr. James Wilson
+RX-PA-2025-0001236,MEM001234569,00169413312,Ozempic 2mg/1.5ml Pen,clinical_pa,pending,2025-01-15,,urgent,,,,1234567892,Dr. Lisa Park
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| pa_id | string | Unique PA identifier |
+| member_id | string | Member identifier |
+| ndc | string | National Drug Code |
+| drug_name | string | Drug name |
+| pa_type | string | formulary_exception, step_therapy_override, quantity_limit, age_edit, clinical_pa, specialty |
+| status | string | pending, approved, denied, cancelled, expired |
+| request_date | date | PA request date |
+| decision_date | date | Decision date |
+| urgency | string | standard, urgent, expedited |
+| effective_date | date | Override effective date |
+| expiration_date | date | Override expiration date |
+| override_code | string | PA override code for claim submission |
+| denial_reason_code | string | Denial reason code |
+| prescriber_npi | string | Requesting prescriber NPI |
+| prescriber_name | string | Prescriber name |
+
+### dur_alerts.csv
+
+```csv
+alert_id,claim_id,member_id,ndc,drug_name,dur_code,dur_type,clinical_significance,interacting_ndc,interacting_drug,severity,pharmacist_message,override_code,outcome_code,alert_datetime
+DUR20250115001,RX20250115000003,MEM001234567,00378180110,Warfarin 5mg,DD,drug_drug,1,63323021601,Aspirin 325mg,major,Increased bleeding risk - monitor INR,2A,1B,2025-01-15T10:30:00
+DUR20250115002,RX20250115000004,MEM001234567,00093505601,Lisinopril 10mg,ER,early_refill,3,,,minor,Refill 8 days early (73% supply used),,1A,2025-01-15T11:15:00
+DUR20250115003,RX20250115000005,MEM001234568,00071015523,Atorvastatin 20mg,TD,therapeutic_dup,2,00093764156,Simvastatin 40mg,moderate,Duplicate statin therapy detected,1K,1C,2025-01-15T14:00:00
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| alert_id | string | Unique alert identifier |
+| claim_id | string | Associated claim ID |
+| member_id | string | Member identifier |
+| ndc | string | NDC of drug causing alert |
+| drug_name | string | Drug name |
+| dur_code | string | DUR code (DD, ER, TD, HD, etc.) |
+| dur_type | string | Alert type description |
+| clinical_significance | integer | 1=major, 2=moderate, 3=minor, 4=undetermined |
+| interacting_ndc | string | NDC of interacting drug (if applicable) |
+| interacting_drug | string | Interacting drug name |
+| severity | string | major, moderate, minor |
+| pharmacist_message | string | Alert message |
+| override_code | string | Pharmacist override code |
+| outcome_code | string | Outcome of service code |
+| alert_datetime | datetime | When alert was generated |
+
+### copay_assistance.csv
+
+```csv
+program_id,member_id,ndc,drug_name,program_type,program_name,program_start,program_end,annual_max_benefit,benefit_used_ytd,benefit_remaining,status
+ASSIST001,MEM001234567,00074433906,Humira 40mg Pen,manufacturer_copay,Humira Complete,2025-01-01,2025-12-31,16000.00,495.00,15505.00,active
+ASSIST002,MEM001234568,00003089421,Eliquis 5mg Tab,manufacturer_copay,Eliquis Savings Card,2025-01-01,2025-12-31,6000.00,250.00,5750.00,active
+ASSIST003,MEM001234569,00002323080,Trulicity 1.5mg Pen,patient_assistance,Lilly Cares,2025-01-01,2025-12-31,,,0.00,pending
+```
+
+| Column | Type | Description |
+|--------|------|-------------|
+| program_id | string | Unique program identifier |
+| member_id | string | Member identifier |
+| ndc | string | NDC of covered drug |
+| drug_name | string | Drug name |
+| program_type | string | manufacturer_copay, patient_assistance, foundation, bridge |
+| program_name | string | Program display name |
+| program_start | date | Program effective date |
+| program_end | date | Program expiration date |
+| annual_max_benefit | decimal | Annual benefit maximum |
+| benefit_used_ytd | decimal | Benefits used YTD |
+| benefit_remaining | decimal | Remaining benefits |
+| status | string | active, pending, expired, exhausted |
+
 ## Multi-File Export
 
 When exporting a complete patient record, generate related CSV files:
@@ -430,6 +590,20 @@ export/
 ├── enrollments.csv
 ├── plan_accumulators.csv
 └── eligibility_inquiries.csv
+```
+
+When exporting pharmacy/RxMemberSim data:
+
+```
+export/
+├── rx_members.csv
+├── rx_plans.csv
+├── rx_accumulators.csv
+├── pharmacy_claims.csv
+├── pharmacy_prior_auth.csv
+├── dur_alerts.csv
+├── formulary_drugs.csv
+└── copay_assistance.csv
 ```
 
 ## Example Transformations
@@ -512,3 +686,4 @@ CLM20250115003|MEM001234|professional|denied|2025-01-16|200.00|NULL
 - [fhir-r4.md](fhir-r4.md) - FHIR format
 - [../scenarios/patientsim/SKILL.md](../scenarios/patientsim/SKILL.md) - Patient data
 - [../scenarios/membersim/SKILL.md](../scenarios/membersim/SKILL.md) - Claims data
+- [../scenarios/rxmembersim/SKILL.md](../scenarios/rxmembersim/SKILL.md) - Pharmacy data

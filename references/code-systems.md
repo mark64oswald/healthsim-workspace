@@ -14,6 +14,7 @@ Standard medical codes for generating realistic healthcare data.
 - [Modifier Codes](#modifier-codes)
 - [ADT and Clinical Codes](#adt-and-clinical-codes)
 - [Plan and Benefit Codes](#plan-and-benefit-codes)
+- [NCPDP and Pharmacy Codes](#ncpdp-and-pharmacy-codes)
 
 ---
 
@@ -816,3 +817,202 @@ Standard medical codes for generating realistic healthcare data.
 | Maximum OOP | $8,300 | $16,600 |
 | HSA Contribution Limit | $4,300 | $8,550 |
 | Catch-up (55+) | +$1,000 | +$1,000 |
+
+---
+
+## NCPDP and Pharmacy Codes
+
+### NCPDP Transaction Codes
+
+| Code | Name | Direction | Description |
+|------|------|-----------|-------------|
+| B1 | Billing | Request | New Rx claim submission |
+| B2 | Reversal | Request | Cancel/reverse previous claim |
+| B3 | Rebill | Request | Resubmit corrected claim |
+| E1 | Eligibility | Request | Eligibility inquiry |
+| N1 | Info Reporting | Request | Information only, no adjudication |
+| N2 | Info Response | Response | Information response |
+| P1 | Prior Auth Request | Request | PA initiation |
+| P2 | Prior Auth Response | Response | PA determination |
+| P3 | Prior Auth Inquiry | Request | PA status check |
+| P4 | Prior Auth Cancel | Request | Cancel PA request |
+| S1 | Service Billing | Request | Service claim (DME, compound) |
+
+### NCPDP Response Status Codes
+
+| Code | Name | Description |
+|------|------|-------------|
+| A | Approved | Claim accepted, payment will follow |
+| P | Paid | Claim paid (used with P1 transactions) |
+| R | Rejected | Claim denied, not payable |
+| D | DUR Warning | Approved with DUR warning |
+| C | Captured | Claim captured for later adjudication |
+| Q | Quantity Limited | Approved for reduced quantity |
+| S | Suspended | Claim pending, additional info needed |
+
+### NCPDP Reject Codes (Common)
+
+| Code | Description | Action |
+|------|-------------|--------|
+| 07 | M/I Cardholder ID | Verify member ID on card |
+| 15 | M/I BIN Number | Check 6-digit BIN |
+| 19 | M/I Days Supply | Validate days supply value |
+| 21 | M/I Product/Service ID | Invalid NDC format |
+| 25 | M/I Prescriber ID | NPI invalid/missing |
+| 40 | NDC Not Covered | Drug not on formulary |
+| 65 | Patient Not Covered | Member not active |
+| 70 | Product/Service Not Covered | Benefit exclusion |
+| 75 | Prior Authorization Required | PA needed |
+| 76 | Plan Limitations Exceeded | Quantity/day limit exceeded |
+| 79 | Refill Too Soon | Early fill not allowed |
+| 80 | No Prescriber Found | NPI not found in database |
+| 83 | Drug Not Found | NDC not recognized |
+| 88 | DUR Reject | DUR hard stop |
+| 89 | DUR Warning | Soft stop, override possible |
+| MR | Mandatory Generic Substitution | DAW not allowed |
+| RT | Therapeutic Substitution | Requires formulary alternative |
+
+### DUR (Drug Utilization Review) Codes
+
+#### DUR Type Codes
+
+| Code | Name | Description |
+|------|------|-------------|
+| DD | Drug-Drug Interaction | Concurrent therapy interaction |
+| ER | Early Refill | Refill before 80% utilization |
+| HD | High Dose | Dose exceeds recommended maximum |
+| LD | Low Dose | Dose below therapeutic threshold |
+| DA | Drug-Age | Age restriction violation |
+| DG | Drug-Gender | Gender-specific restriction |
+| DC | Drug-Disease | Contraindicated condition |
+| TD | Therapeutic Duplication | Duplicate therapy class |
+| PA | Prior Authorization | PA required for coverage |
+| PG | Pregnancy/Lactation | Teratogenic risk warning |
+| MX | Maximum Days Supply | Days supply limit exceeded |
+| ID | Ingredient Duplication | Same active ingredient |
+| LR | Late Refill | Possible non-compliance |
+| MC | Drug-Lab Conflict | Lab value contraindicates drug |
+| SY | Drug-Symptoms | Symptom contraindication |
+
+#### DUR Severity Codes
+
+| Code | Level | Description | Action |
+|------|-------|-------------|--------|
+| 1 | Major | Serious interaction, high risk | Hard stop, requires intervention |
+| 2 | Moderate | Significant interaction | Soft stop, override with reason |
+| 3 | Minor | Low risk interaction | Informational only |
+| 4 | Undetermined | Unable to assess | Review recommended |
+
+#### DUR Outcome Codes
+
+| Code | Description |
+|------|-------------|
+| 1A | Not Filled as Ordered |
+| 1B | Filled as Ordered, Prescriber Consulted |
+| 1C | Filled as Ordered, Other Override |
+| 1D | Filled with Different Drug |
+| 1E | Filled with Different Dose |
+| 1F | Filled with Different Quantity |
+| 1G | Filled with Different Directions |
+| 1H | Drug Therapy Unchanged |
+| 1J | Prescription Not Filled |
+| 1K | Filled with Prescriber Approval |
+| 2A | Pharmacist Override |
+| 2B | Physician Override |
+| 3A | Therapeutic Change |
+| 3B | Patient Refused |
+
+### DAW (Dispense As Written) Codes
+
+| Code | Name | Description | Impact |
+|------|------|-------------|--------|
+| 0 | No Product Selection | Generic may be dispensed | Standard copay |
+| 1 | Substitution Not Allowed by Prescriber | MD writes "DAW" | Brand copay, may have penalty |
+| 2 | Substitution Allowed - Patient Request | Patient prefers brand | Brand copay + penalty |
+| 3 | Substitution Allowed - Pharmacist Select | RPh dispenses brand | Standard brand copay |
+| 4 | Substitution Allowed - Generic Not Available | No generic in stock | Standard brand copay |
+| 5 | Brand Dispensed - Generic Not Available | No generic exists | Brand copay (no penalty) |
+| 6 | Override | Plan mandated generic | Brand with override |
+| 7 | Brand Mandated by Law | State regulations | Brand copay |
+| 8 | Substitution Allowed - Generic Not Available | Manufacturer backorder | Brand copay |
+| 9 | Other | Miscellaneous reasons | Plan-specific |
+
+### Pharmacy Type Codes
+
+| Code | Description |
+|------|-------------|
+| 01 | Community/Retail Pharmacy |
+| 02 | Compounding Pharmacy |
+| 03 | Home Infusion Provider |
+| 04 | Institutional Pharmacy |
+| 05 | Long Term Care Pharmacy |
+| 06 | Mail Order Pharmacy |
+| 07 | Managed Care Organization |
+| 08 | Specialty Pharmacy |
+| 09 | PBM |
+| 10 | Indian Health Service |
+| 99 | Other |
+
+### Drug Schedule Codes (DEA)
+
+| Schedule | Description | Refill Rules |
+|----------|-------------|--------------|
+| II | High abuse potential, accepted medical use | No refills, new Rx each fill |
+| III | Moderate abuse potential | 5 refills in 6 months |
+| IV | Low abuse potential | 5 refills in 6 months |
+| V | Lowest abuse potential | 5 refills in 6 months |
+| OTC | Over-the-counter | No prescription needed |
+| Rx | Prescription (non-controlled) | Plan-specific refills |
+
+### RxPlan Type Codes
+
+| Code | Name | Description |
+|------|------|-------------|
+| COMMERCIAL | Commercial PBM | Employer-sponsored pharmacy benefit |
+| MEDICARE_D | Medicare Part D | CMS standard benefit phases |
+| MEDICAID | Medicaid Managed Rx | State Medicaid pharmacy program |
+| DISCOUNT | Discount Card | Cash-pay discount program |
+| CASH | Cash Price | No insurance, cash payment |
+| 340B | 340B Drug Program | Federal drug discount program |
+| COPAY_ASSIST | Copay Assistance | Manufacturer copay card overlay |
+
+### Pharmacy Prior Auth Type Codes
+
+| Code | Description | Typical Turnaround |
+|------|-------------|-------------------|
+| formulary_exception | Non-formulary drug access | 24-72 hours |
+| step_therapy_override | Skip required first-line therapy | 24-72 hours |
+| quantity_limit | Exceed quantity/days supply limit | 24 hours |
+| age_edit | Override age restriction | 24-48 hours |
+| clinical_pa | Clinical necessity criteria | 48-72 hours |
+| specialty | Specialty drug PA | 3-5 business days |
+
+### Medicare Part D Phase Codes
+
+| Phase | Name | Member Pays | Description |
+|-------|------|-------------|-------------|
+| DEDUCTIBLE | Deductible Phase | 100% | Until $590 (2025) |
+| ICL | Initial Coverage Limit | Copay/coinsurance | $590 - $5,030 |
+| DONUT_HOLE | Coverage Gap | 25% | $5,030 - $8,000 |
+| CATASTROPHIC | Catastrophic | 5% or $4.50/$11.20 | Above $8,000 TrOOP |
+
+### Common BIN/PCN Values
+
+| BIN | PCN | PBM/Plan |
+|-----|-----|----------|
+| 003858 | A4 | Express Scripts |
+| 004336 | ADV | CVS Caremark |
+| 610014 | 01 | OptumRx |
+| 015581 | HRX | Humana Rx |
+| 012345 | TEST | Test/Sandbox Environment |
+
+### Copay Assistance Program Types
+
+| Code | Name | Description |
+|------|------|-------------|
+| manufacturer_copay | Manufacturer Copay Card | Covers copay difference |
+| patient_assistance | Patient Assistance Program | Free drug for qualifying patients |
+| foundation | Foundation Support | Non-profit copay assistance |
+| bridge | Bridge Program | Temporary supply while PA pending |
+| free_trial | Free Trial | Initial supply at no cost |
+| loyalty | Loyalty Program | Refill rewards/discounts |

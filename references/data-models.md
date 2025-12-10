@@ -26,6 +26,16 @@ Canonical entity schemas for all HealthSim data types. Extracted from Domain Kno
   - [Accumulator](#accumulator)
   - [Group](#group)
 - [RxMemberSim Models](#rxmembersim-models)
+  - [Prescription](#prescription)
+  - [PharmacyClaim](#pharmacyclaim)
+  - [FormularyDrug](#formularydrug)
+  - [RxMember](#rxmember)
+  - [RxPlan](#rxplan)
+  - [RxAccumulator](#rxaccumulator)
+  - [PharmacyPriorAuth](#pharmacypriorauth)
+  - [ClaimResponse](#claimresponse)
+  - [DURAlert](#duralert)
+  - [CopayAssistance](#copayassistance)
 
 ---
 
@@ -1068,6 +1078,407 @@ Employer group configuration:
 | 4 | Non-Preferred Brand | $80 |
 | 5 | Specialty | 25% coinsurance |
 
+### RxMember
+
+Pharmacy member with PBM-specific identifiers:
+
+```json
+{
+  "title": "RxMember",
+  "allOf": [{ "$ref": "#/definitions/Person" }],
+  "required": ["member_id", "cardholder_id", "bin", "pcn", "group_number", "rx_plan_code", "coverage_start"],
+  "properties": {
+    "member_id": { "type": "string" },
+    "subscriber_id": { "type": "string" },
+    "cardholder_id": {
+      "type": "string",
+      "description": "ID printed on pharmacy card"
+    },
+    "person_code": {
+      "type": "string",
+      "enum": ["01", "02", "03", "04", "05", "06", "07", "08", "09"],
+      "description": "01=Cardholder, 02=Spouse, 03+=Dependents"
+    },
+    "relationship_code": {
+      "type": "string",
+      "enum": ["1", "2", "3", "4"],
+      "description": "1=Cardholder, 2=Spouse, 3=Dependent, 4=Other"
+    },
+    "bin": {
+      "type": "string",
+      "pattern": "^\\d{6}$",
+      "description": "Bank Identification Number (6 digits)"
+    },
+    "pcn": {
+      "type": "string",
+      "description": "Processor Control Number"
+    },
+    "group_number": { "type": "string" },
+    "rx_plan_code": { "type": "string" },
+    "coverage_start": { "type": "string", "format": "date" },
+    "coverage_end": { "type": "string", "format": "date" },
+    "mail_order_eligible": { "type": "boolean", "default": true },
+    "specialty_eligible": { "type": "boolean", "default": true }
+  }
+}
+```
+
+**Person Code Values:**
+
+| Code | Description |
+|------|-------------|
+| 01 | Cardholder/Subscriber |
+| 02 | Spouse |
+| 03 | Child 1 |
+| 04 | Child 2 |
+| 05 | Child 3 |
+| 06-09 | Additional dependents |
+
+### RxPlan
+
+Pharmacy benefit plan configuration:
+
+```json
+{
+  "title": "RxPlan",
+  "type": "object",
+  "required": ["rx_plan_code", "rx_plan_name"],
+  "properties": {
+    "rx_plan_code": { "type": "string" },
+    "rx_plan_name": { "type": "string" },
+    "formulary_id": { "type": "string" },
+    "plan_type": {
+      "type": "string",
+      "enum": ["commercial", "medicare_part_d", "medicaid", "exchange"],
+      "default": "commercial"
+    },
+    "tier_count": { "type": "integer", "minimum": 3, "maximum": 6, "default": 5 },
+    "deductible": {
+      "type": "object",
+      "properties": {
+        "individual": { "type": "number" },
+        "family": { "type": "number" },
+        "applies_to_specialty": { "type": "boolean", "default": true }
+      }
+    },
+    "oop_max": {
+      "type": "object",
+      "properties": {
+        "individual": { "type": "number" },
+        "family": { "type": "number" },
+        "combined_with_medical": { "type": "boolean", "default": false }
+      }
+    },
+    "tier_copays": {
+      "type": "object",
+      "properties": {
+        "tier_1_retail_30": { "type": "number" },
+        "tier_1_retail_90": { "type": "number" },
+        "tier_1_mail_90": { "type": "number" },
+        "tier_2_retail_30": { "type": "number" },
+        "tier_2_retail_90": { "type": "number" },
+        "tier_2_mail_90": { "type": "number" },
+        "tier_3_retail_30": { "type": "number" },
+        "tier_3_retail_90": { "type": "number" },
+        "tier_3_mail_90": { "type": "number" },
+        "tier_4_retail_30": { "type": "number" },
+        "tier_4_retail_90": { "type": "number" },
+        "tier_4_mail_90": { "type": "number" },
+        "tier_5_coinsurance": { "type": "integer" },
+        "tier_5_max": { "type": "number" }
+      }
+    },
+    "specialty_pharmacy_required": { "type": "boolean", "default": true },
+    "mail_order_mandatory_maintenance": { "type": "boolean", "default": false },
+    "daw_penalty": {
+      "type": "object",
+      "properties": {
+        "applies": { "type": "boolean", "default": true },
+        "penalty_type": { "type": "string", "enum": ["difference", "percentage", "flat"] },
+        "penalty_amount": { "type": "number" }
+      }
+    },
+    "effective_date": { "type": "string", "format": "date" },
+    "termination_date": { "type": "string", "format": "date" }
+  }
+}
+```
+
+### RxAccumulator
+
+Pharmacy-specific accumulator tracking:
+
+```json
+{
+  "title": "RxAccumulator",
+  "type": "object",
+  "required": ["member_id", "rx_plan_code", "plan_year", "accumulator_type"],
+  "properties": {
+    "accumulator_id": { "type": "string" },
+    "member_id": { "type": "string" },
+    "rx_plan_code": { "type": "string" },
+    "plan_year": { "type": "integer" },
+    "accumulator_type": {
+      "type": "string",
+      "enum": ["rx_deductible", "rx_oop_max", "specialty_oop", "brand_penalty", "troop"],
+      "description": "Type of pharmacy accumulator"
+    },
+    "individual_applied": { "type": "number", "default": 0 },
+    "individual_limit": { "type": "number" },
+    "family_applied": { "type": "number", "default": 0 },
+    "family_limit": { "type": "number" },
+    "as_of_date": { "type": "string", "format": "date" },
+    "last_claim_date": { "type": "string", "format": "date" },
+    "last_updated": { "type": "string", "format": "date-time" }
+  }
+}
+```
+
+**Pharmacy Accumulator Types:**
+
+| Type | Description | Notes |
+|------|-------------|-------|
+| rx_deductible | Pharmacy deductible | May be separate from medical |
+| rx_oop_max | Pharmacy out-of-pocket max | May be separate from medical |
+| specialty_oop | Specialty drug OOP | Some plans track separately |
+| brand_penalty | Brand when generic available | DAW penalty accumulator |
+| troop | True Out-of-Pocket (Medicare) | For Part D coverage phases |
+
+### PharmacyPriorAuth
+
+Pharmacy prior authorization request and response:
+
+```json
+{
+  "title": "PharmacyPriorAuth",
+  "type": "object",
+  "required": ["pa_id", "member_id", "ndc", "status", "request_date"],
+  "properties": {
+    "pa_id": { "type": "string" },
+    "member_id": { "type": "string" },
+    "prescriber_npi": { "type": "string" },
+    "prescriber_name": { "type": "string" },
+    "pharmacy_npi": { "type": "string" },
+    "ndc": { "type": "string" },
+    "drug_name": { "type": "string" },
+    "gpi": { "type": "string" },
+    "quantity_requested": { "type": "number" },
+    "days_supply_requested": { "type": "integer" },
+    "diagnosis_codes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "pa_type": {
+      "type": "string",
+      "enum": ["formulary_exception", "step_therapy_override", "quantity_limit", "age_edit", "clinical_pa"],
+      "default": "clinical_pa"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "denied", "cancelled", "expired"],
+      "default": "pending"
+    },
+    "urgency": {
+      "type": "string",
+      "enum": ["standard", "urgent", "expedited"],
+      "default": "standard"
+    },
+    "request_date": { "type": "string", "format": "date" },
+    "decision_date": { "type": "string", "format": "date" },
+    "effective_date": { "type": "string", "format": "date" },
+    "expiration_date": { "type": "string", "format": "date" },
+    "approved_quantity": { "type": "number" },
+    "approved_days_supply": { "type": "integer" },
+    "approved_refills": { "type": "integer" },
+    "denial_reason": { "type": "string" },
+    "denial_code": { "type": "string" },
+    "appeal_deadline": { "type": "string", "format": "date" },
+    "clinical_notes": { "type": "string" },
+    "supporting_documentation": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}
+```
+
+**PA Status Workflow:**
+
+| Status | Description | Next States |
+|--------|-------------|-------------|
+| pending | Request submitted, awaiting review | approved, denied, cancelled |
+| approved | PA approved, ready for use | expired |
+| denied | PA denied | (appeal possible) |
+| cancelled | Request withdrawn | - |
+| expired | Approval period ended | - |
+
+### ClaimResponse
+
+Pharmacy claim adjudication response:
+
+```json
+{
+  "title": "ClaimResponse",
+  "type": "object",
+  "required": ["claim_id", "response_status"],
+  "properties": {
+    "claim_id": { "type": "string" },
+    "authorization_number": { "type": "string" },
+    "response_status": {
+      "type": "string",
+      "enum": ["A", "R", "P", "D"],
+      "description": "A=Accepted, R=Rejected, P=Paid with changes, D=Duplicate"
+    },
+    "reject_codes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "NCPDP reject codes if rejected"
+    },
+    "reject_messages": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "ingredient_cost_paid": { "type": "number" },
+    "dispensing_fee_paid": { "type": "number" },
+    "incentive_amount_paid": { "type": "number" },
+    "flat_sales_tax_paid": { "type": "number" },
+    "percentage_sales_tax_paid": { "type": "number" },
+    "total_amount_paid": { "type": "number" },
+    "patient_pay_amount": { "type": "number" },
+    "copay_amount": { "type": "number" },
+    "coinsurance_amount": { "type": "number" },
+    "deductible_amount": { "type": "number" },
+    "amount_exceeding_periodic_benefit_max": { "type": "number" },
+    "basis_of_reimbursement": {
+      "type": "string",
+      "enum": ["MAC", "AWP", "WAC", "340B", "UC", "OTHER"]
+    },
+    "formulary_tier": { "type": "integer" },
+    "dur_alerts": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/DURAlert" }
+    },
+    "message": { "type": "string" },
+    "additional_messages": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "help_desk_phone": { "type": "string" }
+  }
+}
+```
+
+### DURAlert
+
+Drug Utilization Review alert:
+
+```json
+{
+  "title": "DURAlert",
+  "type": "object",
+  "required": ["alert_type", "severity"],
+  "properties": {
+    "alert_type": {
+      "type": "string",
+      "enum": ["DD", "TD", "ER", "HD", "LD", "DA", "DG", "DC", "MX", "PA"],
+      "description": "DUR alert type code"
+    },
+    "severity": {
+      "type": "string",
+      "enum": ["informational", "warning", "reject"],
+      "default": "warning"
+    },
+    "description": { "type": "string" },
+    "clinical_significance": {
+      "type": "string",
+      "enum": ["1", "2", "3"],
+      "description": "1=Major, 2=Moderate, 3=Minor"
+    },
+    "conflicting_drug": {
+      "type": "object",
+      "properties": {
+        "ndc": { "type": "string" },
+        "drug_name": { "type": "string" },
+        "last_fill_date": { "type": "string", "format": "date" }
+      }
+    },
+    "reason_for_service_code": {
+      "type": "string",
+      "description": "NCPDP Reason for Service code"
+    },
+    "professional_service_code": {
+      "type": "string",
+      "description": "NCPDP Professional Service code"
+    },
+    "result_of_service_code": {
+      "type": "string",
+      "description": "NCPDP Result of Service code"
+    },
+    "message": { "type": "string" },
+    "recommendation": { "type": "string" }
+  }
+}
+```
+
+**DUR Alert Types:**
+
+| Code | Type | Description |
+|------|------|-------------|
+| DD | Drug-Drug | Interaction between two medications |
+| TD | Therapeutic Duplication | Multiple drugs in same class |
+| ER | Early Refill | Before 75-80% of supply used |
+| HD | High Dose | Exceeds max recommended dose |
+| LD | Low Dose | Below therapeutic dose |
+| DA | Drug-Age | Age precaution (pediatric/geriatric) |
+| DG | Drug-Gender | Gender-specific precaution |
+| DC | Drug-Disease | Contraindicated condition |
+| MX | Drug-Pregnancy | Pregnancy category warning |
+| PA | Prior Auth Required | PA edit triggered |
+
+### CopayAssistance
+
+Manufacturer copay assistance program:
+
+```json
+{
+  "title": "CopayAssistance",
+  "type": "object",
+  "required": ["program_id", "program_name", "ndc_list"],
+  "properties": {
+    "program_id": { "type": "string" },
+    "program_name": { "type": "string" },
+    "manufacturer": { "type": "string" },
+    "program_bin": { "type": "string" },
+    "program_pcn": { "type": "string" },
+    "program_group": { "type": "string" },
+    "ndc_list": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "max_benefit_per_fill": { "type": "number" },
+    "max_annual_benefit": { "type": "number" },
+    "min_patient_pay": {
+      "type": "number",
+      "description": "Minimum patient responsibility after assistance"
+    },
+    "eligibility": {
+      "type": "object",
+      "properties": {
+        "commercial_only": { "type": "boolean", "default": true },
+        "medicare_excluded": { "type": "boolean", "default": true },
+        "medicaid_excluded": { "type": "boolean", "default": true },
+        "income_limit": { "type": "number" },
+        "age_min": { "type": "integer" },
+        "age_max": { "type": "integer" }
+      }
+    },
+    "effective_date": { "type": "string", "format": "date" },
+    "expiration_date": { "type": "string", "format": "date" },
+    "terms_url": { "type": "string", "format": "uri" }
+  }
+}
+```
+
 ---
 
 ## Required Fields Summary
@@ -1091,6 +1502,15 @@ Employer group configuration:
 | Accumulator | member_id, plan_code, plan_year, accumulator_type |
 | Claim | claim_id, claim_type, member_id, provider_npi, service_date, principal_diagnosis |
 | PharmacyClaim | claim_id, service_date, pharmacy_npi, member_id, ndc, quantity_dispensed |
+| Prescription | rx_number, patient_mrn, prescriber_npi, ndc, quantity, days_supply, date_written |
+| FormularyDrug | ndc, drug_name, tier |
+| RxMember | member_id, cardholder_id, bin, pcn, group_number, rx_plan_code, coverage_start |
+| RxPlan | rx_plan_code, plan_name, plan_type |
+| RxAccumulator | member_id, rx_plan_code, plan_year |
+| PharmacyPriorAuth | pa_id, member_id, ndc, status, request_date |
+| ClaimResponse | claim_id, transaction_response_status, response_datetime |
+| DURAlert | alert_id, claim_id, dur_code, dur_type, clinical_significance |
+| CopayAssistance | program_id, member_id, ndc, program_type, program_start |
 
 ## Referential Integrity
 
@@ -1117,3 +1537,15 @@ Employer group configuration:
 | Accumulator.plan_code | Plan.plan_code | Yes |
 | Claim.member_id | Member.member_id | Yes |
 | PharmacyClaim.member_id | Member.member_id | Yes |
+| Prescription.patient_mrn | Patient.mrn | Yes |
+| Prescription.encounter_id | Encounter.encounter_id | No |
+| RxMember.rx_plan_code | RxPlan.rx_plan_code | Yes |
+| RxMember.subscriber_id | RxMember.member_id | No (dependents only) |
+| RxAccumulator.member_id | RxMember.member_id | Yes |
+| RxAccumulator.rx_plan_code | RxPlan.rx_plan_code | Yes |
+| PharmacyPriorAuth.member_id | RxMember.member_id | Yes |
+| PharmacyPriorAuth.ndc | FormularyDrug.ndc | No |
+| ClaimResponse.claim_id | PharmacyClaim.claim_id | Yes |
+| DURAlert.claim_id | PharmacyClaim.claim_id | Yes |
+| CopayAssistance.member_id | RxMember.member_id | Yes |
+| CopayAssistance.ndc | FormularyDrug.ndc | No |

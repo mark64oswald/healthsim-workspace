@@ -54,6 +54,9 @@ Load the appropriate scenario based on user request:
 | **Specialty Pharmacy** | specialty drug, biologics, limited distribution | [specialty-pharmacy.md](specialty-pharmacy.md) |
 | **DUR Alerts** | drug interaction, DUR, therapeutic dup, early refill | [dur-alerts.md](dur-alerts.md) |
 | **Formulary Management** | formulary, tier, coverage, preferred | [formulary-management.md](formulary-management.md) |
+| **Rx Enrollment** | rx enrollment, pharmacy member, BIN PCN, rx coverage | [rx-enrollment.md](rx-enrollment.md) |
+| **Rx Prior Auth** | rx prior auth, pharmacy PA, step therapy, formulary exception | [rx-prior-auth.md](rx-prior-auth.md) |
+| **Rx Accumulators** | rx accumulator, pharmacy deductible, rx OOP, TrOOP, Part D phase | [rx-accumulator.md](rx-accumulator.md) |
 
 ## Generation Parameters
 
@@ -66,6 +69,30 @@ Load the appropriate scenario based on user request:
 | dur_outcome | string | none | none, warning, reject |
 
 ## Output Entities
+
+### RxMember
+Pharmacy member/cardholder information:
+- member_id, cardholder_id
+- bin, pcn, group_number, person_code
+- rx_plan_code, coverage_start/end
+- relationship_code, subscriber_id
+- mail_order_eligible, specialty_eligible
+
+### RxPlan
+Pharmacy benefit plan configuration:
+- rx_plan_code, plan_name, plan_type
+- formulary_id, tier_structure
+- rx_deductible, rx_oop_max
+- specialty settings (coinsurance, per-fill max)
+- Part D phases (for Medicare plans)
+
+### RxAccumulator
+Pharmacy benefit accumulators:
+- rx_deductible (applied, limit, remaining)
+- rx_oop_max (applied, limit, remaining)
+- specialty_oop, daw_brand_penalty
+- TrOOP (for Medicare Part D)
+- current_phase (for Part D)
 
 ### Prescription
 Written prescription details:
@@ -87,11 +114,26 @@ NCPDP-style claim transaction:
 
 ### ClaimResponse
 Adjudication response:
-- status (paid, rejected)
+- transaction_response_status (A, R, P, D)
 - pricing (ingredient cost paid, dispensing fee, patient pay)
 - reject codes (if applicable)
 - DUR alerts (if applicable)
-- authorization number
+- authorization number, accumulated amounts
+
+### PharmacyPriorAuth
+Pharmacy PA request and decision:
+- pa_id, status, pa_type
+- request_date, decision_date
+- approval details (override_code, expiration)
+- denial details (reason, alternatives)
+- clinical information, urgency
+
+### DURAlert
+Drug utilization review alert:
+- dur_code, dur_type, clinical_significance
+- interacting_drugs, severity_level
+- override_code, outcome_code
+- pharmacist_message, recommendation
 
 ### FormularyDrug
 Drug coverage information:
@@ -99,6 +141,13 @@ Drug coverage information:
 - tier, covered status
 - PA required, step therapy required
 - quantity limits, age/gender restrictions
+
+### CopayAssistance
+Manufacturer copay programs:
+- program_id, program_type
+- ndc, program_name
+- annual_max_benefit, remaining_benefit
+- copay_covered, effective_dates
 
 See [../../references/data-models.md](../../references/data-models.md) for complete schemas.
 
@@ -305,6 +354,9 @@ See [../../formats/ncpdp-d0.md](../../formats/ncpdp-d0.md) for transformation.
 - [specialty-pharmacy.md](specialty-pharmacy.md) - Specialty drug distribution
 - [dur-alerts.md](dur-alerts.md) - Drug utilization review
 - [formulary-management.md](formulary-management.md) - Formulary and tier structure
+- [rx-enrollment.md](rx-enrollment.md) - Pharmacy enrollment and eligibility
+- [rx-prior-auth.md](rx-prior-auth.md) - Pharmacy prior authorization
+- [rx-accumulator.md](rx-accumulator.md) - Pharmacy accumulator tracking
 - [../../formats/ncpdp-d0.md](../../formats/ncpdp-d0.md) - NCPDP format
 - [../../references/data-models.md](../../references/data-models.md) - Entity schemas
-- [../../references/code-systems.md](../../references/code-systems.md) - NDC, GPI codes
+- [../../references/code-systems.md](../../references/code-systems.md) - NDC, GPI, NCPDP codes

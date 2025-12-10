@@ -451,6 +451,201 @@ CREATE TABLE eligibility_inquiries (
 );
 ```
 
+### rx_members
+
+```sql
+CREATE TABLE rx_members (
+    member_id VARCHAR(20) PRIMARY KEY,
+    cardholder_id VARCHAR(20) NOT NULL,
+    bin CHAR(6) NOT NULL,
+    pcn VARCHAR(20) NOT NULL,
+    group_number VARCHAR(20) NOT NULL,
+    person_code CHAR(2) NOT NULL,
+    given_name VARCHAR(50) NOT NULL,
+    family_name VARCHAR(50) NOT NULL,
+    birth_date DATE NOT NULL,
+    gender CHAR(1) NOT NULL,
+    rx_plan_code VARCHAR(20) NOT NULL REFERENCES rx_plans(rx_plan_code),
+    coverage_start DATE NOT NULL,
+    coverage_end DATE,
+    relationship_code CHAR(2) NOT NULL,
+    subscriber_id VARCHAR(20),
+    mail_order_eligible BOOLEAN DEFAULT TRUE,
+    specialty_eligible BOOLEAN DEFAULT TRUE,
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_rx_members_cardholder ON rx_members(cardholder_id, bin, pcn);
+```
+
+### rx_plans
+
+```sql
+CREATE TABLE rx_plans (
+    rx_plan_code VARCHAR(20) PRIMARY KEY,
+    plan_name VARCHAR(100) NOT NULL,
+    plan_type VARCHAR(20) NOT NULL,
+    formulary_id VARCHAR(20),
+    rx_deductible DECIMAL(10,2) DEFAULT 0,
+    rx_oop_max DECIMAL(10,2),
+    combined_with_medical_oop BOOLEAN DEFAULT FALSE,
+    tier1_retail_30 DECIMAL(10,2),
+    tier1_mail_90 DECIMAL(10,2),
+    tier2_retail_30 DECIMAL(10,2),
+    tier2_mail_90 DECIMAL(10,2),
+    tier3_retail_30 DECIMAL(10,2),
+    tier3_mail_90 DECIMAL(10,2),
+    tier4_retail_30 DECIMAL(10,2),
+    tier4_mail_90 DECIMAL(10,2),
+    specialty_coinsurance INT,
+    specialty_max_per_fill DECIMAL(10,2),
+    part_d_deductible DECIMAL(10,2),
+    part_d_icl DECIMAL(10,2),
+    part_d_catastrophic_threshold DECIMAL(10,2),
+    effective_date DATE,
+    termination_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Plan types: commercial, medicare_d, medicaid, discount, hdhp
+```
+
+### rx_accumulators
+
+```sql
+CREATE TABLE rx_accumulators (
+    accumulator_id VARCHAR(20) PRIMARY KEY,
+    member_id VARCHAR(20) NOT NULL REFERENCES rx_members(member_id),
+    rx_plan_code VARCHAR(20) NOT NULL REFERENCES rx_plans(rx_plan_code),
+    plan_year INT NOT NULL,
+    rx_deductible_applied DECIMAL(10,2) DEFAULT 0,
+    rx_deductible_limit DECIMAL(10,2),
+    rx_deductible_met BOOLEAN DEFAULT FALSE,
+    rx_deductible_met_date DATE,
+    rx_oop_applied DECIMAL(10,2) DEFAULT 0,
+    rx_oop_limit DECIMAL(10,2),
+    rx_oop_met BOOLEAN DEFAULT FALSE,
+    rx_oop_met_date DATE,
+    specialty_ytd DECIMAL(10,2) DEFAULT 0,
+    daw_penalty_ytd DECIMAL(10,2) DEFAULT 0,
+    part_d_phase VARCHAR(20),
+    troop_applied DECIMAL(10,2),
+    gross_drug_cost_ytd DECIMAL(12,2),
+    as_of_date DATE NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (member_id, rx_plan_code, plan_year)
+);
+
+-- Part D phases: deductible, icl, coverage_gap, catastrophic
+```
+
+### pharmacy_prior_auth
+
+```sql
+CREATE TABLE pharmacy_prior_auth (
+    pa_id VARCHAR(30) PRIMARY KEY,
+    member_id VARCHAR(20) NOT NULL REFERENCES rx_members(member_id),
+    ndc VARCHAR(11) NOT NULL,
+    drug_name VARCHAR(200),
+    pa_type VARCHAR(30) NOT NULL,
+    status VARCHAR(20) NOT NULL,
+    urgency VARCHAR(20) DEFAULT 'standard',
+    request_date DATE NOT NULL,
+    request_datetime TIMESTAMP,
+    decision_date DATE,
+    decision_datetime TIMESTAMP,
+    effective_date DATE,
+    expiration_date DATE,
+    override_code VARCHAR(20),
+    approved_quantity INT,
+    approved_days_supply INT,
+    approved_fills INT,
+    denial_reason_code VARCHAR(50),
+    denial_reason TEXT,
+    prescriber_npi VARCHAR(10),
+    prescriber_name VARCHAR(100),
+    reviewer_name VARCHAR(100),
+    reviewer_credentials VARCHAR(50),
+    clinical_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_pharmacy_pa_member ON pharmacy_prior_auth(member_id);
+CREATE INDEX idx_pharmacy_pa_status ON pharmacy_prior_auth(status);
+
+-- PA types: formulary_exception, step_therapy_override, quantity_limit, age_edit, clinical_pa, specialty
+-- Status: pending, approved, denied, cancelled, expired
+-- Urgency: standard, urgent, expedited
+```
+
+### dur_alerts
+
+```sql
+CREATE TABLE dur_alerts (
+    alert_id VARCHAR(30) PRIMARY KEY,
+    claim_id VARCHAR(30) NOT NULL,
+    member_id VARCHAR(20) NOT NULL,
+    ndc VARCHAR(11) NOT NULL,
+    drug_name VARCHAR(200),
+    dur_code VARCHAR(5) NOT NULL,
+    dur_type VARCHAR(30) NOT NULL,
+    clinical_significance INT NOT NULL,
+    interacting_ndc VARCHAR(11),
+    interacting_drug VARCHAR(200),
+    severity VARCHAR(20),
+    pharmacist_message TEXT,
+    recommendation TEXT,
+    override_code VARCHAR(5),
+    outcome_code VARCHAR(5),
+    alert_datetime TIMESTAMP NOT NULL,
+    resolved_datetime TIMESTAMP,
+    resolved_by VARCHAR(100),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_dur_alerts_claim ON dur_alerts(claim_id);
+CREATE INDEX idx_dur_alerts_member ON dur_alerts(member_id);
+
+-- DUR codes: DD (drug-drug), ER (early refill), TD (therapeutic dup), HD (high dose),
+--            LD (low dose), DA (drug-age), DG (drug-gender), DC (drug-disease), PA (prior auth)
+-- Clinical significance: 1=major, 2=moderate, 3=minor, 4=undetermined
+```
+
+### copay_assistance
+
+```sql
+CREATE TABLE copay_assistance (
+    program_id VARCHAR(30) PRIMARY KEY,
+    member_id VARCHAR(20) NOT NULL REFERENCES rx_members(member_id),
+    ndc VARCHAR(11) NOT NULL,
+    drug_name VARCHAR(200),
+    program_type VARCHAR(30) NOT NULL,
+    program_name VARCHAR(100),
+    program_bin CHAR(6),
+    program_pcn VARCHAR(20),
+    program_group VARCHAR(20),
+    program_start DATE NOT NULL,
+    program_end DATE,
+    annual_max_benefit DECIMAL(12,2),
+    benefit_used_ytd DECIMAL(12,2) DEFAULT 0,
+    benefit_remaining DECIMAL(12,2),
+    max_per_fill DECIMAL(10,2),
+    status VARCHAR(20) DEFAULT 'active',
+    enrollment_id VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_copay_assistance_member ON copay_assistance(member_id);
+
+-- Program types: manufacturer_copay, patient_assistance, foundation, bridge, free_trial, loyalty
+-- Status: active, pending, expired, exhausted
+```
+
 ## Example INSERT Statements
 
 ### Single Patient Insert
@@ -628,6 +823,63 @@ INSERT INTO eligibility_inquiries (
 );
 ```
 
+### RxMemberSim Insert
+
+```sql
+BEGIN;
+
+-- Insert pharmacy plan
+INSERT INTO rx_plans (rx_plan_code, plan_name, plan_type, formulary_id, rx_deductible, rx_oop_max, combined_with_medical_oop, tier1_retail_30, tier1_mail_90, tier2_retail_30, tier2_mail_90, tier3_retail_30, tier3_mail_90, specialty_coinsurance, specialty_max_per_fill)
+VALUES ('RX-COMMERCIAL-3TIER', 'Commercial 3-Tier Formulary', 'commercial', 'FORM2025-A', 0.00, 2500.00, FALSE, 10.00, 20.00, 35.00, 70.00, 60.00, 120.00, 25, 250.00);
+
+-- Insert pharmacy members
+INSERT INTO rx_members (member_id, cardholder_id, bin, pcn, group_number, person_code, given_name, family_name, birth_date, gender, rx_plan_code, coverage_start, relationship_code, subscriber_id, mail_order_eligible, specialty_eligible)
+VALUES
+    ('MEM001234567', 'ABC123456789', '003858', 'A4', 'RX1234', '01', 'Michael', 'Johnson', '1985-03-15', 'M', 'RX-COMMERCIAL-3TIER', '2025-02-01', '18', NULL, TRUE, TRUE),
+    ('MEM001234568', 'ABC123456789', '003858', 'A4', 'RX1234', '02', 'Sarah', 'Johnson', '1987-07-22', 'F', 'RX-COMMERCIAL-3TIER', '2025-02-01', '01', 'MEM001234567', TRUE, TRUE),
+    ('MEM001234569', 'ABC123456789', '003858', 'A4', 'RX1234', '03', 'Emma', 'Johnson', '2015-11-10', 'F', 'RX-COMMERCIAL-3TIER', '2025-02-01', '19', 'MEM001234567', TRUE, TRUE);
+
+-- Insert pharmacy accumulators
+INSERT INTO rx_accumulators (accumulator_id, member_id, rx_plan_code, plan_year, rx_deductible_applied, rx_deductible_limit, rx_deductible_met, rx_oop_applied, rx_oop_limit, specialty_ytd, daw_penalty_ytd, as_of_date)
+VALUES
+    ('RXACC20250615001', 'MEM001234567', 'RX-COMMERCIAL-3TIER', 2025, 0.00, 0.00, TRUE, 875.00, 2500.00, 750.00, 45.00, '2025-06-15'),
+    ('RXACC20250615002', 'MEM001234568', 'RX-COMMERCIAL-3TIER', 2025, 0.00, 0.00, TRUE, 225.00, 2500.00, 0.00, 0.00, '2025-06-15');
+
+-- Insert pharmacy prior authorization
+INSERT INTO pharmacy_prior_auth (pa_id, member_id, ndc, drug_name, pa_type, status, urgency, request_date, decision_date, effective_date, expiration_date, override_code, approved_quantity, approved_days_supply, approved_fills, prescriber_npi, prescriber_name)
+VALUES ('RX-PA-2025-0001234', 'MEM001234567', '00074437909', 'Humira 40mg/0.4ml Pen', 'specialty', 'approved', 'standard', '2025-01-15', '2025-01-17', '2025-01-17', '2026-01-17', 'PA12345678', 2, 28, 12, '1234567890', 'Dr. Emily Chen');
+
+-- Insert DUR alert
+INSERT INTO dur_alerts (alert_id, claim_id, member_id, ndc, drug_name, dur_code, dur_type, clinical_significance, interacting_ndc, interacting_drug, severity, pharmacist_message, override_code, outcome_code, alert_datetime)
+VALUES ('DUR20250115001', 'RX20250115000003', 'MEM001234567', '00378180110', 'Warfarin 5mg', 'DD', 'drug_drug', 1, '63323021601', 'Aspirin 325mg', 'major', 'Increased bleeding risk - monitor INR', '2A', '1B', '2025-01-15 10:30:00');
+
+-- Insert copay assistance program
+INSERT INTO copay_assistance (program_id, member_id, ndc, drug_name, program_type, program_name, program_bin, program_pcn, program_start, program_end, annual_max_benefit, benefit_used_ytd, benefit_remaining, status)
+VALUES ('ASSIST001', 'MEM001234567', '00074433906', 'Humira 40mg Pen', 'manufacturer_copay', 'Humira Complete', '004682', 'HUMIRA', '2025-01-01', '2025-12-31', 16000.00, 495.00, 15505.00, 'active');
+
+COMMIT;
+```
+
+### Medicare Part D Insert
+
+```sql
+BEGIN;
+
+-- Insert Medicare Part D plan
+INSERT INTO rx_plans (rx_plan_code, plan_name, plan_type, formulary_id, rx_deductible, rx_oop_max, tier1_retail_30, tier2_retail_30, tier3_retail_30, part_d_deductible, part_d_icl, part_d_catastrophic_threshold)
+VALUES ('RX-PARTD-STD', 'Medicare Part D Standard', 'medicare_d', 'FORM2025-PARTD', 590.00, 8000.00, 5.00, 15.00, 47.00, 590.00, 5030.00, 8000.00);
+
+-- Insert Medicare member
+INSERT INTO rx_members (member_id, cardholder_id, bin, pcn, group_number, person_code, given_name, family_name, birth_date, gender, rx_plan_code, coverage_start, relationship_code, mail_order_eligible, specialty_eligible)
+VALUES ('MBI1234567890', 'MBI1234567890', '015581', 'HRX', 'PARTD2025', '01', 'Robert', 'Williams', '1957-06-15', 'M', 'RX-PARTD-STD', '2025-01-01', '18', TRUE, TRUE);
+
+-- Insert Part D accumulator with phase tracking
+INSERT INTO rx_accumulators (accumulator_id, member_id, rx_plan_code, plan_year, rx_deductible_applied, rx_deductible_limit, rx_deductible_met, rx_deductible_met_date, part_d_phase, troop_applied, gross_drug_cost_ytd, as_of_date)
+VALUES ('RXACC20250915001', 'MBI1234567890', 'RX-PARTD-STD', 2025, 590.00, 590.00, TRUE, '2025-02-28', 'coverage_gap', 6125.00, 12850.00, '2025-09-15');
+
+COMMIT;
+```
+
 ## Dialect-Specific Syntax
 
 ### PostgreSQL
@@ -756,4 +1008,5 @@ VALUES ('MRN00000001', '123 Main St, Apt #5');
 - [csv.md](csv.md) - CSV export
 - [../scenarios/patientsim/SKILL.md](../scenarios/patientsim/SKILL.md) - Patient data
 - [../scenarios/membersim/SKILL.md](../scenarios/membersim/SKILL.md) - Claims data
+- [../scenarios/rxmembersim/SKILL.md](../scenarios/rxmembersim/SKILL.md) - Pharmacy data
 - [../references/code-systems.md](../references/code-systems.md) - Code systems
