@@ -62,6 +62,7 @@ Load these for clinical data generation:
 | **Heart Failure** | CHF, HFrEF, BNP, ejection fraction | NYHA classification, GDMT therapy, decompensation |
 | **Chronic Kidney Disease** | CKD, eGFR, dialysis, nephrology | CKD staging, progression, comorbidities |
 | **Sepsis/Acute Care** | sepsis, infection, ICU, critical | Sepsis criteria, antibiotic protocols, ICU stay |
+| **Orders & Results** | lab order, radiology, ORM, ORU, results | Orders, specimens, lab panels, radiology reports |
 
 See: [scenarios/patientsim/](scenarios/patientsim/) for detailed skills
 
@@ -189,18 +190,30 @@ For code lookups and documentation:
 | [Terminology](references/terminology.md) | Healthcare terminology and abbreviations |
 | [Clinical Rules](references/clinical-rules.md) | Clinical business rules and guidelines |
 | [Validation Rules](references/validation-rules.md) | All validation rules and constraints |
+| [HL7v2 Segments](references/hl7v2-segments.md) | HL7v2 segment definitions (MSH, PID, OBR, OBX, etc.) |
 
 ## Format Transformations
 
 Transform generated data to healthcare standards:
 
+### Healthcare Standards
+
 | Format | Skill | Use Case |
 |--------|-------|----------|
 | FHIR R4 | [formats/fhir-r4.md](formats/fhir-r4.md) | Modern interoperability, REST APIs |
-| HL7v2 ADT | [formats/hl7v2-adt.md](formats/hl7v2-adt.md) | Legacy EMR integration |
+| HL7v2 ADT | [formats/hl7v2-adt.md](formats/hl7v2-adt.md) | Admit/Discharge/Transfer messages |
+| HL7v2 ORM | [formats/hl7v2-orm.md](formats/hl7v2-orm.md) | Order messages (lab, rad, meds) |
+| HL7v2 ORU | [formats/hl7v2-oru.md](formats/hl7v2-oru.md) | Results/observation messages |
 | X12 837 | [formats/x12-837.md](formats/x12-837.md) | Claims submission (P/I) |
 | X12 835 | [formats/x12-835.md](formats/x12-835.md) | Remittance/ERA |
 | NCPDP D.0 | [formats/ncpdp-d0.md](formats/ncpdp-d0.md) | Pharmacy transactions |
+
+### Export Formats
+
+| Format | Skill | Use Case |
+|--------|-------|----------|
+| CSV | [formats/csv.md](formats/csv.md) | Spreadsheets, data analysis, bulk export |
+| SQL | [formats/sql.md](formats/sql.md) | Database INSERT statements, data loading |
 
 ## Integration & Testing
 

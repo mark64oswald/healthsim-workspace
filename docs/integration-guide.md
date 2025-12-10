@@ -12,17 +12,22 @@ SKILL.md (Root Router)
 │   ├── code-systems.md
 │   ├── terminology.md
 │   ├── clinical-rules.md
-│   └── validation-rules.md
+│   ├── validation-rules.md
+│   └── hl7v2-segments.md
 ├── scenarios/            (Domain Generators)
-│   ├── patientsim/       (Clinical)
+│   ├── patientsim/       (Clinical, Orders, Results)
 │   ├── membersim/        (Claims)
 │   └── rxmembersim/      (Pharmacy)
 └── formats/              (Output Transformers)
-    ├── fhir-r4.md
-    ├── hl7v2-adt.md
-    ├── x12-837.md
-    ├── x12-835.md
-    └── ncpdp-d0.md
+    ├── fhir-r4.md        (FHIR R4 resources)
+    ├── hl7v2-adt.md      (ADT messages)
+    ├── hl7v2-orm.md      (Order messages)
+    ├── hl7v2-oru.md      (Result messages)
+    ├── x12-837.md        (Claims)
+    ├── x12-835.md        (Remittance)
+    ├── ncpdp-d0.md       (Pharmacy)
+    ├── csv.md            (CSV export)
+    └── sql.md            (SQL export)
 ```
 
 ## Data Flow Patterns
@@ -144,7 +149,51 @@ MemberSim Claim → MemberSim Adjudication → X12 835 Format
 }
 ```
 
-### Pattern 4: Full Patient Journey
+### Pattern 4: Orders to Results
+
+Clinical orders generate lab/radiology results:
+
+```
+PatientSim Order → HL7v2 ORM → Lab/Radiology → HL7v2 ORU
+```
+
+**Example Flow:**
+```json
+{
+  "step_1_order": {
+    "trigger": "Generate a CMP lab order for diabetes patient",
+    "output": {
+      "order": {
+        "order_id": "ORD20250115001",
+        "order_type": "LAB",
+        "code": "80053",
+        "description": "Comprehensive Metabolic Panel",
+        "priority": "routine",
+        "status": "new"
+      }
+    }
+  },
+  "step_2_hl7v2_orm": {
+    "input": "order from step 1",
+    "output": "ORM^O01 message"
+  },
+  "step_3_results": {
+    "input": "completed order",
+    "output": {
+      "results": [
+        { "code": "2345-7", "name": "Glucose", "value": 142, "flag": "H" },
+        { "code": "4548-4", "name": "HbA1c", "value": 8.2, "flag": "H" }
+      ]
+    }
+  },
+  "step_4_hl7v2_oru": {
+    "input": "results from step 3",
+    "output": "ORU^R01 message"
+  }
+}
+```
+
+### Pattern 5: Full Patient Journey
 
 Complete patient lifecycle across all domains:
 
@@ -152,6 +201,10 @@ Complete patient lifecycle across all domains:
 PatientSim (Registration)
     ↓
 PatientSim (Encounter) → HL7v2 ADT A01
+    ↓
+PatientSim (Orders) → HL7v2 ORM
+    ↓
+PatientSim (Results) → HL7v2 ORU
     ↓
 PatientSim (Diagnosis/Treatment) → FHIR Bundle
     ↓
@@ -422,3 +475,5 @@ Verify that claim references (encounter IDs, authorization numbers) are consiste
 - [SKILL.md](../SKILL.md) - Root router
 - [validation-rules.md](../references/validation-rules.md) - Validation rules
 - [testing-patterns.md](testing-patterns.md) - Testing patterns
+- [hl7v2-segments.md](../references/hl7v2-segments.md) - HL7v2 segment reference
+- [orders-results.md](../scenarios/patientsim/orders-results.md) - Orders and results scenario

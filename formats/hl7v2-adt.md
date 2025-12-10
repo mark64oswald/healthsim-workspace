@@ -155,12 +155,39 @@ DG1|3||E11.9^Type 2 diabetes mellitus^I10|||F|
 DG1|4||N18.3^Chronic kidney disease stage 3^I10|||F|
 ```
 
+### ADT^A02 - Patient Transfer
+```
+MSH|^~\&|HEALTHSIM|SPRINGFIELD_HOSP|EMR|MAIN_CAMPUS|20250112160000||ADT^A02|MSG20250112001|P|2.5|||AL|NE|
+EVN|A02|20250112160000||||20250112160000|
+PID|1||MRN00000001^^^SPRINGFIELD_HOSP^MR||THOMPSON^ELEANOR^MARIE||19500812|F|||456 OAK AVE^^SPRINGFIELD^IL^62702^USA||5559876543|||||||987654321|
+PV1|1|I|ICU^105^B^^^SPRINGFIELD||||1234567890^JOHNSON^ROBERT^MD|||MED||||||||ENC0000000001|||||||||||||||||||20250110140000||||||
+PV2|||^Transfer from Med/Surg for closer monitoring|||||||||||||||||||||||||||||||||
+```
+
+### ADT^A04 - Patient Registration (Outpatient)
+```
+MSH|^~\&|HEALTHSIM|SPRINGFIELD_HOSP|EMR|MAIN_CAMPUS|20250115080000||ADT^A04|MSG20250115004|P|2.5|||AL|NE|
+EVN|A04|20250115080000||||20250115080000|
+PID|1||MRN00000002^^^SPRINGFIELD_HOSP^MR||GARCIA^MARIA^ELENA||19780422|F|||123 ELM ST^^SPRINGFIELD^IL^62701^USA||5551234567|||||||555667788|
+PV1|1|O|CLINIC^ENDO^1^^^SPRINGFIELD||||9876543210^CHEN^LISA^MD|||END||||||||ENC0000000002|||||||||||||||||||20250115080000||||||
+DG1|1||E11.9^Type 2 diabetes mellitus^I10|||A|
+IN1|1|BCBS^Blue Cross Blue Shield|12345|Blue Cross Illinois||||GROUP001||||20250101|20251231||||||||||||||||||MEM001234|
+```
+
 ### ADT^A08 - Patient Update
 ```
 MSH|^~\&|HEALTHSIM|SPRINGFIELD_HOSP|EMR|MAIN_CAMPUS|20250115090000||ADT^A08|MSG20250115003|P|2.5|||AL|NE|
 EVN|A08|20250115090000||||20250115090000|
 PID|1||MRN00000001^^^SPRINGFIELD_HOSP^MR||THOMPSON^ELEANOR^MARIE||19500812|F|||789 NEW ADDRESS^^SPRINGFIELD^IL^62703^USA||5551112222|||||||987654321|
 PV1|1|I|ICU^105^B^^^SPRINGFIELD||||1234567890^JOHNSON^ROBERT^MD|||MED||||||||ENC0000000001|||||||||||||||||||20250110140000||||||
+```
+
+### ADT^A11 - Cancel Admission
+```
+MSH|^~\&|HEALTHSIM|SPRINGFIELD_HOSP|EMR|MAIN_CAMPUS|20250115110000||ADT^A11|MSG20250115005|P|2.5|||AL|NE|
+EVN|A11|20250115110000||||20250115110000|
+PID|1||MRN00000003^^^SPRINGFIELD_HOSP^MR||WILSON^JAMES^ROBERT||19650710|M|||555 MAPLE DR^^SPRINGFIELD^IL^62704^USA||5552223333|||||||112233445|
+PV1|1|I|MED^301^A^^^SPRINGFIELD||||5678901234^PATEL^ARUN^MD|||MED||||||||ENC0000000003|||||||||||||||||||20250115080000||||||
 ```
 
 ## Encoding Rules
@@ -234,7 +261,9 @@ DG1|1||I50.23^Acute on chronic systolic heart failure^I10|||F|
 
 ## Related Skills
 
+- [hl7v2-orm.md](hl7v2-orm.md) - HL7v2 Order messages
+- [hl7v2-oru.md](hl7v2-oru.md) - HL7v2 Results messages
+- [../references/hl7v2-segments.md](../references/hl7v2-segments.md) - Complete segment reference
 - [fhir-r4.md](fhir-r4.md) - Modern FHIR format
-- [x12-837.md](x12-837.md) - Claims format
 - [../scenarios/patientsim/SKILL.md](../scenarios/patientsim/SKILL.md) - Patient data
-- [../references/data-models.md](../references/data-models.md) - Entity schemas
+- [../scenarios/patientsim/orders-results.md](../scenarios/patientsim/orders-results.md) - Orders and results scenario

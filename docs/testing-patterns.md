@@ -705,8 +705,141 @@ Test boundary conditions and edge cases.
 }
 ```
 
+## Additional Format Test Patterns
+
+### Pattern 21: HL7v2 ORM Order Validation
+
+Verify ORM order messages are correctly structured.
+
+**Test Template:**
+```json
+{
+  "test_name": "hl7v2_orm_validation",
+  "message_type": "ORM^O01",
+  "required_segments": ["MSH", "PID", "ORC", "OBR"],
+  "checks": [
+    { "segment": "ORC", "field": 1, "name": "Order Control", "valid_values": ["NW", "CA", "DC", "XO"] },
+    { "segment": "ORC", "field": 2, "name": "Placer Order Number", "required": true },
+    { "segment": "OBR", "field": 4, "name": "Universal Service ID", "format": "code^text^system" }
+  ]
+}
+```
+
+### Pattern 22: HL7v2 ORU Results Validation
+
+Verify ORU result messages contain valid observations.
+
+**Test Template:**
+```json
+{
+  "test_name": "hl7v2_oru_validation",
+  "message_type": "ORU^R01",
+  "required_segments": ["MSH", "PID", "OBR", "OBX"],
+  "checks": [
+    { "segment": "OBX", "field": 2, "name": "Value Type", "valid_values": ["NM", "ST", "TX", "CE"] },
+    { "segment": "OBX", "field": 3, "name": "Observation ID", "format": "LOINC code" },
+    { "segment": "OBX", "field": 5, "name": "Value", "matches_type": "OBX-2" },
+    { "segment": "OBX", "field": 8, "name": "Abnormal Flag", "valid_values": ["N", "L", "H", "LL", "HH", "A"] },
+    { "segment": "OBX", "field": 11, "name": "Result Status", "valid_values": ["P", "F", "C", "X"] }
+  ]
+}
+```
+
+### Pattern 23: CSV Export Validation
+
+Verify CSV output is properly formatted.
+
+**Test Template:**
+```json
+{
+  "test_name": "csv_export_validation",
+  "checks": [
+    { "name": "header_row_present", "condition": "first_row_is_header" },
+    { "name": "consistent_column_count", "condition": "all_rows_same_field_count" },
+    { "name": "proper_quoting", "condition": "fields_with_delimiters_are_quoted" },
+    { "name": "date_format_consistent", "pattern": "YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS" },
+    { "name": "no_trailing_delimiter", "condition": "lines_end_after_last_field" }
+  ]
+}
+```
+
+**Example:**
+```csv
+mrn,given_name,family_name,birth_date,gender
+MRN00000001,John,Smith,1970-03-15,M
+MRN00000002,"Smith, Jr.",Robert,1985-06-20,M
+
+Checks:
+- Header row present ✓
+- All rows have 5 fields ✓
+- "Smith, Jr." properly quoted ✓
+- Dates in ISO format ✓
+```
+
+### Pattern 24: SQL Insert Validation
+
+Verify SQL statements are syntactically correct.
+
+**Test Template:**
+```json
+{
+  "test_name": "sql_insert_validation",
+  "dialect": "postgresql",
+  "checks": [
+    { "name": "valid_table_name", "pattern": "^[a-z_][a-z0-9_]*$" },
+    { "name": "proper_string_escaping", "condition": "single_quotes_doubled" },
+    { "name": "null_handling", "condition": "NULL_keyword_not_quoted" },
+    { "name": "date_format", "pattern": "YYYY-MM-DD" },
+    { "name": "transaction_wrapper", "condition": "BEGIN_and_COMMIT_present" }
+  ]
+}
+```
+
+**Example:**
+```sql
+BEGIN;
+INSERT INTO patients (mrn, family_name, birth_date, deceased_date)
+VALUES ('MRN00000001', 'O''Brien', '1970-03-15', NULL);
+COMMIT;
+
+Checks:
+- Table name valid ✓
+- O'Brien escaped as O''Brien ✓
+- NULL not quoted ✓
+- Transaction wrapped ✓
+```
+
+### Pattern 25: Order-to-Result Consistency
+
+Verify lab orders result in matching observations.
+
+**Test Template:**
+```json
+{
+  "test_name": "order_result_consistency",
+  "order": {
+    "code": "80053",
+    "description": "Comprehensive Metabolic Panel"
+  },
+  "expected_results": [
+    { "loinc": "2345-7", "name": "Glucose", "required": true },
+    { "loinc": "3094-0", "name": "BUN", "required": true },
+    { "loinc": "2160-0", "name": "Creatinine", "required": true },
+    { "loinc": "2951-2", "name": "Sodium", "required": true },
+    { "loinc": "2823-3", "name": "Potassium", "required": true }
+  ],
+  "validations": [
+    "all required results present",
+    "values within reference ranges or flagged appropriately",
+    "result status matches order status",
+    "observation datetime >= order datetime"
+  ]
+}
+```
+
 ## Related Skills
 
 - [integration-guide.md](integration-guide.md) - Cross-skill integration
 - [../references/validation-rules.md](../references/validation-rules.md) - Validation rules
+- [../references/hl7v2-segments.md](../references/hl7v2-segments.md) - HL7v2 segment reference
 - [../SKILL.md](../SKILL.md) - Root router
