@@ -6,6 +6,16 @@ Canonical entity schemas for all HealthSim data types. Extracted from Domain Kno
 
 - [Core Person Model](#core-person-model)
 - [PatientSim Models](#patientsim-models)
+  - [Patient](#patient-extends-person)
+  - [Encounter](#encounter)
+  - [Diagnosis](#diagnosis)
+  - [Medication](#medication)
+  - [LabResult](#labresult)
+  - [VitalSign](#vitalsign)
+  - [Order](#order)
+  - [RadiologyReport](#radiologyreport)
+  - [ADTEvent](#adtevent)
+  - [Location](#location)
 - [MemberSim Models](#membersim-models)
   - [Member](#member-extends-person)
   - [Claim](#claim)
@@ -331,6 +341,256 @@ The foundational person entity shared across all products:
 | systolic_bp | 90 | 140 | mmHg |
 | diastolic_bp | 60 | 90 | mmHg |
 | spo2 | 95 | 100 | % |
+
+### Order
+
+```json
+{
+  "title": "Order",
+  "type": "object",
+  "required": ["order_id", "patient_mrn", "order_type", "code", "status", "ordered_datetime"],
+  "properties": {
+    "order_id": { "type": "string" },
+    "patient_mrn": { "type": "string" },
+    "encounter_id": { "type": "string" },
+    "order_type": {
+      "type": "string",
+      "enum": ["LAB", "RAD", "MEDICATION", "PROCEDURE"],
+      "description": "Type of order"
+    },
+    "code": { "type": "string", "description": "CPT, LOINC, or other procedure code" },
+    "code_system": {
+      "type": "string",
+      "enum": ["CPT", "LOINC", "ICD-10-PCS", "HCPCS"],
+      "default": "CPT"
+    },
+    "description": { "type": "string" },
+    "priority": {
+      "type": "string",
+      "enum": ["stat", "asap", "routine", "preop", "timed"],
+      "default": "routine"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["new", "accepted", "scheduled", "in_progress", "completed", "cancelled"],
+      "default": "new"
+    },
+    "ordered_datetime": { "type": "string", "format": "date-time" },
+    "scheduled_datetime": { "type": "string", "format": "date-time" },
+    "collected_datetime": { "type": "string", "format": "date-time" },
+    "resulted_datetime": { "type": "string", "format": "date-time" },
+    "ordering_provider": {
+      "type": "object",
+      "properties": {
+        "npi": { "type": "string" },
+        "name": { "$ref": "#/definitions/Name" }
+      }
+    },
+    "performing_lab": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" }
+      }
+    },
+    "clinical_indication": { "type": "string" },
+    "diagnosis_codes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "specimen_type": { "type": "string", "description": "For lab orders: Blood, Urine, etc." }
+  }
+}
+```
+
+**Order Types:**
+
+| Type | Description | Common Codes |
+|------|-------------|--------------|
+| LAB | Laboratory orders | CPT 80000-89999, LOINC |
+| RAD | Radiology/imaging orders | CPT 70000-79999 |
+| MEDICATION | Medication orders | RxNorm, NDC |
+| PROCEDURE | Surgical/therapeutic procedures | CPT, ICD-10-PCS |
+
+**Order Priority Codes:**
+
+| Priority | Description | Expected TAT |
+|----------|-------------|--------------|
+| stat | Immediate | 1 hour |
+| asap | As soon as possible | 2-4 hours |
+| routine | Standard | 24-48 hours |
+| preop | Pre-operative | Before surgery |
+| timed | Specific time | As scheduled |
+
+### RadiologyReport
+
+```json
+{
+  "title": "RadiologyReport",
+  "type": "object",
+  "required": ["accession_number", "order_id", "patient_mrn", "exam_datetime"],
+  "properties": {
+    "accession_number": { "type": "string" },
+    "order_id": { "type": "string" },
+    "patient_mrn": { "type": "string" },
+    "encounter_id": { "type": "string" },
+    "procedure_code": { "type": "string" },
+    "procedure_name": { "type": "string" },
+    "modality": {
+      "type": "string",
+      "enum": ["XR", "CT", "MR", "US", "NM", "PET", "FL"],
+      "description": "XR=X-ray, CT=CT scan, MR=MRI, US=Ultrasound, NM=Nuclear Med, PET=PET scan, FL=Fluoroscopy"
+    },
+    "exam_datetime": { "type": "string", "format": "date-time" },
+    "reported_datetime": { "type": "string", "format": "date-time" },
+    "radiologist": {
+      "type": "object",
+      "properties": {
+        "npi": { "type": "string" },
+        "name": { "$ref": "#/definitions/Name" }
+      }
+    },
+    "clinical_indication": { "type": "string" },
+    "comparison": { "type": "string", "description": "Prior studies compared" },
+    "technique": { "type": "string" },
+    "findings": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Findings by anatomic region"
+    },
+    "impression": { "type": "string" },
+    "recommendations": { "type": "string" },
+    "critical_finding": { "type": "boolean", "default": false },
+    "critical_acknowledged_by": { "type": "string" },
+    "critical_acknowledged_datetime": { "type": "string", "format": "date-time" }
+  }
+}
+```
+
+**Radiology Modality Codes:**
+
+| Code | Description | Examples |
+|------|-------------|----------|
+| XR | X-ray/Radiograph | Chest X-ray, bone films |
+| CT | Computed Tomography | CT head, CT chest |
+| MR | Magnetic Resonance | MRI brain, MRI spine |
+| US | Ultrasound | Abdominal US, Echo |
+| NM | Nuclear Medicine | Bone scan, thyroid uptake |
+| PET | Positron Emission Tomography | PET/CT |
+| FL | Fluoroscopy | Swallow study, angiography |
+
+### ADTEvent
+
+```json
+{
+  "title": "ADTEvent",
+  "type": "object",
+  "required": ["event_type", "event_time", "patient_mrn", "encounter_id"],
+  "properties": {
+    "event_id": { "type": "string" },
+    "event_type": {
+      "type": "string",
+      "enum": ["A01", "A02", "A03", "A04", "A08", "A11", "A13"],
+      "description": "HL7 ADT event type"
+    },
+    "event_time": { "type": "string", "format": "date-time" },
+    "patient_mrn": { "type": "string" },
+    "encounter_id": { "type": "string" },
+    "patient_class": {
+      "type": "string",
+      "enum": ["I", "O", "E", "P", "R", "B", "U", "OBS"],
+      "description": "I=Inpatient, O=Outpatient, E=Emergency, P=Preadmit, R=Recurring, B=Obstetrics, U=Unknown, OBS=Observation"
+    },
+    "admission_type": {
+      "type": "string",
+      "enum": ["E", "R", "U", "C"],
+      "description": "E=Emergency, R=Routine, U=Urgent, C=Elective"
+    },
+    "admission_source": {
+      "type": "string",
+      "description": "Source of admission (1-9)"
+    },
+    "location": { "$ref": "#/definitions/Location" },
+    "prior_location": { "$ref": "#/definitions/Location" },
+    "discharge_disposition": { "type": "string" },
+    "attending_provider": {
+      "type": "object",
+      "properties": {
+        "npi": { "type": "string" },
+        "name": { "$ref": "#/definitions/Name" }
+      }
+    },
+    "transfer_reason": { "type": "string" },
+    "cancellation_reason": { "type": "string" },
+    "description": { "type": "string" }
+  }
+}
+```
+
+**ADT Event Types:**
+
+| Event | Name | Description |
+|-------|------|-------------|
+| A01 | Admit | Patient admission notification |
+| A02 | Transfer | Patient transferred between locations |
+| A03 | Discharge | Patient discharged or visit ended |
+| A04 | Register | Outpatient/preadmit registration |
+| A08 | Update | Patient information update |
+| A11 | Cancel Admit | Cancel a previous admission |
+| A13 | Cancel Discharge | Cancel a previous discharge |
+
+### Location
+
+```json
+{
+  "title": "Location",
+  "type": "object",
+  "properties": {
+    "facility": { "type": "string", "description": "Facility/hospital code" },
+    "building": { "type": "string" },
+    "floor": { "type": "string" },
+    "point_of_care": {
+      "type": "string",
+      "description": "Unit code (ED, ICU, MED, etc.)"
+    },
+    "room": { "type": "string" },
+    "bed": { "type": "string" },
+    "location_type": {
+      "type": "string",
+      "enum": ["nursing_unit", "room", "bed", "clinic", "department", "operating_room"],
+      "default": "nursing_unit"
+    },
+    "location_status": {
+      "type": "string",
+      "enum": ["active", "housekeeping", "occupied", "unoccupied", "contaminated", "closed"],
+      "default": "active"
+    }
+  }
+}
+```
+
+**Hospital Unit Codes:**
+
+| Code | Unit Name | Type |
+|------|-----------|------|
+| ED | Emergency Department | Emergency |
+| ICU | Intensive Care Unit | Critical |
+| CCU | Cardiac Care Unit | Critical |
+| MICU | Medical ICU | Critical |
+| SICU | Surgical ICU | Critical |
+| NICU | Neonatal ICU | Critical |
+| SDU | Step-Down Unit | Intermediate |
+| TELE | Telemetry | Intermediate |
+| MED | Medical/Surgical | Acute |
+| SURG | Surgical | Acute |
+| PEDS | Pediatrics | Acute |
+| OB | Obstetrics | Acute |
+| PSYCH | Psychiatry | Behavioral |
+| REHAB | Rehabilitation | Post-Acute |
+| OBS | Observation | Observation |
+| OR | Operating Room | Procedural |
+| PACU | Post-Anesthesia Care | Recovery |
+| L&D | Labor & Delivery | OB |
 
 ---
 
@@ -820,6 +1080,9 @@ Employer group configuration:
 | Diagnosis | code, description, patient_mrn, diagnosed_date |
 | Medication | name, dose, route, frequency, patient_mrn, start_date |
 | LabResult | test_name, value, patient_mrn, collected_time |
+| Order | order_id, patient_mrn, order_type, code, status, ordered_datetime |
+| RadiologyReport | accession_number, order_id, patient_mrn, exam_datetime |
+| ADTEvent | event_type, event_time, patient_mrn, encounter_id |
 | Group | group_id, group_name, effective_date |
 | Plan | plan_code, plan_name, plan_type |
 | PlanServiceBenefit | plan_code, service_type, network_tier, cost_sharing_type |
@@ -838,6 +1101,13 @@ Employer group configuration:
 | Diagnosis.encounter_id | Encounter.encounter_id | No |
 | Medication.patient_mrn | Patient.mrn | Yes |
 | LabResult.patient_mrn | Patient.mrn | Yes |
+| LabResult.encounter_id | Encounter.encounter_id | No |
+| Order.patient_mrn | Patient.mrn | Yes |
+| Order.encounter_id | Encounter.encounter_id | No |
+| RadiologyReport.patient_mrn | Patient.mrn | Yes |
+| RadiologyReport.order_id | Order.order_id | Yes |
+| ADTEvent.patient_mrn | Patient.mrn | Yes |
+| ADTEvent.encounter_id | Encounter.encounter_id | Yes |
 | Member.group_id | Group.group_id | Yes |
 | Member.plan_code | Plan.plan_code | Yes |
 | Member.subscriber_id | Member.member_id | No (dependents only) |

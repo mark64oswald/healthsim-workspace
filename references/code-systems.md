@@ -12,6 +12,7 @@ Standard medical codes for generating realistic healthcare data.
 - [Place of Service Codes](#place-of-service-codes)
 - [Revenue Codes](#revenue-codes)
 - [Modifier Codes](#modifier-codes)
+- [ADT and Clinical Codes](#adt-and-clinical-codes)
 - [Plan and Benefit Codes](#plan-and-benefit-codes)
 
 ---
@@ -366,12 +367,12 @@ Standard medical codes for generating realistic healthcare data.
 
 ### Mental Health
 
-| Generic Name | Brand | RxNorm | NDC (example) | Strength | Route |
-|--------------|-------|--------|---------------|----------|-------|
-| Sertraline | Zoloft | 36437 | 00049490066 | 25mg, 50mg, 100mg | oral |
-| Escitalopram | Lexapro | 321988 | 00456202001 | 5mg, 10mg, 20mg | oral |
-| Fluoxetine | Prozac | 4493 | 00777310602 | 10mg, 20mg, 40mg | oral |
-| Bupropion XL | Wellbutrin XL | 993503 | 00173072155 | 150mg, 300mg | oral |
+| Generic Name | Brand | RxNorm | NDC (example) | Strength | Route | Schedule |
+|--------------|-------|--------|---------------|----------|-------|----------|
+| Sertraline | Zoloft | 36437 | 00049490066 | 25mg, 50mg, 100mg | oral | - |
+| Escitalopram | Lexapro | 321988 | 00456202001 | 5mg, 10mg, 20mg | oral | - |
+| Fluoxetine | Prozac | 4493 | 00777310602 | 10mg, 20mg, 40mg | oral | - |
+| Bupropion XL | Wellbutrin XL | 993503 | 00173072155 | 150mg, 300mg | oral | - |
 | Alprazolam | Xanax | 596 | 00009009101 | 0.25mg, 0.5mg, 1mg, 2mg | oral | IV |
 | Lorazepam | Ativan | 6470 | 00187062101 | 0.5mg, 1mg, 2mg | oral | IV |
 
@@ -494,6 +495,179 @@ Standard medical codes for generating realistic healthcare data.
 | PO | Services provided in off-campus provider-based department |
 | 95 | Synchronous telemedicine service |
 | GT | Interactive audio/video telecommunications |
+
+---
+
+## ADT and Clinical Codes
+
+### ADT Event Types
+
+| Code | Name | Description | Trigger |
+|------|------|-------------|---------|
+| A01 | Admit/Visit Notification | Patient admission | Inpatient admission, ED conversion |
+| A02 | Transfer | Patient transferred | Unit-to-unit, room change, bed swap |
+| A03 | Discharge/End Visit | Discharge or visit end | Leaving facility, death, transfer out |
+| A04 | Register | Registration | Outpatient, preadmit, ED registration |
+| A08 | Update Patient Info | Demographics/visit update | Address, insurance, diagnosis update |
+| A11 | Cancel Admit | Cancel A01 | Erroneous admission, no-show |
+| A13 | Cancel Discharge | Cancel A03 | Patient returned, premature discharge |
+
+### Patient Class Codes
+
+| Code | Description | Typical Duration |
+|------|-------------|------------------|
+| I | Inpatient | 1-14 days |
+| O | Outpatient | 15-60 minutes |
+| E | Emergency | 1-12 hours |
+| U | Urgent Care | 30 min - 2 hours |
+| OBS | Observation | 8-48 hours |
+| P | Preadmit | Pre-registration |
+| R | Recurring | Scheduled series |
+| B | Obstetrics | Variable |
+
+### Admission Type Codes
+
+| Code | Description | Use Case |
+|------|-------------|----------|
+| E | Emergency | Unplanned, urgent admission |
+| R | Routine | Standard scheduled admission |
+| U | Urgent | Unscheduled but not emergent |
+| C | Elective | Scheduled, can be delayed |
+
+### Admission Source Codes
+
+| Code | Description | Use When |
+|------|-------------|----------|
+| 1 | Physician Referral | Direct admit from office |
+| 2 | Clinic Referral | Transfer from clinic |
+| 3 | HMO Referral | HMO-authorized admission |
+| 4 | Transfer from Hospital | From another acute facility |
+| 5 | Transfer from SNF | From skilled nursing facility |
+| 6 | Transfer from Other | From other healthcare facility |
+| 7 | Emergency Room | ED-originated admission |
+| 8 | Court/Law Enforcement | Legal/psychiatric hold |
+| 9 | Information Not Available | Unknown source |
+
+### Discharge Disposition Codes
+
+| Code | Description | Use When |
+|------|-------------|----------|
+| 01 | Home/Self Care | Standard discharge home |
+| 02 | Short-term Hospital | Transfer to acute care |
+| 03 | SNF | Transfer to skilled nursing |
+| 04 | ICF | Transfer to intermediate care |
+| 05 | Other Institution | Cancer center, children's, etc. |
+| 06 | Home with Home Health | Home with HHA services |
+| 07 | Left AMA | Against medical advice |
+| 20 | Expired | Death in facility |
+| 21 | Expired in ED | Death in emergency dept |
+| 43 | Federal Hospital | VA, military facility |
+| 50 | Hospice - Home | Hospice at home |
+| 51 | Hospice - Facility | Hospice in a facility |
+| 62 | Inpatient Rehab | Transfer to rehab |
+| 63 | LTCH | Long-term care hospital |
+| 65 | Psychiatric | Transfer to psych facility |
+| 66 | Critical Access | Transfer to CAH |
+| 70 | Another Institution - Not Defined | Other discharge |
+
+### Hospital Unit Codes
+
+| Code | Unit Name | Type | Level of Care |
+|------|-----------|------|---------------|
+| ED | Emergency Department | Emergency | Acute |
+| ICU | Intensive Care Unit | Critical | Critical |
+| CCU | Cardiac Care Unit | Critical | Critical |
+| MICU | Medical ICU | Critical | Critical |
+| SICU | Surgical ICU | Critical | Critical |
+| NICU | Neonatal ICU | Critical | Critical |
+| PICU | Pediatric ICU | Critical | Critical |
+| SDU | Step-Down Unit | Intermediate | Intermediate |
+| TELE | Telemetry | Intermediate | Intermediate |
+| MED | Medical/Surgical | Acute | Acute |
+| SURG | Surgical | Acute | Acute |
+| PEDS | Pediatrics | Acute | Acute |
+| OB | Obstetrics | Acute | Acute |
+| L&D | Labor & Delivery | OB | Acute |
+| PSYCH | Psychiatry | Behavioral | Behavioral |
+| REHAB | Rehabilitation | Post-Acute | Post-Acute |
+| OBS | Observation | Observation | Observation |
+| OR | Operating Room | Procedural | Procedural |
+| PACU | Post-Anesthesia Care | Recovery | Recovery |
+| ENDO | Endoscopy | Procedural | Procedural |
+| CATH | Cardiac Cath Lab | Procedural | Procedural |
+
+### Order Type Codes
+
+| Code | Description | Common Codes |
+|------|-------------|--------------|
+| LAB | Laboratory orders | CPT 80000-89999 |
+| RAD | Radiology/imaging | CPT 70000-79999 |
+| MEDICATION | Medication orders | RxNorm, NDC |
+| PROCEDURE | Surgical/therapeutic | CPT, ICD-10-PCS |
+
+### Order Status Codes
+
+| Code | Description | Next States |
+|------|-------------|-------------|
+| new | Order placed | accepted, cancelled |
+| accepted | Order acknowledged | scheduled, in_progress |
+| scheduled | Time scheduled | in_progress, cancelled |
+| in_progress | Being performed | completed, cancelled |
+| completed | Finished, results available | - |
+| cancelled | Order cancelled | - |
+
+### Order Priority Codes
+
+| Code | Description | Expected TAT | Use Case |
+|------|-------------|--------------|----------|
+| stat | Immediate | 1 hour | Life-threatening |
+| asap | As soon as possible | 2-4 hours | Urgent clinical need |
+| routine | Standard | 24-48 hours | Normal workflow |
+| preop | Pre-operative | Before surgery | Surgical clearance |
+| timed | Specific time | As scheduled | Timed specimens |
+
+### Radiology Modality Codes
+
+| Code | Description | Examples |
+|------|-------------|----------|
+| XR | X-ray/Radiograph | Chest X-ray, bone films |
+| CT | Computed Tomography | CT head, CT chest, CT abd/pelvis |
+| MR | Magnetic Resonance | MRI brain, MRI spine, MRI knee |
+| US | Ultrasound | Abdominal US, Echo, OB US |
+| NM | Nuclear Medicine | Bone scan, thyroid uptake, V/Q scan |
+| PET | Positron Emission Tomography | PET/CT oncology |
+| FL | Fluoroscopy | Upper GI, barium swallow |
+| MG | Mammography | Screening/diagnostic mammo |
+| DX | Digital Radiography | Digital X-ray |
+
+### Lab Abnormal Flag Codes
+
+| Flag | Description | Action Level |
+|------|-------------|--------------|
+| N | Normal | No action |
+| H | High | Review |
+| L | Low | Review |
+| HH | Critical High | Immediate notification |
+| LL | Critical Low | Immediate notification |
+| A | Abnormal | Review |
+| AA | Critical Abnormal | Immediate notification |
+| > | Above high normal | Review |
+| < | Below low normal | Review |
+
+### Specimen Type Codes
+
+| Code | Description | Common Tests |
+|------|-------------|--------------|
+| BLD | Blood | CBC, CMP, coags |
+| SER | Serum | Chemistry, immunoassays |
+| PLS | Plasma | Coagulation studies |
+| UR | Urine | UA, culture, toxicology |
+| CSF | Cerebrospinal Fluid | Cell count, culture, protein |
+| STL | Stool | O&P, occult blood, culture |
+| SPT | Sputum | Culture, AFB |
+| SWB | Swab | Culture, rapid antigen |
+| TIS | Tissue | Pathology, culture |
+| FLU | Body Fluid | Cell count, culture |
 
 ---
 
