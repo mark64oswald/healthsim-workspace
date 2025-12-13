@@ -1,5 +1,56 @@
 # Enrollment and Eligibility Scenario
 
+A scenario template for generating member enrollment transactions and eligibility verification responses.
+
+## For Claude
+
+Use this skill when the user requests enrollment or eligibility scenarios. This teaches you how to generate **realistic enrollment transactions** (834) and eligibility responses (270/271).
+
+**When to apply this skill:**
+
+- User mentions enrollment, eligibility, or member add
+- User requests 834, 270, or 271 transactions
+- User specifies COBRA, open enrollment, or QLE
+- User asks for eligibility verification scenarios
+- User needs coverage verification examples
+
+**Key capabilities this skill provides:**
+
+- How to structure 834 enrollment transactions
+- How to generate 270/271 eligibility inquiries and responses
+- How to model qualifying life events and effective dates
+- How to handle COBRA and continuation coverage
+- How to represent coverage tiers and dependent relationships
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: enrollment, eligibility, 834, 270, 271, payer
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic enrollment and eligibility transactions. It models member adds, changes, terminations, and eligibility verification with proper effective dates and coverage details.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "enrollment", "eligibility", "member enrollment"
+- "834", "270", "271"
+- "eligibility check", "coverage verification"
+- "COBRA", "open enrollment", "QLE"
+
+**Enrollment Scenarios**:
+
+- "Generate a new member enrollment"
+- "Create an eligibility verification response"
+- "Generate a COBRA enrollment"
+
 ## Trigger Phrases
 
 - enrollment
@@ -282,7 +333,7 @@ Response to eligibility inquiry.
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: New Hire Enrollment
 

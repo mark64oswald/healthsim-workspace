@@ -1,5 +1,56 @@
 # Pharmacy Enrollment Scenario
 
+A scenario template for generating pharmacy benefit enrollment and eligibility transactions including member adds, changes, and terminations.
+
+## For Claude
+
+Use this skill when the user requests pharmacy enrollment or eligibility scenarios. This teaches you how to generate **realistic pharmacy benefit enrollment** with BIN/PCN/Group configurations and coverage activation.
+
+**When to apply this skill:**
+
+- User mentions rx enrollment or pharmacy enrollment
+- User requests pharmacy eligibility or member scenarios
+- User specifies BIN, PCN, or cardholder ID
+- User asks for pharmacy card or coverage activation
+- User needs PBM enrollment examples
+
+**Key capabilities this skill provides:**
+
+- How to structure pharmacy enrollment transactions
+- How to configure BIN/PCN/Group identifiers
+- How to model coverage effective dates
+- How to handle cardholder vs dependent enrollment
+- How to generate mail order eligibility flags
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, enrollment, eligibility, PBM, member
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic pharmacy benefit enrollment transactions. It models member adds, changes, and terminations with proper BIN/PCN/Group configuration and coverage dates.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "rx enrollment", "pharmacy enrollment"
+- "pharmacy eligibility", "rx member"
+- "BIN PCN", "cardholder ID"
+- "pharmacy card", "rx coverage"
+
+**Enrollment Scenarios**:
+
+- "Generate a pharmacy member enrollment"
+- "Create a pharmacy eligibility record"
+- "Generate a pharmacy coverage termination"
+
 ## Trigger Phrases
 
 - rx enrollment
@@ -260,7 +311,7 @@ End of pharmacy coverage.
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: New Pharmacy Enrollment
 

@@ -1,5 +1,56 @@
 # Prior Authorization Scenario
 
+A scenario template for generating prior authorization requests and decisions for medical services, procedures, and medications.
+
+## For Claude
+
+Use this skill when the user requests prior authorization or utilization management scenarios. This teaches you how to generate **realistic PA workflows** with clinical criteria, decision rationale, and appeal processes.
+
+**When to apply this skill:**
+
+- User mentions prior authorization, prior auth, or PA
+- User requests pre-certification or medical necessity scenarios
+- User specifies utilization management or UM
+- User asks for authorization approval/denial examples
+- User needs PA workflow documentation
+
+**Key capabilities this skill provides:**
+
+- How to structure PA requests with required clinical information
+- How to apply medical necessity criteria for decisions
+- How to model approval, denial, and pended scenarios
+- How to handle urgent vs standard review timelines
+- How to generate appeal and peer-to-peer review scenarios
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: prior-auth, utilization-management, payer, authorization
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic prior authorization workflows. It models the complete PA lifecycle from request through decision, including clinical criteria evaluation, turnaround times, and appeal processes.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "prior authorization", "prior auth", "PA"
+- "pre-certification", "pre-cert"
+- "medical necessity", "utilization management"
+- "authorization required"
+
+**PA Scenarios**:
+
+- "Generate a PA request for an MRI"
+- "Create a denied prior authorization"
+- "Generate an appeal for a PA denial"
+
 ## Trigger Phrases
 
 - prior authorization
@@ -268,7 +319,7 @@
 | Concurrent | 1 business day | 1 business day |
 | Retrospective | 30 calendar days | 30 calendar days |
 
-## Example Outputs
+## Examples
 
 ### Example 1: MRI Prior Auth - Approved
 

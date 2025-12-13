@@ -1,5 +1,56 @@
 # Specialty Pharmacy Scenario
 
+A scenario template for generating specialty pharmacy transactions for high-cost biologics, injectables, and limited distribution drugs.
+
+## For Claude
+
+Use this skill when the user requests specialty pharmacy or biologic medication scenarios. This teaches you how to generate **realistic specialty drug claims** with prior authorization, copay assistance, and hub services.
+
+**When to apply this skill:**
+
+- User mentions specialty pharmacy or specialty drug
+- User requests biologics, biosimilars, or injectable scenarios
+- User specifies hub services or limited distribution
+- User asks for copay assistance or patient support programs
+- User needs high-cost drug billing examples
+
+**Key capabilities this skill provides:**
+
+- How to structure specialty pharmacy claims
+- How to model limited distribution drug requirements
+- How to integrate copay assistance and patient support
+- How to handle prior authorization for specialty drugs
+- How to generate specialty tier cost-sharing
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, specialty, biologics, PBM, high-cost
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic specialty pharmacy transactions. It models high-cost medication dispensing including biologics, limited distribution requirements, copay assistance, and hub services.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "specialty pharmacy", "specialty drug"
+- "biologics", "biosimilar", "injectable"
+- "limited distribution", "specialty tier"
+- "high-cost drug", "hub services"
+
+**Specialty Scenarios**:
+
+- "Generate a specialty pharmacy claim"
+- "Create a biologic prescription fill"
+- "Generate a claim with copay assistance"
+
 ## Trigger Phrases
 
 - specialty pharmacy
@@ -289,7 +340,7 @@
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Specialty Claim with Copay Assistance
 

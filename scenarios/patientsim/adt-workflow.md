@@ -1,5 +1,54 @@
 # ADT Workflow Scenario
 
+A scenario template for generating Admit/Discharge/Transfer events following HL7v2 ADT messaging patterns.
+
+## For Claude
+
+Use this skill when the user requests ADT events or patient movement workflows. This teaches you how to generate **realistic ADT messages** including A01 (admit), A02 (transfer), A03 (discharge), and other event types with proper location coding and temporal sequences.
+
+**When to apply this skill:**
+
+- User mentions ADT, admission, discharge, or transfer events
+- User requests patient movement or census data
+- User asks for inpatient workflow simulation
+- User needs HL7v2 ADT message examples
+
+**Key capabilities this skill provides:**
+
+- How to generate proper ADT event sequences
+- How to code locations (units, rooms, beds)
+- How to apply admission sources and discharge dispositions
+- How to model complete inpatient stay workflows
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: adt, admission, discharge, transfer, hl7v2, inpatient
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic Admit/Discharge/Transfer events for patient movement tracking. It supports the complete ADT lifecycle from registration through discharge with proper location coding and event sequencing.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "ADT", "admit", "admission", "discharge", "transfer"
+- "A01", "A02", "A03", "A04", "A08"
+- "patient movement", "census", "bed management"
+- "inpatient workflow"
+
+**Workflow Scenarios**:
+
+- "Generate an admission for chest pain"
+- "Create a complete inpatient stay with transfers"
+- "Generate ADT events for an ED-to-admit conversion"
+
 ## Trigger Phrases
 
 - ADT
@@ -295,7 +344,7 @@ Examples:
 | 65 | Psychiatric | Transfer to psych |
 | 66 | Critical Access | Transfer to CAH |
 
-## Example Outputs
+## Examples
 
 ### Example 1: Standard Admission (A01)
 

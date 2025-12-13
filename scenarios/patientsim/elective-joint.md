@@ -81,6 +81,20 @@ Apply this skill when the user's request involves:
 - When user mentions orthopedic AND rehabilitation/PT
 - When user mentions obesity AND osteoarthritis (strong association)
 
+## Trigger Phrases
+
+- joint replacement
+- hip replacement
+- knee replacement
+- THA
+- TKA
+- arthroplasty
+- orthopedic surgery
+- post-op orthopedic
+- POD
+- DVT prophylaxis
+- elective surgery
+
 ## Dependencies
 - healthcare/clinical-domain.md
 
@@ -1416,3 +1430,28 @@ Low-risk patient selected for outpatient arthroplasty program.
 - American Society of Anesthesiologists (ASA) Perioperative Management Guidelines, 2023
 - CDC Guideline for Prevention of Surgical Site Infection, 2017
 - Journal of Arthroplasty - Prosthetic Joint Infection Management, 2023
+
+## Related Skills
+
+### PatientSim Scenarios
+
+- [SKILL.md](SKILL.md) - PatientSim overview
+- [adt-workflow.md](adt-workflow.md) - Admission/transfer workflows
+- [orders-results.md](orders-results.md) - Lab ordering and results
+- [sepsis-acute-care.md](sepsis-acute-care.md) - Surgical site infection complications
+
+### Cross-Product: MemberSim
+
+- [../membersim/professional-claims.md](../membersim/professional-claims.md) - Orthopedic surgeon billing
+- [../membersim/facility-claims.md](../membersim/facility-claims.md) - Inpatient surgical DRG claims, SNF billing
+- [../membersim/prior-authorization.md](../membersim/prior-authorization.md) - Elective surgery authorization
+
+### Cross-Product: RxMemberSim
+
+- [../rxmembersim/retail-pharmacy.md](../rxmembersim/retail-pharmacy.md) - Post-op medications (pain management, anticoagulants)
+- [../rxmembersim/dur-alerts.md](../rxmembersim/dur-alerts.md) - Opioid therapy monitoring
+
+### Reference Files
+
+- [../../references/data-models.md](../../references/data-models.md) - Entity schemas
+- [../../references/code-systems.md](../../references/code-systems.md) - ICD-10, CPT codes

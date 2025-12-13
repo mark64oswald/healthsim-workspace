@@ -1,5 +1,56 @@
 # Manufacturer Programs Scenario
 
+A scenario template for generating manufacturer assistance programs including copay cards, patient assistance programs, and hub services.
+
+## For Claude
+
+Use this skill when the user requests manufacturer program or copay assistance scenarios. This teaches you how to generate **realistic patient support programs** with copay cards, PAPs, and accumulator adjustment policies.
+
+**When to apply this skill:**
+
+- User mentions manufacturer program or copay card
+- User requests patient assistance program or PAP
+- User specifies copay coupon or copay accumulator
+- User asks for hub program or bridge program examples
+- User needs foundation assistance scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure copay card programs and limits
+- How to model patient assistance eligibility criteria
+- How to handle accumulator adjustment programs
+- How to integrate hub services with specialty fills
+- How to generate manufacturer rebate scenarios
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, manufacturer, copay-card, PAP, hub-services
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic manufacturer assistance programs. It models copay cards, patient assistance programs, foundation grants, and hub services that support patient access to medications.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "manufacturer program", "copay card"
+- "patient assistance program", "PAP"
+- "copay coupon", "copay accumulator"
+- "hub program", "bridge program"
+
+**Program Scenarios**:
+
+- "Generate a copay card enrollment"
+- "Create a PAP eligibility check"
+- "Generate an accumulator adjustment scenario"
+
 ## Trigger Phrases
 
 - manufacturer program
@@ -498,7 +549,7 @@ Maximizers coordinate manufacturer assistance to ensure patient costs count towa
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Copay Card Enrollment
 

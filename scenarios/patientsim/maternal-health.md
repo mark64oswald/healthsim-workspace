@@ -1,5 +1,54 @@
 # Maternal Health Scenario
 
+A scenario template for generating obstetric patients across pregnancy phases including prenatal care, labor and delivery, and postpartum follow-up.
+
+## For Claude
+
+Use this skill when the user requests pregnancy or obstetric patient data. This teaches you how to generate **realistic maternal health scenarios** with appropriate prenatal visits, complications, and delivery outcomes.
+
+**When to apply this skill:**
+
+- User mentions pregnancy, prenatal, or obstetric care
+- User requests gestational diabetes or preeclampsia scenarios
+- User asks for labor and delivery data
+- User needs postpartum encounter examples
+
+**Key capabilities this skill provides:**
+
+- How to model pregnancy by gestational age and trimester
+- How to generate appropriate prenatal visit schedules
+- How to create pregnancy complications (GDM, preeclampsia, preterm labor)
+- How to model labor, delivery, and postpartum encounters
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: obstetrics, pregnancy, prenatal, maternal-health, labor-delivery
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic obstetric patient data across all phases of pregnancy. It supports prenatal visit schedules, pregnancy complications, labor and delivery events, and postpartum follow-up with appropriate clinical documentation.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "pregnancy", "pregnant", "prenatal", "obstetric"
+- "gestational diabetes", "GDM", "preeclampsia"
+- "labor and delivery", "cesarean", "postpartum"
+- "gravida", "para", "trimester"
+
+**Clinical Scenarios**:
+
+- "Generate a 28-week prenatal visit"
+- "Create a gestational diabetes case with insulin"
+- "Generate a severe preeclampsia admission"
+
 ## Trigger Phrases
 
 - pregnancy

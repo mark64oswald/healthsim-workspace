@@ -77,6 +77,20 @@ Apply this skill when the user's request involves:
 - When user mentions chest pain AND hypotension (cardiogenic shock)
 - When user mentions chest pain AND dyspnea (possible heart failure or PE)
 
+## Trigger Phrases
+
+- chest pain
+- myocardial infarction
+- MI
+- STEMI
+- NSTEMI
+- acute coronary syndrome
+- ACS
+- troponin
+- ED chest pain
+- rule out MI
+- cardiac workup
+
 ## Dependencies
 - healthcare/clinical-domain.md
 
@@ -846,3 +860,27 @@ STEMI:
 - 2023 ACC/AHA/ACCP/ASPC/NLA/PCNA Guideline for the Management of Patients With Chronic Coronary Disease
 - Fourth Universal Definition of Myocardial Infarction (2018)
 - HEART Score validation studies (Six AJ, et al. 2008)
+
+## Related Skills
+
+### PatientSim Scenarios
+
+- [SKILL.md](SKILL.md) - PatientSim overview
+- [heart-failure.md](heart-failure.md) - Cardiac comorbidity
+- [adt-workflow.md](adt-workflow.md) - Admission workflows
+- [orders-results.md](orders-results.md) - Lab ordering and results
+
+### Cross-Product: MemberSim
+
+- [../membersim/professional-claims.md](../membersim/professional-claims.md) - ED physician billing
+- [../membersim/facility-claims.md](../membersim/facility-claims.md) - ED facility claims, cardiac cath facility billing
+
+### Cross-Product: RxMemberSim
+
+- [../rxmembersim/retail-pharmacy.md](../rxmembersim/retail-pharmacy.md) - Cardiac medication fills (statins, antiplatelets, beta-blockers)
+- [../rxmembersim/specialty-pharmacy.md](../rxmembersim/specialty-pharmacy.md) - Specialty cardiac medications
+
+### Reference Files
+
+- [../../references/data-models.md](../../references/data-models.md) - Entity schemas
+- [../../references/code-systems.md](../../references/code-systems.md) - ICD-10, CPT, LOINC codes

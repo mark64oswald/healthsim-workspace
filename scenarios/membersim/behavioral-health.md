@@ -1,5 +1,56 @@
 # Behavioral Health Claims Scenario
 
+A scenario template for generating behavioral health professional claims including psychotherapy, psychiatric evaluation, and substance use disorder treatment.
+
+## For Claude
+
+Use this skill when the user requests behavioral health claims or mental health billing scenarios. This teaches you how to generate **realistic behavioral health claims** with appropriate CPT codes, session lengths, and provider types.
+
+**When to apply this skill:**
+
+- User mentions behavioral health claim or mental health claim
+- User requests psychotherapy or psychiatry billing
+- User specifies substance abuse or SUD claims
+- User asks for therapy session claims
+- User needs PHP/IOP claim examples
+
+**Key capabilities this skill provides:**
+
+- How to select appropriate psychotherapy CPT codes by time
+- How to code psychiatric evaluations and medication management
+- How to structure partial hospitalization and IOP claims
+- How to handle telehealth behavioral health billing
+- How to apply mental health parity requirements
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: behavioral-health, mental-health, claims, payer, psychiatry
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic behavioral health professional claims. It models psychotherapy, psychiatric evaluation, medication management, and substance use treatment with appropriate coding and adjudication.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "behavioral health claim", "mental health claim"
+- "psychotherapy claim", "psychiatry claim"
+- "substance abuse claim", "SUD claim"
+- "therapy claim", "counseling claim"
+
+**Claim Scenarios**:
+
+- "Generate a psychotherapy claim"
+- "Create a psychiatric evaluation claim"
+- "Generate an IOP claim for substance use"
+
 ## Trigger Phrases
 
 - behavioral health claim
@@ -163,7 +214,7 @@
 | 95 | Synchronous telemedicine | Real-time video |
 | GT | Via interactive audio/video | Telehealth service |
 
-## Claim Examples
+## Examples
 
 ### Example 1: Individual Psychotherapy Session
 

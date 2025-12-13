@@ -1,5 +1,56 @@
 # Pharmacy Prior Authorization Scenario
 
+A scenario template for generating pharmacy prior authorization requests including clinical PA, step therapy overrides, and formulary exceptions.
+
+## For Claude
+
+Use this skill when the user requests pharmacy prior authorization scenarios. This teaches you how to generate **realistic pharmacy PA workflows** with clinical criteria, ePA transactions, and decision outcomes.
+
+**When to apply this skill:**
+
+- User mentions pharmacy prior auth or rx PA
+- User requests step therapy or formulary exception
+- User specifies quantity limit override or age edit
+- User asks for PA approval/denial examples
+- User needs ePA transaction scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure pharmacy PA request transactions
+- How to model clinical criteria for different drug types
+- How to handle step therapy requirements
+- How to generate ePA (electronic PA) workflows
+- How to document PA decisions and overrides
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, prior-auth, step-therapy, ePA, PBM
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic pharmacy prior authorization workflows. It models clinical PA, step therapy, formulary exceptions, and quantity limit overrides with appropriate clinical criteria and decision rationale.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "pharmacy prior auth", "rx prior auth"
+- "drug prior auth", "medication PA"
+- "step therapy", "formulary exception"
+- "quantity limit override", "PA required"
+
+**PA Scenarios**:
+
+- "Generate a pharmacy PA request"
+- "Create a step therapy override"
+- "Generate a denied formulary exception"
+
 ## Trigger Phrases
 
 - pharmacy prior auth
@@ -421,7 +472,7 @@ Full clinical review for high-cost or specialty drugs.
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Approved Step Therapy Override
 

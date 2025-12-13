@@ -1,5 +1,56 @@
 # Pharmacy Accumulator Tracking Scenario
 
+A scenario template for generating pharmacy benefit accumulators including deductibles, OOP maximums, and Medicare Part D phases.
+
+## For Claude
+
+Use this skill when the user requests pharmacy accumulator or Part D phase scenarios. This teaches you how to generate **realistic pharmacy cost-sharing** with TrOOP tracking, coverage gap, and catastrophic phase modeling.
+
+**When to apply this skill:**
+
+- User mentions rx accumulator or pharmacy deductible
+- User requests Part D phase or donut hole scenarios
+- User specifies TrOOP or true out of pocket
+- User asks for pharmacy cost sharing examples
+- User needs catastrophic coverage scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure pharmacy accumulators by plan type
+- How to model Medicare Part D benefit phases
+- How to track TrOOP and coverage gap entry
+- How to handle specialty tier maximums
+- How to generate DAW and brand penalty scenarios
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, accumulator, Part-D, TrOOP, cost-sharing
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic pharmacy accumulator tracking. It models commercial pharmacy deductibles, Medicare Part D phases, and specialty tier maximums with proper cost-sharing calculations.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "rx accumulator", "pharmacy deductible"
+- "rx out of pocket", "TrOOP"
+- "Part D phase", "donut hole"
+- "coverage gap", "catastrophic"
+
+**Accumulator Scenarios**:
+
+- "Generate a pharmacy accumulator state"
+- "Create a Part D coverage gap scenario"
+- "Generate a member in catastrophic phase"
+
 ## Trigger Phrases
 
 - rx accumulator
@@ -290,7 +341,7 @@ Amounts that do NOT count toward TrOOP:
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Commercial Accumulator Status
 

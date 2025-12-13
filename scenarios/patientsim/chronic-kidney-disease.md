@@ -1,5 +1,54 @@
 # Chronic Kidney Disease Scenario
 
+A scenario template for generating patients with chronic kidney disease across all stages, including dialysis and transplant evaluation.
+
+## For Claude
+
+Use this skill when the user requests CKD patient data or nephrology scenarios. This teaches you how to generate **realistic CKD patients** with stage-appropriate lab values, medications, and encounter patterns.
+
+**When to apply this skill:**
+
+- User mentions CKD, kidney disease, or renal failure
+- User requests eGFR or creatinine-based scenarios
+- User asks for dialysis patient data
+- User needs nephrology encounter examples
+
+**Key capabilities this skill provides:**
+
+- How to stage CKD properly (1-5, 5D) based on eGFR and albuminuria
+- How to generate stage-appropriate lab abnormalities
+- How to model CKD medication regimens (phosphate binders, ESAs, etc.)
+- How to create nephrology follow-up patterns
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: ckd, nephrology, dialysis, renal, chronic-disease
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic chronic kidney disease patients across all stages. It models the complete CKD spectrum from early-stage with proteinuria through end-stage renal disease on dialysis, with appropriate lab patterns, medications, and comorbidities.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "CKD", "chronic kidney disease", "renal failure"
+- "eGFR", "creatinine", "BUN"
+- "dialysis", "hemodialysis", "peritoneal dialysis"
+- "nephrology", "nephrologist"
+
+**Clinical Scenarios**:
+
+- "Generate a stage 4 CKD patient"
+- "Create a diabetic nephropathy case"
+- "Generate a patient preparing for dialysis"
+
 ## Trigger Phrases
 
 - CKD

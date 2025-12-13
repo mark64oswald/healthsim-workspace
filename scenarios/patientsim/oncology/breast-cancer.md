@@ -86,6 +86,20 @@ Apply this skill when the user's request involves:
 - When user mentions breast cancer AND lymphedema
 - When user mentions breast cancer AND genetic counseling
 
+## Trigger Phrases
+
+- breast cancer
+- breast mass
+- mammogram
+- mastectomy
+- lumpectomy
+- HER2
+- ER positive
+- triple negative
+- tamoxifen
+- Herceptin
+- BRCA
+
 ## Parameters
 
 | Parameter | Type | Default | Description |
@@ -1136,3 +1150,28 @@ Key areas requiring validation:
 - Surveillance protocols per current guidelines
 
 Last validation review: Pending
+
+## Related Skills
+
+### PatientSim Scenarios
+
+- [../SKILL.md](../SKILL.md) - PatientSim overview
+- [lung-cancer.md](lung-cancer.md) - Similar oncology scenario structure
+- [colorectal-cancer.md](colorectal-cancer.md) - Similar oncology scenario structure
+- [../maternal-health.md](../maternal-health.md) - Pregnancy and breast cancer considerations
+
+### Cross-Product: MemberSim
+
+- [../../membersim/professional-claims.md](../../membersim/professional-claims.md) - Oncology office visit billing
+- [../../membersim/facility-claims.md](../../membersim/facility-claims.md) - Chemotherapy infusion, surgery, radiation claims
+- [../../membersim/prior-authorization.md](../../membersim/prior-authorization.md) - Oncology drug authorization
+
+### Cross-Product: RxMemberSim
+
+- [../../rxmembersim/specialty-pharmacy.md](../../rxmembersim/specialty-pharmacy.md) - Oncology drugs (trastuzumab, pertuzumab, CDK4/6 inhibitors)
+- [../../rxmembersim/rx-prior-auth.md](../../rxmembersim/rx-prior-auth.md) - Specialty drug authorization
+
+### Reference Files
+
+- [../../../references/data-models.md](../../../references/data-models.md) - Entity schemas
+- [../../../references/code-systems.md](../../../references/code-systems.md) - ICD-10, CPT, HCPCS codes

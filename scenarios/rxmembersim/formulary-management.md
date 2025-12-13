@@ -1,5 +1,56 @@
 # Formulary Management Scenario
 
+A scenario template for generating formulary structures including tier configurations, step therapy, and coverage policies.
+
+## For Claude
+
+Use this skill when the user requests formulary or drug coverage scenarios. This teaches you how to generate **realistic formulary configurations** with tier structures, utilization management, and alternatives.
+
+**When to apply this skill:**
+
+- User mentions formulary or drug coverage
+- User requests tier structure or preferred drug scenarios
+- User specifies step therapy or prior authorization
+- User asks for quantity limit examples
+- User needs formulary exception scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure multi-tier formularies
+- How to model step therapy requirements
+- How to configure quantity limits by drug
+- How to handle prior authorization criteria
+- How to generate formulary alternative suggestions
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, formulary, coverage, step-therapy, PBM
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic formulary management configurations. It models complete formulary structures with tiering, utilization management, and coverage policies for various plan types.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "formulary", "drug coverage", "tier"
+- "preferred drug", "non-preferred"
+- "step therapy", "prior authorization"
+- "quantity limit", "formulary exception"
+
+**Formulary Scenarios**:
+
+- "Generate a 4-tier formulary structure"
+- "Create step therapy requirements"
+- "Generate a non-formulary rejection"
+
 ## Trigger Phrases
 
 - formulary
@@ -338,7 +389,7 @@
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Formulary Lookup - Covered
 
