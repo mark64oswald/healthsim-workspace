@@ -1,5 +1,56 @@
 # Retail Pharmacy Scenario
 
+A scenario template for generating retail pharmacy prescription fills and claims including new prescriptions, refills, and mail order.
+
+## For Claude
+
+Use this skill when the user requests retail pharmacy or prescription fill scenarios. This teaches you how to generate **realistic pharmacy claims** with NCPDP transactions, copays, and fill workflows.
+
+**When to apply this skill:**
+
+- User mentions retail pharmacy or prescription fill
+- User requests pharmacy claim or refill scenarios
+- User specifies copay, days supply, or fill type
+- User asks for CVS, Walgreens, or mail order examples
+- User needs pharmacy billing scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure NCPDP claim transactions
+- How to model retail vs mail order channel differences
+- How to apply formulary copay tiers
+- How to handle new fills vs refills
+- How to generate rejection and override scenarios
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, retail, prescription, NCPDP, PBM
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic retail pharmacy transactions. It models the complete prescription lifecycle from new fill through refill, including claim submission, adjudication, and patient cost-sharing.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "retail pharmacy", "prescription fill"
+- "refill", "pharmacy claim"
+- "copay", "CVS", "Walgreens"
+- "30-day supply", "90-day supply", "mail order"
+
+**Pharmacy Scenarios**:
+
+- "Generate a retail pharmacy claim"
+- "Create a prescription refill"
+- "Generate a mail order fill"
+
 ## Trigger Phrases
 
 - retail pharmacy
@@ -268,7 +319,7 @@
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: New Generic Fill
 

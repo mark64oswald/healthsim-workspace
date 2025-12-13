@@ -1,5 +1,56 @@
 # Value-Based Care Scenario
 
+A scenario template for generating value-based care arrangements including quality measures, HEDIS, risk adjustment, and alternative payment models.
+
+## For Claude
+
+Use this skill when the user requests value-based care or quality measurement scenarios. This teaches you how to generate **realistic VBC arrangements** with quality metrics, risk adjustment, and payment models.
+
+**When to apply this skill:**
+
+- User mentions value-based care, VBC, or quality measures
+- User requests HEDIS, STARS, or quality reporting
+- User specifies risk adjustment, HCC, or attribution
+- User asks for ACO or alternative payment model examples
+- User needs pay-for-performance scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure quality measure reporting (HEDIS/STARS)
+- How to model risk adjustment and HCC coding
+- How to configure shared savings arrangements
+- How to track member attribution to providers
+- How to calculate quality bonuses and penalties
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: value-based-care, quality, HEDIS, risk-adjustment, payer
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic value-based care arrangements. It models quality measurement, risk adjustment, provider attribution, and alternative payment models used in population health management.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "value-based care", "VBC", "quality measures"
+- "HEDIS", "STARS", "quality payment"
+- "risk adjustment", "HCC", "attribution"
+- "ACO", "APM", "pay for performance"
+
+**VBC Scenarios**:
+
+- "Generate a quality bonus program"
+- "Create a shared savings model"
+- "Generate HEDIS measure compliance data"
+
 ## Trigger Phrases
 
 - value-based care
@@ -389,7 +440,7 @@
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: VBC Performance Report
 

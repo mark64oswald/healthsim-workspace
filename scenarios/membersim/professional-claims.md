@@ -1,5 +1,56 @@
 # Professional Claims Scenario
 
+A scenario template for generating professional (CMS-1500/837P) claims for physician and outpatient services, including E&M visits, procedures, and diagnostics.
+
+## For Claude
+
+Use this skill when the user requests professional claims or physician billing scenarios. This teaches you how to generate **realistic professional claims** with appropriate E&M coding, procedure modifiers, and adjudication patterns.
+
+**When to apply this skill:**
+
+- User mentions professional claim, 837P, or CMS-1500
+- User requests physician billing or office visit claims
+- User specifies E&M codes or outpatient procedures
+- User asks for claim adjudication scenarios
+- User needs provider billing examples
+
+**Key capabilities this skill provides:**
+
+- How to select appropriate E&M codes based on visit complexity
+- How to apply modifiers correctly (25, 59, LT/RT, etc.)
+- How to structure claim lines with diagnosis pointers
+- How to model adjudication with CARC codes
+- How to handle network vs out-of-network scenarios
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: claims, professional, billing, payer, 837P
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic professional claims for physician services. It models the complete claim lifecycle from service to adjudication, including E&M code selection, procedure coding, modifier usage, and payment calculation.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "professional claim", "837P", "CMS-1500"
+- "physician claim", "office visit claim"
+- "E&M claim", "outpatient claim"
+- "provider claim", "billing"
+
+**Claim Scenarios**:
+
+- "Generate a professional claim for an office visit"
+- "Create a claim with E&M and procedure"
+- "Generate a denied claim example"
+
 ## Trigger Phrases
 
 - professional claim
@@ -232,7 +283,7 @@
 | Invalid diagnosis | CO-11 | Diagnosis inconsistent | Correct and resubmit |
 | Bundling | CO-97 | Included in another service | Review coding |
 
-## Example Outputs
+## Examples
 
 ### Example 1: Standard Office Visit (Paid)
 

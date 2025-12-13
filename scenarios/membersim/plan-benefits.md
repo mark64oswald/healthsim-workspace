@@ -1,5 +1,56 @@
 # Plan & Benefits Configuration Scenario
 
+A scenario template for generating health plan benefit structures including HMO, PPO, HDHP, and other plan types with cost-sharing configurations.
+
+## For Claude
+
+Use this skill when the user requests plan design or benefit configuration scenarios. This teaches you how to generate **realistic plan structures** with appropriate cost-sharing, network tiers, and coverage limits.
+
+**When to apply this skill:**
+
+- User mentions plan, benefit plan, or plan design
+- User requests HMO, PPO, HDHP, or other plan types
+- User specifies copay structure or deductible design
+- User asks for plan configuration examples
+- User needs benefit structure documentation
+
+**Key capabilities this skill provides:**
+
+- How to structure plan types (HMO, PPO, EPO, POS, HDHP)
+- How to configure cost-sharing tiers and copay structures
+- How to model network types and tier differentials
+- How to set up HSA-eligible plan requirements
+- How to integrate medical and pharmacy benefits
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: plan-design, benefits, payer, configuration
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic health plan benefit configurations. It models complete plan structures with cost-sharing, network rules, and coverage limits appropriate to each plan type.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "plan", "benefit plan", "plan design"
+- "HMO", "PPO", "HDHP", "EPO"
+- "copay structure", "deductible structure"
+- "cost sharing", "network tier"
+
+**Plan Scenarios**:
+
+- "Generate an HMO plan configuration"
+- "Create an HDHP with HSA"
+- "Generate a tiered network PPO plan"
+
 ## Trigger Phrases
 
 - plan
@@ -450,7 +501,7 @@ Services typically requiring prior authorization:
 | Rehabilitation | Inpatient rehab, SNF |
 | Home Health | Skilled nursing, PT at home |
 
-## Example Outputs
+## Examples
 
 ### Example 1: Complete PPO Plan
 

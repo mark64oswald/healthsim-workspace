@@ -88,6 +88,19 @@ Apply this skill when the user's request involves:
 - When user mentions colorectal cancer AND genetic testing
 - When user mentions colorectal cancer AND screening colonoscopy
 
+## Trigger Phrases
+
+- colon cancer
+- rectal cancer
+- colorectal cancer
+- colonoscopy
+- FOLFOX
+- MSI-H
+- KRAS
+- liver metastases
+- Lynch syndrome
+- CEA
+
 ## Parameters
 
 | Parameter | Type | Default | Description |
@@ -1477,7 +1490,7 @@ Visit 20 (Day 273) - Surveillance:
 Year 2: Remains NED - potentially cured
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Screen-Detected Stage I
 
@@ -1850,7 +1863,24 @@ family_implications:
 
 ## Related Skills
 
-- **skills/healthcare/oncology-domain.md**: Foundational oncology knowledge (staging, treatment modalities, toxicity management)
-- **skills/scenarios/breast-cancer.md**: Similar scenario template structure, can cross-reference for multi-cancer patients
-- **skills/scenarios/lung-cancer.md**: Similar scenario template structure
-- **skills/references/oncology/**: Reference data for ICD-10 codes, medications, regimens, tumor markers, and staging
+### PatientSim Scenarios
+
+- [../SKILL.md](../SKILL.md) - PatientSim overview
+- [breast-cancer.md](breast-cancer.md) - Similar oncology scenario structure
+- [lung-cancer.md](lung-cancer.md) - Similar oncology scenario structure
+
+### Cross-Product: MemberSim
+
+- [../../membersim/professional-claims.md](../../membersim/professional-claims.md) - Oncology office visit, colonoscopy billing
+- [../../membersim/facility-claims.md](../../membersim/facility-claims.md) - Chemotherapy infusion, surgery, radiation claims
+- [../../membersim/prior-authorization.md](../../membersim/prior-authorization.md) - Oncology drug authorization
+
+### Cross-Product: RxMemberSim
+
+- [../../rxmembersim/specialty-pharmacy.md](../../rxmembersim/specialty-pharmacy.md) - Oncology drugs (FOLFOX agents, anti-EGFR therapy)
+- [../../rxmembersim/rx-prior-auth.md](../../rxmembersim/rx-prior-auth.md) - Specialty drug authorization
+
+### Reference Files
+
+- [../../../references/data-models.md](../../../references/data-models.md) - Entity schemas
+- [../../../references/code-systems.md](../../../references/code-systems.md) - ICD-10, CPT, HCPCS codes

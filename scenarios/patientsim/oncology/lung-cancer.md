@@ -87,6 +87,19 @@ Apply this skill when the user's request involves:
 - When user mentions lung cancer AND smoking cessation
 - When user mentions lung cancer AND driver mutation
 
+## Trigger Phrases
+
+- lung cancer
+- lung mass
+- NSCLC
+- SCLC
+- EGFR
+- ALK
+- PD-L1
+- osimertinib
+- immunotherapy lung
+- brain metastases
+
 ## Parameters
 
 | Parameter | Type | Default | Description |
@@ -1371,3 +1384,28 @@ Key areas requiring validation:
 - SCLC staging and treatment protocols
 
 Last validation review: Pending
+
+## Related Skills
+
+### PatientSim Scenarios
+
+- [../SKILL.md](../SKILL.md) - PatientSim overview
+- [breast-cancer.md](breast-cancer.md) - Similar oncology scenario structure
+- [colorectal-cancer.md](colorectal-cancer.md) - Similar oncology scenario structure
+- [../sepsis-acute-care.md](../sepsis-acute-care.md) - Oncology patients with neutropenic fever
+
+### Cross-Product: MemberSim
+
+- [../../membersim/professional-claims.md](../../membersim/professional-claims.md) - Oncology office visit billing
+- [../../membersim/facility-claims.md](../../membersim/facility-claims.md) - Chemotherapy infusion, surgery, radiation claims
+- [../../membersim/prior-authorization.md](../../membersim/prior-authorization.md) - Oncology drug authorization
+
+### Cross-Product: RxMemberSim
+
+- [../../rxmembersim/specialty-pharmacy.md](../../rxmembersim/specialty-pharmacy.md) - Targeted therapies (osimertinib, alectinib), immunotherapy
+- [../../rxmembersim/rx-prior-auth.md](../../rxmembersim/rx-prior-auth.md) - Specialty drug authorization
+
+### Reference Files
+
+- [../../../references/data-models.md](../../../references/data-models.md) - Entity schemas
+- [../../../references/code-systems.md](../../../references/code-systems.md) - ICD-10, CPT, HCPCS codes

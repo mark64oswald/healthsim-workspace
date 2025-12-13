@@ -50,12 +50,16 @@ Load the appropriate scenario based on user request:
 | Scenario | Trigger Phrases | File |
 |----------|-----------------|------|
 | **ADT Workflow** | admission, discharge, transfer, ADT, patient movement | [adt-workflow.md](adt-workflow.md) |
+| **Behavioral Health** | depression, anxiety, bipolar, PTSD, mental health, psychiatric, substance use, PHQ-9, GAD-7 | [behavioral-health.md](behavioral-health.md) |
 | **Diabetes Management** | diabetes, A1C, glucose, metformin, insulin | [diabetes-management.md](diabetes-management.md) |
 | **Heart Failure** | CHF, HFrEF, HFpEF, BNP, ejection fraction | [heart-failure.md](heart-failure.md) |
 | **Chronic Kidney Disease** | CKD, eGFR, dialysis, nephropathy | [chronic-kidney-disease.md](chronic-kidney-disease.md) |
 | **Sepsis/Acute Care** | sepsis, infection, ICU, critical care | [sepsis-acute-care.md](sepsis-acute-care.md) |
 | **Orders & Results** | lab order, radiology, ORM, ORU, results | [orders-results.md](orders-results.md) |
 | **Maternal Health** | pregnancy, prenatal, obstetric, labor, delivery, postpartum, GDM, preeclampsia | [maternal-health.md](maternal-health.md) |
+| **Pediatrics** | | |
+| ↳ Childhood Asthma | asthma, pediatric, inhaler, albuterol, nebulizer, wheeze | [pediatrics/childhood-asthma.md](pediatrics/childhood-asthma.md) |
+| ↳ Acute Otitis Media | ear infection, otitis media, AOM, ear pain, amoxicillin pediatric | [pediatrics/acute-otitis-media.md](pediatrics/acute-otitis-media.md) |
 | **Oncology** | | |
 | ↳ Breast Cancer | breast cancer, mastectomy, ER positive, HER2, tamoxifen | [oncology/breast-cancer.md](oncology/breast-cancer.md) |
 | ↳ Lung Cancer | lung cancer, NSCLC, EGFR, ALK, immunotherapy | [oncology/lung-cancer.md](oncology/lung-cancer.md) |
@@ -186,10 +190,19 @@ Claude combines patterns from multiple scenario skills to generate a coherent pa
 - [heart-failure.md](heart-failure.md) - Heart failure scenarios
 - [chronic-kidney-disease.md](chronic-kidney-disease.md) - CKD scenarios
 
+### Behavioral Health
+
+- [behavioral-health.md](behavioral-health.md) - Depression, anxiety, bipolar, PTSD, substance use
+
 ### Acute Care
 - [adt-workflow.md](adt-workflow.md) - ADT workflow scenarios
 - [sepsis-acute-care.md](sepsis-acute-care.md) - Acute care scenarios
 - [orders-results.md](orders-results.md) - Orders and results
+
+### Pediatrics
+
+- [pediatrics/childhood-asthma.md](pediatrics/childhood-asthma.md) - Pediatric asthma scenarios
+- [pediatrics/acute-otitis-media.md](pediatrics/acute-otitis-media.md) - Ear infection scenarios
 
 ### Oncology
 - [oncology-domain.md](../../references/oncology-domain.md) - Foundational oncology knowledge

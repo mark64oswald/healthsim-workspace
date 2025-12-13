@@ -168,6 +168,261 @@ NTE|1||Patient has Type 2 diabetes. A1C slightly above target of 7.0%.
 
 ---
 
+## C-CDA Examples
+
+### Continuity of Care Document (CCD)
+
+**Prompt:**
+```
+Generate a C-CDA CCD for a diabetic patient with hypertension
+```
+
+**Output:**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:sdtc="urn:hl7-org:sdtc">
+  <realmCode code="US"/>
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+  <templateId root="2.16.840.1.113883.10.20.22.1.2" extension="2015-08-01"/>
+  <id root="2.16.840.1.113883.19.5" extension="CCD-20250115-001"/>
+  <code code="34133-9" codeSystem="2.16.840.1.113883.6.1" displayName="Summarization of Episode Note"/>
+  <title>Continuity of Care Document</title>
+  <effectiveTime value="20250115"/>
+  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+  <languageCode code="en-US"/>
+
+  <!-- Patient Information -->
+  <recordTarget>
+    <patientRole>
+      <id root="2.16.840.1.113883.19.5" extension="MRN00000001"/>
+      <addr use="HP">
+        <streetAddressLine>123 Main Street</streetAddressLine>
+        <city>Springfield</city>
+        <state>IL</state>
+        <postalCode>62701</postalCode>
+      </addr>
+      <telecom value="tel:+1-217-555-0142" use="HP"/>
+      <patient>
+        <name use="L">
+          <given>Robert</given>
+          <given>Michael</given>
+          <family>Johnson</family>
+        </name>
+        <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"/>
+        <birthTime value="19700315"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+
+  <!-- Author (Provider) -->
+  <author>
+    <time value="20250115"/>
+    <assignedAuthor>
+      <id root="2.16.840.1.113883.4.6" extension="1234567890"/>
+      <assignedPerson>
+        <name>
+          <given>Sarah</given>
+          <family>Chen</family>
+          <suffix>MD</suffix>
+        </name>
+      </assignedPerson>
+      <representedOrganization>
+        <name>Springfield Medical Associates</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+
+  <!-- Custodian -->
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id root="2.16.840.1.113883.19.5"/>
+        <name>Springfield Medical Associates</name>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+
+  <component>
+    <structuredBody>
+      <!-- Problems Section -->
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.5.1" extension="2015-08-01"/>
+          <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" displayName="Problem List"/>
+          <title>Problems</title>
+          <text>
+            <list>
+              <item>Type 2 Diabetes Mellitus (E11.9) - Active since 2018-03-15</item>
+              <item>Essential Hypertension (I10) - Active since 2015-06-20</item>
+            </list>
+          </text>
+          <entry>
+            <act classCode="ACT" moodCode="EVN">
+              <templateId root="2.16.840.1.113883.10.20.22.4.3" extension="2015-08-01"/>
+              <id root="2.16.840.1.113883.19.5" extension="problem-001"/>
+              <code code="CONC" codeSystem="2.16.840.1.113883.5.6"/>
+              <statusCode code="active"/>
+              <entryRelationship typeCode="SUBJ">
+                <observation classCode="OBS" moodCode="EVN">
+                  <templateId root="2.16.840.1.113883.10.20.22.4.4" extension="2015-08-01"/>
+                  <id root="2.16.840.1.113883.19.5" extension="obs-001"/>
+                  <code code="55607006" codeSystem="2.16.840.1.113883.6.96" displayName="Problem"/>
+                  <statusCode code="completed"/>
+                  <effectiveTime><low value="20180315"/></effectiveTime>
+                  <value xsi:type="CD" code="E11.9" codeSystem="2.16.840.1.113883.6.90"
+                         displayName="Type 2 diabetes mellitus without complications"/>
+                </observation>
+              </entryRelationship>
+            </act>
+          </entry>
+        </section>
+      </component>
+
+      <!-- Medications Section -->
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.1.1" extension="2014-06-09"/>
+          <code code="10160-0" codeSystem="2.16.840.1.113883.6.1" displayName="Medications"/>
+          <title>Medications</title>
+          <text>
+            <list>
+              <item>Metformin 1000mg - 1 tablet by mouth twice daily</item>
+              <item>Lisinopril 20mg - 1 tablet by mouth once daily</item>
+            </list>
+          </text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
+```
+
+### Discharge Summary
+
+**Prompt:**
+```
+Generate a C-CDA discharge summary for a heart failure patient
+```
+
+**Output:**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3">
+  <realmCode code="US"/>
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="2.16.840.1.113883.10.20.22.1.1" extension="2015-08-01"/>
+  <templateId root="2.16.840.1.113883.10.20.22.1.8" extension="2015-08-01"/>
+  <id root="2.16.840.1.113883.19.5" extension="DSUM-20250119-001"/>
+  <code code="18842-5" codeSystem="2.16.840.1.113883.6.1" displayName="Discharge Summary"/>
+  <title>Discharge Summary</title>
+  <effectiveTime value="20250119"/>
+  <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+
+  <!-- Patient (abbreviated) -->
+  <recordTarget>
+    <patientRole>
+      <id root="2.16.840.1.113883.19.5" extension="MRN00000002"/>
+      <patient>
+        <name><given>Margaret</given><family>Wilson</family></name>
+        <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1"/>
+        <birthTime value="19521108"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+
+  <component>
+    <structuredBody>
+      <!-- Hospital Admission Diagnosis -->
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.43"/>
+          <code code="46241-6" codeSystem="2.16.840.1.113883.6.1" displayName="Hospital Admission Diagnosis"/>
+          <title>Admission Diagnosis</title>
+          <text>
+            <list>
+              <item>Acute on chronic systolic heart failure (I50.23)</item>
+            </list>
+          </text>
+        </section>
+      </component>
+
+      <!-- Hospital Discharge Diagnosis -->
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.24"/>
+          <code code="11535-2" codeSystem="2.16.840.1.113883.6.1" displayName="Hospital Discharge Diagnosis"/>
+          <title>Discharge Diagnoses</title>
+          <text>
+            <list>
+              <item>Acute on chronic systolic heart failure (I50.23) - Principal</item>
+              <item>Atherosclerotic heart disease (I25.10)</item>
+              <item>Atrial fibrillation (I48.91)</item>
+              <item>Chronic kidney disease, stage 3 (N18.3)</item>
+            </list>
+          </text>
+        </section>
+      </component>
+
+      <!-- Hospital Course -->
+      <component>
+        <section>
+          <code code="8648-8" codeSystem="2.16.840.1.113883.6.1" displayName="Hospital Course"/>
+          <title>Hospital Course</title>
+          <text>
+            <paragraph>72-year-old female admitted with acute decompensated heart failure.
+            Presented with 2 weeks of progressive dyspnea, orthopnea, and lower extremity edema.
+            Initial BNP 1850 pg/mL. Chest X-ray showed cardiomegaly and bilateral pleural effusions.</paragraph>
+            <paragraph>Patient was diuresed with IV furosemide 80mg BID with good response.
+            Weight decreased from 82.5 kg to 76.2 kg. BNP improved to 450 pg/mL at discharge.
+            Transitioned to oral diuretics. GDMT optimized.</paragraph>
+          </text>
+        </section>
+      </component>
+
+      <!-- Discharge Medications -->
+      <component>
+        <section>
+          <templateId root="2.16.840.1.113883.10.20.22.2.11.1" extension="2015-08-01"/>
+          <code code="10183-2" codeSystem="2.16.840.1.113883.6.1" displayName="Discharge Medications"/>
+          <title>Discharge Medications</title>
+          <text>
+            <list>
+              <item>Sacubitril/Valsartan 49/51mg - 1 tablet by mouth twice daily</item>
+              <item>Carvedilol 25mg - 1 tablet by mouth twice daily</item>
+              <item>Dapagliflozin 10mg - 1 tablet by mouth once daily</item>
+              <item>Spironolactone 25mg - 1 tablet by mouth once daily</item>
+              <item>Furosemide 40mg - 1 tablet by mouth once daily</item>
+              <item>Apixaban 5mg - 1 tablet by mouth twice daily</item>
+            </list>
+          </text>
+        </section>
+      </component>
+
+      <!-- Discharge Instructions -->
+      <component>
+        <section>
+          <code code="8653-8" codeSystem="2.16.840.1.113883.6.1" displayName="Discharge Instructions"/>
+          <title>Discharge Instructions</title>
+          <text>
+            <list>
+              <item>Weigh yourself every morning. Call if weight increases more than 3 lbs in one day or 5 lbs in one week.</item>
+              <item>Limit sodium intake to less than 2000mg per day.</item>
+              <item>Limit fluid intake to 2 liters per day.</item>
+              <item>Take all medications as prescribed.</item>
+              <item>Follow up with Cardiology in 7 days.</item>
+              <item>Return to ED for worsening shortness of breath, chest pain, or dizziness.</item>
+            </list>
+          </text>
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
+```
+
+---
+
 ## X12 Examples
 
 ### 837P Professional Claim

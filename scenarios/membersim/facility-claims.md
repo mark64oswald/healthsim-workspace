@@ -1,5 +1,56 @@
 # Facility Claims Scenario
 
+A scenario template for generating institutional (UB-04/837I) claims for hospital inpatient, outpatient, and observation services.
+
+## For Claude
+
+Use this skill when the user requests facility/institutional claims or hospital billing scenarios. This teaches you how to generate **realistic facility claims** with DRG assignment, revenue codes, and institutional adjudication patterns.
+
+**When to apply this skill:**
+
+- User mentions facility claim, 837I, or UB-04
+- User requests hospital or inpatient claims
+- User specifies DRG, revenue codes, or room and board
+- User asks for institutional claim scenarios
+- User needs hospital billing examples
+
+**Key capabilities this skill provides:**
+
+- How to assign appropriate DRGs based on diagnoses and procedures
+- How to structure revenue code lines for different services
+- How to calculate length of stay and per-diem rates
+- How to model inpatient vs outpatient adjudication
+- How to handle admission types and discharge statuses
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: MemberSim
+- **Tags**: claims, facility, institutional, billing, payer, 837I
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic facility claims for hospital services. It models DRG-based inpatient payments, outpatient APC reimbursement, observation stays, and the complete institutional claim lifecycle.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "facility claim", "837I", "UB-04"
+- "inpatient claim", "hospital claim"
+- "DRG", "revenue code", "room and board"
+- "institutional claim"
+
+**Claim Scenarios**:
+
+- "Generate an inpatient claim for a hip replacement"
+- "Create an outpatient facility claim"
+- "Generate a hospital claim with DRG"
+
 ## Trigger Phrases
 
 - facility claim
@@ -242,7 +293,7 @@ Adjustments:
 }
 ```
 
-## Example Outputs
+## Examples
 
 ### Example 1: Heart Failure Admission (DRG 291)
 

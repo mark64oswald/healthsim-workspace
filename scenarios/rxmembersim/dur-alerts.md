@@ -1,5 +1,56 @@
 # Drug Utilization Review (DUR) Alerts Scenario
 
+A scenario template for generating DUR alerts including drug interactions, therapeutic duplication, and early refill rejections.
+
+## For Claude
+
+Use this skill when the user requests DUR alert or drug interaction scenarios. This teaches you how to generate **realistic clinical edit alerts** with appropriate severity levels and pharmacist responses.
+
+**When to apply this skill:**
+
+- User mentions DUR or drug utilization review
+- User requests drug interaction or duplication scenarios
+- User specifies early refill or refill too soon
+- User asks for clinical alert examples
+- User needs prospective DUR scenarios
+
+**Key capabilities this skill provides:**
+
+- How to structure DUR alert codes and messages
+- How to model drug-drug interaction severity levels
+- How to handle pharmacist professional service codes
+- How to generate override and rejection scenarios
+- How to document result of service codes
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: RxMemberSim
+- **Tags**: pharmacy, DUR, drug-interaction, clinical-edit, PBM
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic drug utilization review alerts. It models prospective DUR checks including drug interactions, therapeutic duplication, dose alerts, and pharmacist intervention documentation.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "DUR", "drug utilization review"
+- "drug interaction", "drug-drug interaction"
+- "therapeutic duplication", "early refill"
+- "high dose", "contraindication"
+
+**DUR Scenarios**:
+
+- "Generate a drug interaction alert"
+- "Create an early refill rejection"
+- "Generate a DUR override scenario"
+
 ## Trigger Phrases
 
 - DUR
@@ -356,7 +407,7 @@
 | 1F | Rx not filled |
 | 1G | Drug therapy unchanged |
 
-## Example Outputs
+## Examples
 
 ### Example 1: Major Drug Interaction - Reject
 

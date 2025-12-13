@@ -1,5 +1,54 @@
 # Sepsis and Acute Care Scenario
 
+A scenario template for generating sepsis patients across severity levels with SEP-1 bundle compliance and ICU-level care patterns.
+
+## For Claude
+
+Use this skill when the user requests sepsis or critical care patient data. This teaches you how to generate **realistic sepsis presentations** with appropriate vital signs, lab patterns, and treatment bundles.
+
+**When to apply this skill:**
+
+- User mentions sepsis, septic shock, or SIRS
+- User requests critical care or ICU scenarios
+- User asks for bacteremia or bloodstream infection data
+- User needs acute care encounter examples
+
+**Key capabilities this skill provides:**
+
+- How to classify sepsis severity (sepsis, severe sepsis, septic shock)
+- How to generate SOFA score-appropriate organ dysfunction
+- How to model SEP-1 bundle compliance (antibiotics, fluids, vasopressors)
+- How to create ICU admission patterns
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: sepsis, critical-care, icu, acute-care, infection
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic sepsis patients across the severity spectrum. It implements Sepsis-3 definitions, SOFA scoring, and SEP-1 quality measure bundle compliance with appropriate vital signs, lab abnormalities, and treatment patterns.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "sepsis", "septic shock", "SIRS"
+- "bacteremia", "bloodstream infection"
+- "ICU admission", "critical care"
+- "SEP-1", "sepsis bundle"
+
+**Clinical Scenarios**:
+
+- "Generate a septic shock patient from pneumonia"
+- "Create a urosepsis case requiring ICU"
+- "Generate sepsis with multi-organ dysfunction"
+
 ## Trigger Phrases
 
 - sepsis

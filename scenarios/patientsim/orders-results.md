@@ -1,5 +1,54 @@
 # Orders and Results Scenario
 
+A scenario template for generating clinical orders (laboratory, radiology, medication) and their corresponding results with realistic values and interpretations.
+
+## For Claude
+
+Use this skill when the user requests clinical orders or diagnostic results. This teaches you how to generate **realistic ORM/ORU messages** with appropriate test panels, result values, and critical value handling.
+
+**When to apply this skill:**
+
+- User mentions lab orders, test results, or observations
+- User requests ORM or ORU message generation
+- User asks for specific lab panels (CMP, CBC, etc.)
+- User needs radiology or medication order examples
+
+**Key capabilities this skill provides:**
+
+- How to structure order and result messages
+- How to generate appropriate reference ranges and abnormal flags
+- How to model critical value workflows
+- How to create condition-specific order panels
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: orders, results, laboratory, radiology, orm, oru, hl7v2
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates clinical orders and results for laboratory, radiology, and medication workflows. It supports the complete order lifecycle from placement through completion with realistic result values and interpretations.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "lab order", "test order", "lab result", "test result"
+- "ORM", "ORU", "observation"
+- "CMP", "CBC", "lipid panel", "BMP"
+- "radiology order", "imaging result"
+
+**Order Scenarios**:
+
+- "Generate a CMP with abnormal results"
+- "Create a critical potassium value"
+- "Generate a chest x-ray order with report"
+
 ## Trigger Phrases
 
 - order
@@ -113,7 +162,7 @@ This scenario generates clinical orders (laboratory, radiology, medication) and 
 | BNP | 30934-4 | <100 | 100-400 | >400 | pg/mL |
 | NT-proBNP | 33762-6 | <300 | 300-900 | >900 | pg/mL |
 
-## Example Outputs
+## Examples
 
 ### Example 1: CMP Order with Normal Results
 

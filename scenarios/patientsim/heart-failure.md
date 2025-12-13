@@ -1,5 +1,54 @@
 # Heart Failure Scenario
 
+A scenario template for generating heart failure patients with guideline-directed medical therapy across all NYHA classes and ejection fraction categories.
+
+## For Claude
+
+Use this skill when the user requests heart failure patient data or cardiology scenarios. This teaches you how to generate **realistic heart failure patients** with appropriate GDMT, lab patterns, and encounter types.
+
+**When to apply this skill:**
+
+- User mentions heart failure, CHF, or ejection fraction
+- User requests HFrEF, HFpEF, or HFmrEF scenarios
+- User asks for decompensated heart failure admissions
+- User needs cardiology encounter examples
+
+**Key capabilities this skill provides:**
+
+- How to classify heart failure by ejection fraction and NYHA class
+- How to generate appropriate GDMT medication regimens
+- How to model stable vs decompensated presentations
+- How to create cardiology follow-up patterns
+
+## Metadata
+
+- **Type**: scenario-template
+- **Version**: 1.0
+- **Author**: PatientSim
+- **Tags**: heart-failure, cardiology, chf, gdmt, chronic-disease
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic heart failure patients across the spectrum from compensated outpatient to acute decompensation requiring hospitalization. It implements current guideline-directed medical therapy and appropriate diagnostic workup patterns.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+
+- "heart failure", "CHF", "congestive heart failure"
+- "HFrEF", "HFpEF", "HFmrEF", "ejection fraction"
+- "BNP", "NT-proBNP", "decompensated"
+- "NYHA class", "cardiomyopathy"
+
+**Clinical Scenarios**:
+
+- "Generate a patient with HFrEF on GDMT"
+- "Create a decompensated heart failure admission"
+- "Generate a heart failure clinic follow-up"
+
 ## Trigger Phrases
 
 - heart failure
