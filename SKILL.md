@@ -228,6 +228,7 @@ Transform generated data to healthcare standards:
 |--------|-------|----------|
 | CSV | [formats/csv.md](formats/csv.md) | Spreadsheets, data analysis, bulk export |
 | SQL | [formats/sql.md](formats/sql.md) | Database INSERT statements, data loading |
+| Dimensional | [formats/dimensional-analytics.md](formats/dimensional-analytics.md) | Star schema for DuckDB, Databricks, BI tools |
 
 ## Integration & Testing
 

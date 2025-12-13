@@ -87,7 +87,7 @@ def test_oncology_skills(test: SmokeTest):
     print_header("2. Oncology Skills")
 
     oncology_skills = [
-        "scenarios/patientsim/oncology/oncology-domain.md",
+        "references/oncology-domain.md",  # Foundational oncology knowledge (in references/)
         "scenarios/patientsim/oncology/breast-cancer.md",
         "scenarios/patientsim/oncology/lung-cancer.md",
         "scenarios/patientsim/oncology/colorectal-cancer.md",

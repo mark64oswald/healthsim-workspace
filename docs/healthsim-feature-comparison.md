@@ -108,8 +108,8 @@ This document compares features from the current Python-library HealthSim archit
 
 | Feature | Current (Python) | Skills-First | Notes on Skills-First Implementation |
 |---------|------------------|--------------|--------------------------------------|
-| **Databricks export** | ✅ Native integration | ✅ MCP tool | `write_databricks` MCP tool |
-| **Database loading** | ✅ SQLAlchemy patterns | ⚠️ MCP tool or script | MCP tools for common targets |
+| **Databricks export** | ✅ Native integration | ✅ CLI-based | Conversation-first: Claude generates SQL, executes via `databricks sql -e` CLI |
+| **Database loading** | ✅ SQLAlchemy patterns | ✅ SQL generation | Claude generates INSERT statements; CLI or script executes |
 | **File system export** | ✅ Native | ✅ Script + MCP | Scripts write files; MCP for batch |
 | **API integration** | ✅ Python SDK patterns | ⚠️ MCP tools | MCP tools wrap external APIs |
 | **Streaming pipelines** | ✅ Generator yields | ❌ Not available | Batch-oriented only |

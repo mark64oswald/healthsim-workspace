@@ -542,6 +542,39 @@ Maintain logical date sequences across encounters, claims, and fills.
 ### 5. Validate Cross-References
 Verify that claim references (encounter IDs, authorization numbers) are consistent.
 
+## Analytics Database Integration
+
+For loading data to analytics databases, HealthSim uses a conversation-first approach:
+
+### DuckDB (Local)
+
+```
+User: Generate 10 patients in star schema format for DuckDB
+
+Claude:
+1. Generates CREATE TABLE + INSERT statements
+2. Outputs SQL directly in conversation
+3. User can copy/paste or save to file
+```
+
+### Databricks (Enterprise)
+
+**Prerequisites**: Authenticated via Databricks CLI (`databricks auth profiles`)
+
+```
+User: Load 10 patients to Databricks. Use catalog 'dev_catalog', schema 'gold'.
+
+Claude:
+1. Confirms CLI authentication
+2. Generates SQL (CREATE TABLE IF NOT EXISTS + INSERT)
+3. Executes via: databricks api post /api/2.0/sql/statements
+4. Reports success with row counts
+```
+
+No MCP server or Python scripts required - Claude generates SQL and executes via the SQL Statements API.
+
+See [dimensional-analytics.md](../formats/dimensional-analytics.md) for star schema details.
+
 ## Related Skills
 
 - [SKILL.md](../SKILL.md) - Root router
@@ -549,3 +582,4 @@ Verify that claim references (encounter IDs, authorization numbers) are consiste
 - [testing-patterns.md](testing-patterns.md) - Testing patterns
 - [hl7v2-segments.md](../references/hl7v2-segments.md) - HL7v2 segment reference
 - [orders-results.md](../scenarios/patientsim/orders-results.md) - Orders and results scenario
+- [dimensional-analytics.md](../formats/dimensional-analytics.md) - Star schema format

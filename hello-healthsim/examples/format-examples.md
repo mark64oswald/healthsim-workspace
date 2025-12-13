@@ -351,6 +351,77 @@ VALUES ('CLM20250115000001', 1, '99214', 175.00, 1);
 
 ---
 
+## Dimensional/Analytics Examples
+
+### Star Schema for DuckDB
+
+**Prompt:**
+```
+Generate 3 patients with encounters in star schema format for DuckDB analytics
+```
+
+**Output:**
+```sql
+-- Dimension: dim_patient
+CREATE TABLE IF NOT EXISTS analytics.dim_patient (
+    patient_key INT PRIMARY KEY,
+    mrn VARCHAR(20),
+    given_name VARCHAR(50),
+    family_name VARCHAR(50),
+    birth_date DATE,
+    age INT,
+    age_band VARCHAR(10),
+    gender CHAR(1)
+);
+
+INSERT INTO analytics.dim_patient VALUES
+(1, 'MRN100001', 'John', 'Smith', '1960-03-15', 65, '65-74', 'M'),
+(2, 'MRN100002', 'Maria', 'Garcia', '1955-08-22', 69, '65-74', 'F'),
+(3, 'MRN100003', 'Robert', 'Johnson', '1978-11-03', 46, '45-54', 'M');
+
+-- Fact: fact_encounters
+CREATE TABLE IF NOT EXISTS analytics.fact_encounters (
+    encounter_key INT PRIMARY KEY,
+    patient_key INT REFERENCES dim_patient,
+    encounter_date DATE,
+    encounter_class CHAR(1),
+    length_of_stay_hours INT,
+    is_readmission_30_day BOOLEAN
+);
+
+INSERT INTO analytics.fact_encounters VALUES
+(1, 1, '2025-01-10', 'O', 2, FALSE),
+(2, 2, '2025-01-12', 'I', 72, FALSE),
+(3, 3, '2025-01-14', 'E', 6, FALSE);
+```
+
+### Load to Databricks
+
+**Prompt:**
+```
+Load 5 patients to Databricks. Use catalog 'dev_catalog', schema 'gold'.
+```
+
+**Claude's Workflow:**
+1. Confirms CLI authentication via `databricks auth profiles`
+2. Generates CREATE TABLE and INSERT statements
+3. Executes via SQL Statements API
+4. Reports success with table counts
+
+**Example execution:**
+```bash
+# Claude uses SQL Statements API
+databricks api post /api/2.0/sql/statements --json '{
+  "warehouse_id": "YOUR_WAREHOUSE_ID",
+  "statement": "CREATE TABLE IF NOT EXISTS dev_catalog.gold.dim_patient (...)",
+  "wait_timeout": "30s"
+}'
+```
+
+**No Python scripts or MCP servers required** - just CLI auth and the SQL Statements API.
+
+---
+
 ## Tips for Format Requests
 
 1. **Be explicit** - "Generate as FHIR R4 Bundle" is clearer than "Generate as FHIR"
@@ -360,3 +431,5 @@ VALUES ('CLM20250115000001', 1, '99214', 175.00, 1);
 3. **Combine formats** - "Generate a patient with HL7v2 ADT message and FHIR equivalent"
 
 4. **Specify version** - "Generate as HL7v2.5.1" when version matters
+
+5. **Specify target database** - "Generate for DuckDB" or "Load to Databricks catalog 'X'"

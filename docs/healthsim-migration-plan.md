@@ -25,7 +25,7 @@ This document outlines the phased migration from the current Python-library Heal
 | **Session 3** | PatientSim Reference Build | 3-4 hours | Complete PatientSim skill | ✅ Review before Session 4 |
 | **Session 4** | MemberSim Build | 2-3 hours | Complete MemberSim skill | Optional review |
 | **Session 5** | RxMemberSim Build | 2-3 hours | Complete RxMemberSim skill | Optional review |
-| **Session 6** | MCP Server & Integration | 2-3 hours | Batch tools, Databricks integration | ✅ Review before Session 7 |
+| **Session 6** | MCP Server & Integration | 2-3 hours | Batch tools, CLI integrations | ✅ Review before Session 7 |
 | **Session 7** | Documentation & Examples | 2-3 hours | README, getting started, examples | ✅ Final review |
 | **Session 8** | Git Migration & Launch | 1-2 hours | Archive old, publish new | Launch |
 
@@ -334,7 +334,7 @@ healthsim/
 │   │   ├── sample-fhir-bundle.json
 │   │   └── sample-hl7v2.txt
 │   └── notebooks/
-│       └── databricks-quickstart.py
+│       └── analytics-examples.sql
 │
 ├── tests/
 │   ├── test_validation_scripts.py
@@ -399,11 +399,11 @@ When generating [entities], follow this workflow:
 
 ## Batch Generation
 
-For generating multiple [entities], use MCP tools:
+For generating multiple [entities]:
 
-- `healthsim.batch_generate` - Generate cohorts
-- `healthsim.write_parquet` - Write to Parquet files
-- `healthsim.write_databricks` - Load to Databricks
+- **Conversation-first**: Claude generates SQL directly for any count
+- **File export**: `healthsim.write_parquet` - Write to Parquet files
+- **Databricks**: Claude uses `databricks sql -e` CLI (no MCP needed)
 
 ## Validation
 
@@ -937,7 +937,6 @@ mcp-server/
 │       ├── __init__.py
 │       ├── batch_generate.py        # Generate cohorts
 │       ├── write_parquet.py         # Write to Parquet
-│       ├── write_databricks.py      # Write to Databricks
 │       ├── write_csv.py             # Write to CSV
 │       ├── run_scenario.py          # Execute multi-event scenario
 │       └── validate_batch.py        # Validate multiple entities
@@ -949,6 +948,9 @@ mcp-server/
 ├── README.md
 └── .env.example
 ```
+
+**Note**: Databricks integration uses conversation-first approach (no MCP tool needed).
+Claude generates SQL and executes via `databricks sql -e` CLI, trusting existing CLI auth.
 
 ### MCP Tool Specifications
 
@@ -972,16 +974,6 @@ async def write_parquet(
     """Write entities to Parquet file(s)."""
 
 @app.tool()
-async def write_databricks(
-    data: list[dict],
-    catalog: str,
-    schema: str,
-    table: str,
-    mode: str = "append"    # "append" | "overwrite"
-) -> dict:
-    """Write entities to Databricks Unity Catalog table."""
-
-@app.tool()
 async def run_scenario(
     product: str,
     scenario: str,
@@ -996,7 +988,7 @@ async def run_scenario(
 
 **Before proceeding to Session 7:**
 1. Test MCP server locally
-2. Verify Databricks integration (if credentials available)
+2. Verify Databricks CLI auth works (`databricks auth profiles`)
 3. Test batch generation at scale (100+ entities)
 
 ---
@@ -1061,7 +1053,7 @@ Claude: [Runs export script, provides FHIR R4 Bundle]
 
 - [Conversation Examples](examples/conversations/)
 - [Sample Outputs](examples/outputs/)
-- [Databricks Quickstart](examples/notebooks/databricks-quickstart.py)
+- [Analytics Examples](examples/notebooks/analytics-examples.sql)
 
 ## Installation (MCP Server)
 
@@ -1139,7 +1131,7 @@ This guide will have you generating synthetic healthcare data in minutes.
 
 - Explore [clinical scenarios](../skills/patientsim/scenarios/)
 - Try [batch generation](user-guide/batch-generation.md)
-- Load data to [Databricks](user-guide/databricks-integration.md)
+- Load data to [analytics databases](user-guide/analytics-integration.md) (DuckDB, Databricks)
 ```
 
 #### Example Conversations

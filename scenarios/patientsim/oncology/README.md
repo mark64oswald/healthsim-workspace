@@ -6,7 +6,7 @@ Comprehensive oncology patient generation skills for PatientSim.
 
 | Skill | Description | Key Features |
 |-------|-------------|--------------|
-| [oncology-domain.md](oncology-domain.md) | Foundational oncology knowledge | Staging, biomarkers, treatment modalities |
+| [oncology-domain.md](../../../references/oncology-domain.md) | Foundational oncology knowledge | Staging, biomarkers, treatment modalities |
 | [breast-cancer.md](breast-cancer.md) | Breast cancer scenarios | Molecular subtypes, hormonal/targeted therapy |
 | [lung-cancer.md](lung-cancer.md) | Lung cancer scenarios | NSCLC/SCLC, biomarker-driven therapy |
 | [colorectal-cancer.md](colorectal-cancer.md) | Colorectal cancer scenarios | Colon/rectal, MSI, hereditary syndromes |

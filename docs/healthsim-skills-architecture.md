@@ -387,12 +387,19 @@ For code lookups and validation:
 | MCP Server | Purpose | When Used |
 |------------|---------|-----------|
 | **File System** | Save generated data to files | Always - output delivery |
-| **Desktop Commander** | Advanced file operations | Complex file management |
 | **GitHub** | Version control, sharing | Publishing datasets |
-| **Databricks** | Load to Delta Lake | Enterprise integration |
-| **PostgreSQL** | Load to relational DB | Database integration |
 
-### 5.2 MCP Tool Usage Patterns
+### 5.2 Database Integration (Conversation-First)
+
+Database integration uses direct CLI commands rather than MCP servers, following the conversation-first philosophy:
+
+| Database | Method | Authentication |
+|----------|--------|----------------|
+| **DuckDB** | Direct SQL generation | None (local/in-memory) |
+| **Databricks** | `databricks sql -e` CLI | `databricks auth profiles` |
+| **PostgreSQL** | Generated SQL scripts | User-managed connection |
+
+### 5.3 MCP Tool Usage Patterns
 
 #### Save Generated Data
 
@@ -406,17 +413,19 @@ Claude:
 4. Return download link
 ```
 
-#### Load to Database
+#### Load to Databricks (Conversation-First)
 
 ```
-User: "Generate claims and load to Databricks"
+User: "Generate patients and load to Databricks"
 
 Claude:
-1. Generate claims using claims skill
-2. Transform to Delta Lake format
-3. Use Databricks MCP: CREATE TABLE, INSERT
-4. Confirm load complete
+1. Confirm CLI authentication: databricks auth profiles
+2. Generate SQL (CREATE TABLE + INSERT)
+3. Execute via: databricks api post /api/2.0/sql/statements
+4. Report success with row counts
 ```
+
+No MCP server needed - just CLI auth and the SQL Statements API.
 
 #### Publish to GitHub
 
@@ -430,7 +439,7 @@ Claude:
 4. Return repository URL
 ```
 
-### 5.3 MCP-Free Operations
+### 5.4 MCP-Free Operations
 
 These operations require NO MCP (pure conversation):
 
