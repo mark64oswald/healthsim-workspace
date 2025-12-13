@@ -1,4 +1,144 @@
-# Diabetes Management Scenario
+# Type 2 Diabetes Management Scenario - Disease Progression Events
+
+A scenario template for generating patients with Type 2 diabetes mellitus across all stages of disease progression, from pre-diabetes through complex insulin-dependent regimens with complications.
+
+## For Claude
+
+Use this skill when the user requests diabetic patients or diabetes management scenarios. This teaches you how to generate **realistic clinical progressions** for Type 2 diabetes across all stages - from newly diagnosed through complex multi-medication regimens with complications.
+
+**When to apply this skill:**
+- User mentions diabetes, T2DM, diabetic patient
+- User requests A1C levels, blood sugar, glucose control scenarios
+- User specifies metformin, insulin, or other diabetes medications
+- User asks for chronic disease management scenarios
+- User mentions diabetes complications (nephropathy, retinopathy, neuropathy)
+- User needs disease progression modeling over time
+
+**Key capabilities this skill provides:**
+- How to generate disease progression from pre-diabetes through insulin-dependent stages
+- How to match A1C levels with appropriate medication regimens
+- How to apply complication probabilities based on disease duration
+- How to create realistic lab panels for different control statuses
+- How to sequence medication escalation appropriately
+- How to model comorbidities (hypertension, hyperlipidemia, CKD)
+
+## Metadata
+- **Type**: scenario-template
+- **Version**: 2.0
+- **Author**: PatientSim
+- **Tags**: diabetes, chronic-disease, endocrine, primary-care
+- **Updated**: 2025-01-15
+
+## Purpose
+
+This scenario generates realistic Type 2 diabetes patients across the full spectrum of disease progression. It models the longitudinal management of diabetes from diagnosis through complex regimens, including medication escalation, complication development, and monitoring patterns.
+
+## When to Use This Skill
+
+Apply this skill when the user's request involves:
+
+**Direct Keywords**:
+- "diabetes", "diabetic", "T2DM", "Type 2 diabetes"
+- "A1C", "hemoglobin A1C", "glycemic control"
+- "blood sugar", "glucose", "hyperglycemia"
+- "metformin", "insulin", "diabetes medications"
+- "diabetes complications"
+
+**Clinical Scenarios**:
+- "Generate a diabetic patient"
+- "Create a patient with poorly controlled diabetes"
+- "Generate patients with diabetes and CKD"
+- "Model disease progression over 10 years"
+
+## Generation Guidelines
+
+When generating diabetic patients:
+1. **Match A1C to control status**: Well-controlled (<7%), moderate (7-8.5%), poor (>8.5%)
+2. **Apply comorbidities**: Hypertension (75%), hyperlipidemia (70%), obesity (85%)
+3. **Progress complications by duration**: CKD risk increases after 10 years
+4. **Escalate medications appropriately**: Start metformin, add SGLT2/GLP-1, then insulin
+5. **Include appropriate labs**: A1C, CMP, lipid panel, urine microalbumin
+
+## Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| age_range | range | 45-75 | Patient age range |
+| diabetes_duration | range | 0-20 | Years since diagnosis |
+| control_level | enum | moderate | well-controlled, moderate, poorly-controlled |
+| has_complications | boolean | false | Whether to include complications |
+
+## Generation Rules
+
+### Demographics
+- Age range: 45-75 years (peak incidence)
+- Higher prevalence in certain ethnic groups
+- BMI typically > 25
+
+### Conditions
+- E11.9 - Type 2 diabetes mellitus without complications
+- E11.65 - Type 2 diabetes mellitus with hyperglycemia
+- E11.22 - Type 2 diabetes with diabetic chronic kidney disease
+- I10 - Essential hypertension (75% comorbidity)
+- E78.5 - Hyperlipidemia (70% comorbidity)
+
+### Vital Signs
+- Blood pressure often elevated (>130/80)
+- BMI typically > 30
+
+### Medications
+- Metformin 500-2000mg daily (first-line)
+- SGLT2 inhibitors (empagliflozin, dapagliflozin)
+- GLP-1 agonists (semaglutide, dulaglutide)
+- Insulin glargine for advanced disease
+
+### Timeline
+- Diagnosis → Metformin → Add second agent (2-3 years) → Insulin if needed (5+ years)
+- A1C monitoring every 3-6 months
+- Annual comprehensive exams
+
+## Variations
+
+### Newly Diagnosed Diabetes
+- Duration: 0-1 years
+- A1C: 6.5-8.5%
+- Medications: Metformin only
+- Complications: None
+
+### Well-Controlled Long-Term
+- Duration: 5-15 years
+- A1C: <7%
+- Medications: Metformin + one additional agent
+- Good adherence pattern
+
+### Poorly Controlled with Complications
+- Duration: 10+ years
+- A1C: >9%
+- Medications: Multiple agents including insulin
+- Complications: Nephropathy, retinopathy, neuropathy
+
+## Examples
+
+### Example 1: Newly Diagnosed
+```json
+{
+  "patient": {
+    "mrn": "MRN00000001",
+    "name": { "given_name": "Sarah", "family_name": "Johnson" },
+    "birth_date": "1975-06-20",
+    "gender": "F"
+  },
+  "diagnoses": [
+    { "code": "E11.9", "description": "Type 2 diabetes without complications" }
+  ],
+  "medications": [
+    { "name": "Metformin", "dose": "500 mg", "frequency": "BID" }
+  ],
+  "labs": [
+    { "test_name": "HbA1c", "value": "7.2", "unit": "%" }
+  ]
+}
+```
 
 ## Trigger Phrases
 
@@ -13,7 +153,11 @@
 - hyperglycemia
 - glucose control
 
-## Parameters
+## Dependencies
+
+- healthcare/clinical-domain.md
+
+## Disease Progression Stages
 
 | Parameter | Type | Default | Options |
 |-----------|------|---------|---------|
