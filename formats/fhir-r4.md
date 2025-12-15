@@ -526,6 +526,81 @@ observation_mapping:
 }
 ```
 
+## FHIR NDJSON Format
+
+### What is NDJSON?
+
+NDJSON (Newline Delimited JSON) is a format where each line contains exactly one complete, valid JSON object. Unlike standard FHIR JSON bundles, NDJSON doesn't wrap resources in a Bundle—each resource stands alone on its own line.
+
+### When to Use NDJSON vs Standard FHIR JSON
+
+| Format | Use Case | Request With |
+|--------|----------|--------------|
+| **FHIR Bundle (JSON)** | API transactions, single patient records, document exchange | "as FHIR", "as FHIR Bundle" |
+| **FHIR NDJSON** | Bulk data export, analytics pipelines, data warehouse loading, streaming | "as FHIR NDJSON", "as bulk FHIR" |
+
+### Key Differences
+
+| Aspect | Standard FHIR JSON | FHIR NDJSON |
+|--------|-------------------|-------------|
+| **Structure** | Resources wrapped in Bundle | One resource per line, no wrapper |
+| **Line breaks** | Allowed within resource (pretty-print) | NO line breaks within resource |
+| **File extension** | `.json` | `.ndjson` |
+| **Content-Type** | `application/fhir+json` | `application/fhir+ndjson` |
+| **References** | Internal URN references in bundle | Typically use literal resource IDs |
+| **Use case** | API calls, single transactions | Bulk export, analytics, streaming |
+
+### NDJSON Example
+
+Each line is a complete FHIR resource (shown here with line numbers for clarity):
+
+```text
+{"resourceType":"Patient","id":"patient-001","name":[{"family":"Smith","given":["John"]}],"gender":"male","birthDate":"1975-03-15"}
+{"resourceType":"Patient","id":"patient-002","name":[{"family":"Garcia","given":["Maria"]}],"gender":"female","birthDate":"1965-08-22"}
+{"resourceType":"Patient","id":"patient-003","name":[{"family":"Johnson","given":["Robert"]}],"gender":"male","birthDate":"1958-11-30"}
+```
+
+**Note:** In actual NDJSON files, each JSON object must be on a single line with no internal line breaks.
+
+### FHIR Bulk Data Export Format
+
+The [FHIR Bulk Data Access specification](https://hl7.org/fhir/uv/bulkdata/) uses NDJSON for exporting large datasets. When exporting bulk data:
+
+1. **Separate files by resource type**: `Patient.ndjson`, `Observation.ndjson`, `Condition.ndjson`
+2. **One resource per line**: No Bundle wrapper
+3. **No internal formatting**: Each JSON object is minified to a single line
+
+Example file structure for bulk export:
+
+```text
+export/
+├── Patient.ndjson        # All patients, one per line
+├── Observation.ndjson    # All observations, one per line
+├── Condition.ndjson      # All conditions, one per line
+├── MedicationRequest.ndjson
+└── Encounter.ndjson
+```
+
+### Converting Between Formats
+
+**Bundle → NDJSON:**
+Extract each `entry[].resource` and write as a single line.
+
+**NDJSON → Bundle:**
+Read each line, parse as JSON, wrap in Bundle with appropriate `entry[]` structure.
+
+### Trigger Phrases for NDJSON
+
+- "as NDJSON"
+- "as FHIR NDJSON"
+- "bulk export format"
+- "for bulk data"
+- "newline delimited"
+- "for analytics"
+- "for data warehouse"
+
+---
+
 ## Complete Patient Bundle Example
 
 ```json

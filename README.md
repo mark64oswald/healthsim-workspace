@@ -107,9 +107,30 @@ healthsim-skills/
 │   ├── oncology/              # Oncology reference data
 │   └── ccda/                   # C-CDA template references
 │
-└── docs/                       # Additional documentation
-    ├── integration-guide.md
-    └── testing-patterns.md
+└── docs/                       # Shared developer documentation
+    ├── README.md              # Documentation index
+    ├── architecture/          # System architecture
+    │   ├── layered-pattern.md
+    │   └── healthsim-core-spec.md
+    ├── mcp/                   # MCP integration
+    │   ├── integration-guide.md
+    │   ├── development-guide.md
+    │   └── configuration.md
+    ├── state-management/      # State management
+    │   ├── specification.md
+    │   └── user-guide.md
+    ├── skills/                # Skills format
+    │   ├── format-specification.md
+    │   ├── format-specification-v2.md
+    │   ├── migration-guide.md
+    │   └── creating-skills.md
+    ├── extensions/            # Extension guides
+    │   ├── philosophy.md
+    │   ├── mcp-tools.md
+    │   ├── skills.md
+    │   ├── slash-commands.md
+    │   └── quick-reference.md
+    └── contributing.md        # Contribution guidelines
 ```
 
 ---
@@ -239,9 +260,36 @@ See [hello-healthsim/](hello-healthsim/) for detailed setup instructions.
 
 ---
 
+## Documentation
+
+### Getting Started
+- **[hello-healthsim/](hello-healthsim/)** - 5-minute quick start for all products
+- **[SKILL.md](SKILL.md)** - Master skill file with full reference
+
+### Developer Documentation (Shared Across Products)
+- **[MCP Integration](docs/mcp/integration-guide.md)** - MCP server integration guide
+- **[State Management](docs/state-management/user-guide.md)** - Save/load and session management
+- **[Extension Philosophy](docs/extensions/philosophy.md)** - How to extend HealthSim
+- **[Skills Format](docs/skills/format-specification-v2.md)** - Skills format specification
+- **[Quick Reference](docs/extensions/quick-reference.md)** - Fast lookup for all extension types
+- **[Contributing](docs/contributing.md)** - Development guidelines
+
+### Reference
+- **[scenarios/](scenarios/)** - Clinical scenarios organized by product
+- **[formats/](formats/)** - Output format transformations (FHIR, HL7v2, X12, NCPDP)
+- **[references/](references/)** - Code systems, clinical rules, terminology
+
+### Architecture
+- **[Layered Architecture](docs/architecture/layered-pattern.md)** - System design patterns
+- **[HealthSim Core Spec](docs/architecture/healthsim-core-spec.md)** - Shared infrastructure specification
+
+---
+
 ## Contributing
 
 See [hello-healthsim/EXTENDING.md](hello-healthsim/EXTENDING.md) for how to add new scenarios, formats, and code systems.
+
+For detailed development guidelines, see [docs/contributing.md](docs/contributing.md).
 
 ---
 

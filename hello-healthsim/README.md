@@ -15,6 +15,7 @@ By the end of this guide, you'll be able to generate:
 - **Clinical Data** - Patients with realistic diagnoses, medications, and lab results
 - **Claims Data** - Professional and facility claims with proper adjudication
 - **Pharmacy Data** - Prescriptions, pharmacy claims, and drug utilization alerts
+- **Saved Scenarios** - Persistent workspaces you can resume, branch, and share
 
 All through simple natural language requests like:
 > "Generate a 65-year-old diabetic patient with hypertension and their recent office visit claim"
@@ -396,6 +397,68 @@ See [../formats/dimensional-analytics.md](../formats/dimensional-analytics.md) f
 
 ---
 
+## Hello, State Management!
+
+Save your work, pick up where you left off, and explore "what-if" scenarios.
+
+### Save Your Work
+
+After generating data you want to keep:
+
+```text
+Save this as my-diabetes-cohort
+```
+
+HealthSim saves your entire workspace - all patients, clinical data, claims, and provenance information - to `~/.healthsim/scenarios/`.
+
+### Load Later
+
+Come back tomorrow (or next month) and restore exactly where you left off:
+
+```text
+Load my-diabetes-cohort
+```
+
+### See What You've Saved
+
+```text
+What scenarios do I have?
+```
+
+### Why Save Scenarios?
+
+- **Session continuity** - Work on complex cohorts across multiple sessions
+- **Reproducibility** - Save test baselines for regression testing
+- **Sharing** - Scenarios are portable JSON files you can share with colleagues
+- **Version control** - Save before making changes, compare versions
+
+### "What-If" Branching
+
+Build a patient, save a baseline, then explore different paths:
+
+```text
+Save this as patient-baseline
+```
+
+Now explore an acute complication:
+
+```text
+Generate a DKA hospitalization for this patient
+Save this as patient-dka-path
+```
+
+Or go back and try a different trajectory:
+
+```text
+Load patient-baseline
+Instead, add gradual progression over 6 months
+Save this as patient-progression-path
+```
+
+Now you have three scenarios you can compare - perfect for testing how different clinical trajectories affect your systems.
+
+---
+
 ## What's Included
 
 ```
@@ -493,6 +556,15 @@ Once you're comfortable with basic generation:
 | "for DuckDB" | SQL for local analytics |
 | "for Databricks" | SQL loaded to Databricks |
 | "in star schema" | Dimensional fact/dimension tables |
+
+### State Management
+
+| Request | What You Get |
+|---------|--------------|
+| "save as my-cohort" | Scenario saved with all patients/data |
+| "load my-cohort" | Restore previous workspace |
+| "what scenarios do I have" | List saved scenarios |
+| "delete old-scenario" | Remove a saved scenario |
 
 ---
 
