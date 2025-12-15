@@ -1,4 +1,4 @@
-# HealthSim Skills
+# HealthSim Workspace
 
 **Generate realistic synthetic healthcare data through natural conversation with Claude.**
 
