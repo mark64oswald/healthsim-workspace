@@ -40,10 +40,10 @@ Load the appropriate scenario based on user request:
 
 | Scenario | Trigger Phrases | File | Status |
 |----------|-----------------|------|--------|
-| **Phase III Pivotal** | phase 3, pivotal, registration, NDA, BLA | [scenarios/phase3-pivotal.md](scenarios/phase3-pivotal.md) | Active |
-| **Phase I Dose Escalation** | phase 1, dose escalation, FIH, first-in-human | scenarios/phase1-dose-escalation.md | Planned |
-| **Phase II Proof of Concept** | phase 2, PoC, proof of concept, dose finding | scenarios/phase2-poc.md | Planned |
-| **Adaptive Design** | adaptive, platform trial, master protocol, basket, umbrella | scenarios/adaptive-design.md | Planned |
+| **Phase III Pivotal** | phase 3, pivotal, registration, NDA, BLA | [phase3-pivotal.md](phase3-pivotal.md) | Active |
+| **Phase I Dose Escalation** | phase 1, dose escalation, FIH, first-in-human | phase1-dose-escalation.md | Planned |
+| **Phase II Proof of Concept** | phase 2, PoC, proof of concept, dose finding | phase2-poc.md | Planned |
+| **Adaptive Design** | adaptive, platform trial, master protocol, basket, umbrella | adaptive-design.md | Planned |
 
 ## Domain Skills
 
@@ -51,8 +51,8 @@ Reference domain knowledge for generation patterns:
 
 | Domain | Description | File | Status |
 |--------|-------------|------|--------|
-| **Clinical Trials Domain** | Core trial concepts, phases, CDISC standards, entity definitions | [domain/clinical-trials-domain.md](domain/clinical-trials-domain.md) | Active |
-| **Recruitment & Enrollment** | Screening funnel, consent, eligibility, screen failures | [domain/recruitment-enrollment.md](domain/recruitment-enrollment.md) | Placeholder |
+| **Clinical Trials Domain** | Core trial concepts, phases, CDISC standards, entity definitions | [clinical-trials-domain.md](clinical-trials-domain.md) | Active |
+| **Recruitment & Enrollment** | Screening funnel, consent, eligibility, screen failures | [recruitment-enrollment.md](recruitment-enrollment.md) | Placeholder |
 
 ## Therapeutic Areas
 
@@ -69,10 +69,10 @@ Therapeutic area-specific trial patterns:
 
 | Format | Description | File | Status |
 |--------|-------------|------|--------|
-| **SDTM** | Study Data Tabulation Model domains | formats/sdtm-output.md | Planned |
-| **ADaM** | Analysis Data Model datasets | formats/adam-output.md | Planned |
-| **ODM-XML** | Operational Data Model | formats/odm-xml.md | Planned |
-| **Define-XML** | Dataset definitions for FDA submission | formats/define-xml.md | Planned |
+| **SDTM** | Study Data Tabulation Model domains | ../../formats/cdisc-sdtm.md | Planned |
+| **ADaM** | Analysis Data Model datasets | ../../formats/cdisc-adam.md | Planned |
+| **ODM-XML** | Operational Data Model | ../../formats/cdisc-odm.md | Planned |
+| **Define-XML** | Dataset definitions for FDA submission | ../../formats/cdisc-define-xml.md | Planned |
 | **Dimensional** | Star schema for analytics | [../../formats/dimensional-analytics.md](../../formats/dimensional-analytics.md) | Shared |
 
 ## Key Entities
@@ -156,7 +156,7 @@ Quick reference for CDISC SDTM domains generated:
 | **Findings** | VS, LB, EG, PE | Vitals, labs, ECG, physical exam |
 | **Special Purpose** | SV, CO | Subject visits, comments |
 
-See [domain/clinical-trials-domain.md](domain/clinical-trials-domain.md) for detailed SDTM specifications.
+See [clinical-trials-domain.md](clinical-trials-domain.md) for detailed SDTM specifications.
 
 ## Examples
 
@@ -187,7 +187,7 @@ TrialSim validates generated data for:
 
 ## Related Skills
 
-- [domain/clinical-trials-domain.md](domain/clinical-trials-domain.md) - Core domain knowledge
-- [domain/recruitment-enrollment.md](domain/recruitment-enrollment.md) - Recruitment patterns
+- [clinical-trials-domain.md](clinical-trials-domain.md) - Core domain knowledge
+- [recruitment-enrollment.md](recruitment-enrollment.md) - Recruitment patterns
 - [../../formats/dimensional-analytics.md](../../formats/dimensional-analytics.md) - Analytics output
 - [../../references/code-systems.md](../../references/code-systems.md) - ICD-10, MedDRA, LOINC codes
