@@ -96,5 +96,5 @@ Common screen failure reasons by category:
 
 ## See Also
 
-- [clinical-trials-domain.md](./clinical-trials-domain.md) - Core domain knowledge
-- [../scenarios/phase3-pivotal.md](../scenarios/phase3-pivotal.md) - Phase III scenario
+- [clinical-trials-domain.md](clinical-trials-domain.md) - Core domain knowledge
+- [phase3-pivotal.md](phase3-pivotal.md) - Phase III scenario

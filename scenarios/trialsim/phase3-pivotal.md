@@ -335,7 +335,7 @@ TrialSim validates Phase III data for:
 
 ## Related Skills
 
-- [../domain/clinical-trials-domain.md](../domain/clinical-trials-domain.md) - Core domain knowledge
-- [../domain/recruitment-enrollment.md](../domain/recruitment-enrollment.md) - Screening patterns
+- [clinical-trials-domain.md](clinical-trials-domain.md) - Core domain knowledge
+- [recruitment-enrollment.md](recruitment-enrollment.md) - Screening patterns
 - [../../formats/dimensional-analytics.md](../../formats/dimensional-analytics.md) - Analytics output
 - [../../references/code-systems.md](../../references/code-systems.md) - ICD-10, MedDRA codes

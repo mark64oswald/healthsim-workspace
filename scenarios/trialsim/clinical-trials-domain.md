@@ -505,7 +505,7 @@ Trial-related services can generate claims:
 
 ## See Also
 
-- [../SKILL.md](../SKILL.md) - TrialSim overview and routing
+- [SKILL.md](SKILL.md) - TrialSim overview and routing
 - [recruitment-enrollment.md](recruitment-enrollment.md) - Recruitment patterns
-- [../scenarios/phase3-pivotal.md](../scenarios/phase3-pivotal.md) - Phase III trial scenario
+- [phase3-pivotal.md](phase3-pivotal.md) - Phase III trial scenario
 - [../../references/code-systems.md](../../references/code-systems.md) - Code system references
