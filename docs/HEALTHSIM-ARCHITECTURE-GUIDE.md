@@ -167,7 +167,7 @@ HealthSim replaces traditional programming with conversational AI. Users describ
 ### 4.1 Repository Structure
 
 ```
-healthsim-workspace/
+healthsim-common/
 ├── SKILL.md                           # Master entry point (triggers routing)
 ├── README.md                          # Repository overview
 ├── CHANGELOG.md                       # Version history
@@ -284,13 +284,13 @@ The `healthsim.code-workspace` file organizes folders for development:
 ```json
 {
   "folders": [
-    { "name": "healthsim-core", "path": "./healthsim-workspace" },
-    { "name": "patientsim", "path": "./healthsim-workspace/skills/patientsim" },
-    { "name": "membersim", "path": "./healthsim-workspace/skills/membersim" },
-    { "name": "rxmembersim", "path": "./healthsim-workspace/skills/rxmembersim" },
-    { "name": "trialsim", "path": "./healthsim-workspace/skills/trialsim" },
-    { "name": "populationsim", "path": "./healthsim-workspace/skills/populationsim" },
-    { "name": "networksim", "path": "./healthsim-workspace/skills/networksim" }
+    { "name": "healthsim-common", "path": "./healthsim-common" },
+    { "name": "patientsim", "path": "./healthsim-common/skills/patientsim" },
+    { "name": "membersim", "path": "./healthsim-common/skills/membersim" },
+    { "name": "rxmembersim", "path": "./healthsim-common/skills/rxmembersim" },
+    { "name": "trialsim", "path": "./healthsim-common/skills/trialsim" },
+    { "name": "populationsim", "path": "./healthsim-common/skills/populationsim" },
+    { "name": "networksim", "path": "./healthsim-common/skills/networksim" }
   ]
 }
 ```

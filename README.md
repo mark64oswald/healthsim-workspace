@@ -1,8 +1,12 @@
-# HealthSim Workspace
+# HealthSim Common
 
-**Generate realistic synthetic healthcare data through natural conversation with Claude.**
+**The shared foundation for the HealthSim product family.**
 
-A Skills-first synthetic healthcare data generation system. This repository replaces traditional Python libraries with Claude Skills - structured markdown documents that Claude uses to generate clinically coherent, realistic healthcare data.
+This repository contains everything shared across HealthSim products:
+- **Skills** - Structured markdown documents that Claude uses to generate clinically coherent healthcare data
+- **Formats** - Output transformation specs (FHIR, C-CDA, HL7v2, X12, NCPDP)
+- **References** - Shared terminology, code systems, and clinical rules
+- **Python** - Core utilities for generation, validation, state management, and dimensional output
 
 ---
 
@@ -60,7 +64,7 @@ The getting started guide includes:
 ## Repository Structure
 
 ```
-healthsim-workspace/
+healthsim-common/
 ├── SKILL.md                    # Master skill file (start here)
 ├── README.md                   # This file
 │
@@ -107,30 +111,29 @@ healthsim-workspace/
 │   ├── oncology/              # Oncology reference data
 │   └── ccda/                   # C-CDA template references
 │
-└── docs/                       # Shared developer documentation
-    ├── README.md              # Documentation index
-    ├── architecture/          # System architecture
-    │   ├── layered-pattern.md
-    │   └── healthsim-core-spec.md
-    ├── mcp/                   # MCP integration
-    │   ├── integration-guide.md
-    │   ├── development-guide.md
-    │   └── configuration.md
-    ├── state-management/      # State management
-    │   ├── specification.md
-    │   └── user-guide.md
-    ├── skills/                # Skills format
-    │   ├── format-specification.md
-    │   ├── format-specification-v2.md
-    │   ├── migration-guide.md
-    │   └── creating-skills.md
-    ├── extensions/            # Extension guides
-    │   ├── philosophy.md
-    │   ├── mcp-tools.md
-    │   ├── skills.md
-    │   ├── slash-commands.md
-    │   └── quick-reference.md
-    └── contributing.md        # Contribution guidelines
+├── docs/                       # Shared developer documentation
+│   ├── README.md              # Documentation index
+│   ├── architecture/          # System architecture
+│   ├── mcp/                   # MCP integration
+│   ├── state-management/      # State management
+│   ├── skills/                # Skills format specs
+│   ├── extensions/            # Extension guides
+│   └── contributing.md        # Contribution guidelines
+│
+├── src/healthsim/              # Core Python modules
+│   ├── benefits/              # Accumulator tracking (deductibles, OOPM)
+│   ├── config/                # Settings and logging
+│   ├── dimensional/           # Data warehouse output (DuckDB, Databricks)
+│   ├── formats/               # Format base classes
+│   ├── generation/            # Distributions, reproducibility, cohorts
+│   ├── person/                # Demographics and identifiers
+│   ├── state/                 # Workspace persistence and provenance
+│   ├── temporal/              # Timeline and period utilities
+│   └── validation/            # Validation framework
+│
+├── tests/                      # Python test suite (476 tests)
+│
+└── pyproject.toml             # Python package config
 ```
 
 ---
@@ -230,7 +233,7 @@ Add SKILL.md to a Claude Project, or configure as MCP server:
   "mcpServers": {
     "healthsim": {
       "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/healthsim-workspace"]
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "/path/to/healthsim-common"]
     }
   }
 }
@@ -238,10 +241,10 @@ Add SKILL.md to a Claude Project, or configure as MCP server:
 
 ### Claude Code
 
-Run from the healthsim-workspace directory:
+Run from the healthsim-common directory:
 
 ```bash
-cd healthsim-workspace
+cd healthsim-common
 claude
 ```
 
@@ -281,7 +284,7 @@ See [hello-healthsim/](hello-healthsim/) for detailed setup instructions.
 
 ### Architecture
 - **[Layered Architecture](docs/architecture/layered-pattern.md)** - System design patterns
-- **[HealthSim Core Spec](docs/architecture/healthsim-core-spec.md)** - Shared infrastructure specification
+- **[HealthSim Core Spec](docs/architecture/healthsim-common-spec.md)** - Shared infrastructure specification
 
 ---
 

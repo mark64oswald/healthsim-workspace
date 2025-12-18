@@ -27,7 +27,7 @@ Claude Desktop's Projects feature allows you to attach files that Claude can ref
 
 1. In your new project, click **"Add content"**
 2. Select **"Add files"**
-3. Navigate to your cloned `healthsim-workspace` folder
+3. Navigate to your cloned `healthsim-common` folder
 4. Add these key files:
    - `SKILL.md` (required - master skill file)
    - `references/data-models.md` (recommended)
@@ -83,14 +83,14 @@ Edit the config file to add a filesystem MCP server pointing to HealthSim:
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/healthsim-workspace"
+        "/path/to/your/healthsim-common"
       ]
     }
   }
 }
 ```
 
-**Replace `/path/to/your/healthsim-workspace`** with the actual path where you cloned the repository.
+**Replace `/path/to/your/healthsim-common`** with the actual path where you cloned the repository.
 
 **macOS Example:**
 ```json
@@ -101,7 +101,7 @@ Edit the config file to add a filesystem MCP server pointing to HealthSim:
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/Users/yourname/projects/healthsim-workspace"
+        "/Users/yourname/projects/healthsim-common"
       ]
     }
   }
@@ -117,7 +117,7 @@ Edit the config file to add a filesystem MCP server pointing to HealthSim:
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "C:\\Users\\yourname\\projects\\healthsim-workspace"
+        "C:\\Users\\yourname\\projects\\healthsim-common"
       ]
     }
   }
@@ -136,7 +136,7 @@ In a new chat, you should see a tools icon indicating MCP servers are connected.
 Can you see the HealthSim skill files?
 ```
 
-Claude should be able to read files from the healthsim-workspace directory.
+Claude should be able to read files from the healthsim-common directory.
 
 ---
 
@@ -201,7 +201,7 @@ Add the relevant scenario file:
 3. Verify the path uses forward slashes or escaped backslashes
 4. Try running the MCP server manually to check for errors:
    ```bash
-   npx -y @modelcontextprotocol/server-filesystem /path/to/healthsim-workspace
+   npx -y @modelcontextprotocol/server-filesystem /path/to/healthsim-common
    ```
 
 ---

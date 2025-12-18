@@ -7,7 +7,7 @@ Learn how to customize and extend HealthSim with new scenarios, formats, and cod
 ## Architecture Overview
 
 ```
-healthsim-workspace/
+healthsim-common/
 ├── SKILL.md                    # Master skill (entry point)
 ├── skills/                  # Domain-specific generation rules
 │   ├── patientsim/            # Clinical data

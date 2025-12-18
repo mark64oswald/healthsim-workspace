@@ -93,7 +93,7 @@ The Skills-first architecture replaces traditional Python libraries with convers
 ### 2.1 Directory Structure
 
 ```
-healthsim-workspace/
+healthsim-common/
 ├── SKILL.md                           # Master entry point
 ├── references/
 │   ├── data-models.md                 # Entity schemas

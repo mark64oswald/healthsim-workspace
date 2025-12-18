@@ -1,6 +1,6 @@
 # HealthSim Core Specification
 
-This document outlines the shared infrastructure foundation (`healthsim-core`) that enables PatientSim, MemberSim, and RxMemberSim to share common functionality.
+This document outlines the shared infrastructure foundation (`healthsim-common`) that enables PatientSim, MemberSim, and RxMemberSim to share common functionality.
 
 **Document Version**: 1.0
 
@@ -443,7 +443,7 @@ Extract in this order (least dependencies first):
 ## 4. Dependency Map
 
 ```
-healthsim-core
+healthsim-common
 ├── config/
 │   ├── settings.py      (pydantic-settings)
 │   └── logging.py       (stdlib logging)
@@ -474,7 +474,7 @@ healthsim-core
     └── composer.py      → skills.loader, skills.schema
 ```
 
-**External Dependencies for healthsim-core:**
+**External Dependencies for healthsim-common:**
 - `pydantic >= 2.0`
 - `pydantic-settings >= 2.0`
 - `faker >= 18.0`
@@ -527,7 +527,7 @@ healthsim-core
 
 **Mitigation**:
 - Strict layering: `config` → `validation.base` → `temporal` → `person` → `generation`
-- No upward imports within healthsim-core
+- No upward imports within healthsim-common
 - Use TYPE_CHECKING imports where necessary
 
 ---
@@ -571,7 +571,7 @@ product/
 ```toml
 [project]
 dependencies = [
-    "healthsim-core >= 1.0.0",
+    "healthsim-common >= 1.0.0",
     # ... product-specific deps
 ]
 ```
@@ -580,7 +580,7 @@ dependencies = [
 
 ## 7. Testing Strategy
 
-### 7.1 healthsim-core Tests
+### 7.1 healthsim-common Tests
 
 - Unit tests for all extracted modules
 - No product-specific test data
@@ -589,21 +589,21 @@ dependencies = [
 ### 7.2 Product Tests
 
 - Existing tests continue to work (after import updates)
-- Integration tests verify healthsim-core integration
+- Integration tests verify healthsim-common integration
 - Product-specific validation tests remain
 
 ### 7.3 Migration Testing
 
 - Create test script that validates:
   1. Old product code still runs (import aliases)
-  2. New code using healthsim-core works
+  2. New code using healthsim-common works
   3. Generated data is identical (seed reproducibility)
 
 ---
 
 ## 8. Next Steps
 
-1. **Create healthsim-core repository**
+1. **Create healthsim-common repository**
    - Initialize with pyproject.toml
    - Setup CI/CD
 
@@ -617,14 +617,14 @@ dependencies = [
    - skills.schema, loader, composer
 
 5. **Refactor Products**
-   - Update imports to use healthsim-core
+   - Update imports to use healthsim-common
    - Product models extend Person
    - Product generators extend BaseGenerator
 
-6. **Release healthsim-core v1.0.0**
+6. **Release healthsim-common v1.0.0**
 
 7. **Release Updated Products**
-   - Depend on healthsim-core
+   - Depend on healthsim-common
 
 ---
 
@@ -647,7 +647,7 @@ dependencies = [
 | mcp | formatters.py | HYBRID |
 
 **Summary:**
-- **CORE (extract to healthsim-core)**: 4 files
+- **CORE (extract to healthsim-common)**: 4 files
 - **HYBRID (split required)**: 6 files
 - **PRODUCT (stays in product repos)**: Multiple files
 
@@ -663,10 +663,10 @@ from product.core.models import ProductModel, Gender
 from product.skills.loader import SkillLoader
 ```
 
-### After (with healthsim-core)
+### After (with healthsim-common)
 
 ```python
-# Generic imports from healthsim-core
+# Generic imports from healthsim-common
 from healthsim.validation import ValidationResult, ValidationSeverity
 from healthsim.person import Person, Gender
 from healthsim.skills import SkillLoader

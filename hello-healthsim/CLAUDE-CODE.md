@@ -41,8 +41,8 @@ source ~/.zshrc
 ### Step 3: Clone HealthSim
 
 ```bash
-git clone https://github.com/mark64oswald/healthsim-workspace.git
-cd healthsim-workspace
+git clone https://github.com/mark64oswald/healthsim-common.git
+cd healthsim-common
 ```
 
 ---
@@ -55,7 +55,7 @@ Claude Code automatically has access to files in your current directory.
 
 ```bash
 # Navigate to HealthSim
-cd /path/to/healthsim-workspace
+cd /path/to/healthsim-common
 
 # Start Claude Code
 claude
@@ -81,7 +81,7 @@ Configure HealthSim as an MCP server for access from any directory.
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/healthsim-workspace"
+        "/path/to/your/healthsim-common"
       ]
     }
   }
@@ -104,7 +104,7 @@ cat > .claude/settings.json << 'EOF'
       "args": [
         "-y",
         "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/healthsim-workspace"
+        "/path/to/your/healthsim-common"
       ]
     }
   }
@@ -122,7 +122,7 @@ Create a `.claude/instructions.md` file in your project:
 This project uses HealthSim for synthetic healthcare data generation.
 
 When generating healthcare data:
-1. Read SKILL.md from the healthsim-workspace directory for guidance
+1. Read SKILL.md from the healthsim-common directory for guidance
 2. Follow the data models in references/data-models.md
 3. Use appropriate code systems from references/code-systems.md
 4. Apply clinical rules from references/clinical-rules.md
@@ -140,7 +140,7 @@ Available products:
 ### Interactive Mode
 
 ```bash
-cd healthsim-workspace
+cd healthsim-common
 claude
 ```
 
@@ -177,7 +177,7 @@ claude --print "Generate a pharmacy claim for metformin"
 #!/bin/bash
 # generate-test-patients.sh
 
-cd /path/to/healthsim-workspace
+cd /path/to/healthsim-common
 
 claude --print "Generate 5 patients with various chronic conditions as a JSON array" \
   > test-patients.json
@@ -224,13 +224,13 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code
 
       - name: Clone HealthSim
-        run: git clone https://github.com/mark64oswald/healthsim-workspace.git
+        run: git clone https://github.com/mark64oswald/healthsim-common.git
 
       - name: Generate Test Data
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          cd healthsim-workspace
+          cd healthsim-common
           claude --print "Generate 10 diverse patients with chronic conditions" \
             > ../test-data/patients.json
           claude --print "Generate 10 professional claims" \
@@ -328,7 +328,7 @@ EOF
 ### Test Basic Generation
 
 ```bash
-cd healthsim-workspace
+cd healthsim-common
 claude --print "Generate a patient with Type 2 diabetes"
 ```
 
@@ -366,7 +366,7 @@ export ANTHROPIC_API_KEY="your-key"
 
 ### "Cannot read skill files"
 
-1. Verify you're in the healthsim-workspace directory
+1. Verify you're in the healthsim-common directory
 2. Check MCP server configuration path
 3. Ensure files exist: `ls SKILL.md`
 
@@ -374,7 +374,7 @@ export ANTHROPIC_API_KEY="your-key"
 
 ```bash
 # Test MCP server manually
-npx -y @modelcontextprotocol/server-filesystem /path/to/healthsim-workspace
+npx -y @modelcontextprotocol/server-filesystem /path/to/healthsim-common
 
 # Check for Node.js
 node --version  # Should be 18+

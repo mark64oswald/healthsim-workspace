@@ -13,7 +13,7 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
     ┌─────────────────────────────────────────────────────────────────┐
     │                                                                 │
     │   ┌─────────────────────────────────────────────────────────┐   │
-    │   │              healthsim-workspace (Skills)               │   │
+    │   │              healthsim-common (Skills)               │   │
     │   │   Scenarios, Formats, References, Documentation         │   │
     │   └─────────────────────────────────────────────────────────┘   │
     │                              │                                  │
@@ -28,7 +28,7 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
     │              └───────────────┼───────────────┘                  │
     │                              ▼                                  │
     │   ┌─────────────────────────────────────────────────────────┐   │
-    │   │                   healthsim-core                        │   │
+    │   │                   healthsim-common                        │   │
     │   │   Shared Models, Validation, State, Generation          │   │
     │   └─────────────────────────────────────────────────────────┘   │
     │                                                                 │
@@ -41,8 +41,8 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
 
 | Repository | Purpose | GitHub | Key Contents |
 |------------|---------|--------|--------------|
-| **[healthsim-workspace](https://github.com/mark64oswald/healthsim-workspace)** | Skills & shared docs | [repo](https://github.com/mark64oswald/healthsim-workspace) | Scenarios, formats, references, SKILL.md files |
-| **[healthsim-core](https://github.com/mark64oswald/healthsim-core)** | Shared Python library | [repo](https://github.com/mark64oswald/healthsim-core) | Models, validation, state management, generation |
+| **[healthsim-common](https://github.com/mark64oswald/healthsim-common)** | Skills & shared docs | [repo](https://github.com/mark64oswald/healthsim-common) | Scenarios, formats, references, SKILL.md files |
+| **[healthsim-common](https://github.com/mark64oswald/healthsim-common)** | Shared Python library | [repo](https://github.com/mark64oswald/healthsim-common) | Models, validation, state management, generation |
 | **[PatientSim](https://github.com/mark64oswald/PatientSim)** | Clinical/EMR data | [repo](https://github.com/mark64oswald/PatientSim) | Patients, encounters, diagnoses, labs, vitals |
 | **[MemberSim](https://github.com/mark64oswald/membersim)** | Claims/payer data | [repo](https://github.com/mark64oswald/membersim) | Members, claims, benefits, prior auth |
 | **[RxMemberSim](https://github.com/mark64oswald/rxmembersim)** | Pharmacy/PBM data | [repo](https://github.com/mark64oswald/rxmembersim) | Prescriptions, formularies, DUR alerts |
@@ -144,8 +144,8 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
 | Document | Description |
 |----------|-------------|
 | [architecture/layered-pattern.md](architecture/layered-pattern.md) | Layered architecture overview |
-| [architecture/healthsim-core-spec.md](architecture/healthsim-core-spec.md) | healthsim-core specification |
-| [healthsim-workspace-architecture.md](healthsim-workspace-architecture.md) | Skills architecture |
+| [architecture/healthsim-common-spec.md](architecture/healthsim-common-spec.md) | healthsim-common specification |
+| [healthsim-common-architecture.md](healthsim-common-architecture.md) | Skills architecture |
 
 ### Contributing
 
@@ -189,12 +189,12 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
 | [RxMemberSim/docs/tutorials/](https://github.com/mark64oswald/rxmembersim/tree/main/docs/tutorials) | Step-by-step tutorials |
 | [RxMemberSim/docs/reference/](https://github.com/mark64oswald/rxmembersim/tree/main/docs/reference) | API and schema reference |
 
-### healthsim-core (Shared Library)
+### healthsim-common (Shared Library)
 
 | Location | Contents |
 |----------|----------|
-| [healthsim-core/docs/](https://github.com/mark64oswald/healthsim-core/tree/main/docs) | Core library documentation |
-| [architecture/healthsim-core-spec.md](architecture/healthsim-core-spec.md) | Technical specification |
+| [healthsim-common/docs/](https://github.com/mark64oswald/healthsim-common/tree/main/docs) | Core library documentation |
+| [architecture/healthsim-common-spec.md](architecture/healthsim-common-spec.md) | Technical specification |
 
 ---
 
@@ -230,15 +230,15 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
 ### For Architects (understanding the system)
 
 1. [Layered Architecture](architecture/layered-pattern.md) - System design
-2. [healthsim-core Spec](architecture/healthsim-core-spec.md) - Core library
-3. [Skills Architecture](healthsim-workspace-architecture.md) - Skills system
+2. [healthsim-common Spec](architecture/healthsim-common-spec.md) - Core library
+3. [Skills Architecture](healthsim-common-architecture.md) - Skills system
 4. [Data Models](../references/data-models.md) - Entity schemas
 
 ---
 
 ## What's Shared vs. Product-Specific
 
-| Shared (healthsim-workspace) | Product-Specific (product repos) |
+| Shared (healthsim-common) | Product-Specific (product repos) |
 |------------------------------|----------------------------------|
 | Skills & scenarios | Python implementation |
 | Output formats | API reference |
@@ -254,8 +254,8 @@ HealthSim is a suite of products for generating synthetic healthcare data throug
 | Resource | Use For |
 |----------|---------|
 | [Troubleshooting Guide](../hello-healthsim/TROUBLESHOOTING.md) | Common issues |
-| [GitHub Issues](https://github.com/mark64oswald/healthsim-workspace/issues) | Bug reports, feature requests |
-| [GitHub Discussions](https://github.com/mark64oswald/healthsim-workspace/discussions) | Questions, ideas |
+| [GitHub Issues](https://github.com/mark64oswald/healthsim-common/issues) | Bug reports, feature requests |
+| [GitHub Discussions](https://github.com/mark64oswald/healthsim-common/discussions) | Questions, ideas |
 
 ---
 
