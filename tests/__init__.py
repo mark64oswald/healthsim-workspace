@@ -1,1 +1,1 @@
-"""Tests for healthsim-core."""
+"""Tests for healthsim-common."""

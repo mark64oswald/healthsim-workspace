@@ -80,7 +80,7 @@ class WriterRegistry:
             raise ValueError(
                 f"Target '{target_name}' requires packages: "
                 f"{writer_class.REQUIRED_PACKAGES}. "
-                f"Install with: pip install healthsim-core[{target_name}]"
+                f"Install with: pip install healthsim-common[{target_name}]"
             )
 
         return writer_class

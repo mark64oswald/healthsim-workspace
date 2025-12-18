@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to healthsim-workspace (Skills repository) will be documented in this file.
+All notable changes to healthsim-common (Skills repository) will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Renamed repository from healthsim-skills to healthsim-workspace
+- Renamed repository from healthsim-common to healthsim-common
 - Updated all internal references to new repository name
 - Updated README title to "HealthSim Workspace"
 
@@ -64,7 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Skills format specification (v1.0 and v2.0)
 - Extension framework documentation
 
-[Unreleased]: https://github.com/mark64oswald/healthsim-workspace/compare/v1.2.0...HEAD
-[1.2.0]: https://github.com/mark64oswald/healthsim-workspace/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/mark64oswald/healthsim-workspace/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/mark64oswald/healthsim-workspace/releases/tag/v1.0.0
+[Unreleased]: https://github.com/mark64oswald/healthsim-common/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/mark64oswald/healthsim-common/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/mark64oswald/healthsim-common/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/mark64oswald/healthsim-common/releases/tag/v1.0.0

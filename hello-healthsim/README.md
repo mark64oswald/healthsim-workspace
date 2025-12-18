@@ -55,10 +55,10 @@ brew install claude-code
 
 ```bash
 # Clone HealthSim skills
-git clone https://github.com/mark64oswald/healthsim-workspace.git
+git clone https://github.com/mark64oswald/healthsim-common.git
 
 # Navigate to the project
-cd healthsim-workspace
+cd healthsim-common
 ```
 
 ### Step 2: Configure Claude
@@ -462,7 +462,7 @@ Now you have three scenarios you can compare - perfect for testing how different
 ## What's Included
 
 ```
-healthsim-workspace/
+healthsim-common/
 ├── SKILL.md                    # Master skill file (start here)
 ├── skills/
 │   ├── patientsim/            # Clinical/EMR data generation
@@ -506,7 +506,7 @@ Once you're comfortable with basic generation:
 
 ### Get Help
 - [Troubleshooting](TROUBLESHOOTING.md) - Common issues and solutions
-- [GitHub Issues](https://github.com/mark64oswald/healthsim-workspace/issues) - Report bugs or request features
+- [GitHub Issues](https://github.com/mark64oswald/healthsim-common/issues) - Report bugs or request features
 
 ---
 

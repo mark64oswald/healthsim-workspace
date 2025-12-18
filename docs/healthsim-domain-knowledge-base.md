@@ -3,7 +3,7 @@
 **Session 1 Deliverable - Knowledge Extraction**  
 **Version**: 1.0  
 **Date**: 2025-12-09  
-**Purpose**: Comprehensive extraction of domain knowledge from healthsim-core, PatientSim, MemberSim, and RxMemberSim repositories for migration to Skills-first architecture.
+**Purpose**: Comprehensive extraction of domain knowledge from healthsim-common, PatientSim, MemberSim, and RxMemberSim repositories for migration to Skills-first architecture.
 
 ---
 
@@ -33,7 +33,7 @@ HealthSim is a family of three products sharing a common foundation:
 │   PatientSim    │   MemberSim     │     RxMemberSim         │
 │   (Clinical)    │   (Payer)       │     (Pharmacy)          │
 ├─────────────────┴─────────────────┴─────────────────────────┤
-│                     healthsim-core                          │
+│                     healthsim-common                          │
 │  (Person, Temporal, Generation, Validation, Formats)        │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -42,11 +42,11 @@ HealthSim is a family of three products sharing a common foundation:
 
 | Concept | Description | Source Module |
 |---------|-------------|---------------|
-| **Person** | Base demographics, identifiers, contact info | healthsim-core/person |
-| **Timeline** | Event sequencing with dependencies | healthsim-core/temporal |
-| **Distribution** | Statistical generation patterns | healthsim-core/generation |
-| **Validation** | Rule-based data quality | healthsim-core/validation |
-| **Transformer** | Output format conversion | healthsim-core/formats |
+| **Person** | Base demographics, identifiers, contact info | healthsim-common/person |
+| **Timeline** | Event sequencing with dependencies | healthsim-common/temporal |
+| **Distribution** | Statistical generation patterns | healthsim-common/generation |
+| **Validation** | Rule-based data quality | healthsim-common/validation |
+| **Transformer** | Output format conversion | healthsim-common/formats |
 
 ### 1.3 Primary Use Cases
 
@@ -60,7 +60,7 @@ HealthSim is a family of three products sharing a common foundation:
 
 ## 2. Data Models & Schemas
 
-### 2.1 Core Person Model (healthsim-core)
+### 2.1 Core Person Model (healthsim-common)
 
 The foundational person entity shared across all products:
 
@@ -2208,7 +2208,7 @@ dur_codes:
 **Purpose**: Session 1 deliverable for Skills-first migration  
 
 **Source Repositories Analyzed**:
-- healthsim-core (v0.2.0)
+- healthsim-common (v0.2.0)
 - patientsim (v0.3.0)
 - membersim (v0.2.0)
 - rxmembersim (v0.2.0)

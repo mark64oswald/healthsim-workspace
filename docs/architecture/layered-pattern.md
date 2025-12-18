@@ -332,7 +332,7 @@ class HbA1cGlucoseValidator(ValidationStrategy):
 
 ### Adding New Clinical Scenario
 
-1. Create skill file in healthsim-workspace/skills/
+1. Create skill file in healthsim-common/skills/
 2. Define clinical logic and parameters
 3. Add example patients
 4. Test with Claude
@@ -388,6 +388,6 @@ transformer.create_bundle(patients=patients)  # Single bundle
 
 ## See Also
 
-- [HealthSim Core Extraction Spec](healthsim-core-spec.md) - Shared library architecture
+- [HealthSim Core Extraction Spec](healthsim-common-spec.md) - Shared library architecture
 - [Extension Framework](../extensions/philosophy.md) - Adding new capabilities
 - [State Management](../state-management/specification.md) - Save/load scenarios

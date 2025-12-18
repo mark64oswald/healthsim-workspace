@@ -41,7 +41,7 @@ Extract all domain knowledge from existing Python codebases into a structured do
 ### Inputs (What I'll Read)
 ```
 Existing Repositories:
-├── healthsim-core/
+├── healthsim-common/
 │   ├── src/healthsim/person/       → Demographics, identifiers
 │   ├── src/healthsim/temporal/     → Timeline, date utilities
 │   ├── src/healthsim/generation/   → Distributions, seeds
@@ -1195,13 +1195,13 @@ Archive old repositories and publish new HealthSim repository.
 #### Step 1: Archive Old Repositories
 
 ```bash
-# For each old repo (healthsim-core, patientsim, membersim, rxmembersim)
+# For each old repo (healthsim-common, patientsim, membersim, rxmembersim)
 
 # Option A: Archive on GitHub (recommended)
 # Go to Settings > Archive this repository
 
 # Option B: Rename with -archived suffix
-gh repo rename healthsim-core healthsim-core-archived
+gh repo rename healthsim-common healthsim-common-archived
 ```
 
 #### Step 2: Create New Repository
@@ -1311,7 +1311,7 @@ I'm ready to begin HealthSim knowledge extraction.
 Please read the following repositories and extract domain knowledge 
 into the structured format we discussed:
 
-1. healthsim-core at [path]
+1. healthsim-common at [path]
 2. patientsim at [path]
 3. membersim at [path]
 4. rxmembersim at [path]
