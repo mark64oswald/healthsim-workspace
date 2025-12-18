@@ -141,9 +141,7 @@ class TestSkill:
             name="Test Skill",
             description="A test skill",
             metadata=SkillMetadata(type=SkillType.GENERATION_GUIDE),
-            parameters=[
-                SkillParameter(name="count", type=ParameterType.INTEGER, default=10)
-            ],
+            parameters=[SkillParameter(name="count", type=ParameterType.INTEGER, default=10)],
         )
 
         assert skill.name == "Test Skill"
@@ -170,9 +168,7 @@ class TestSkill:
         """Test getting parameter value with overrides."""
         skill = Skill(
             name="Test",
-            parameters=[
-                SkillParameter(name="count", type=ParameterType.INTEGER, default=10)
-            ],
+            parameters=[SkillParameter(name="count", type=ParameterType.INTEGER, default=10)],
         )
 
         # Default value
@@ -185,9 +181,7 @@ class TestSkill:
         """Test applying a variation."""
         skill = Skill(
             name="Test",
-            parameters=[
-                SkillParameter(name="mode", type=ParameterType.STRING, default="normal")
-            ],
+            parameters=[SkillParameter(name="mode", type=ParameterType.STRING, default="normal")],
             variations=[
                 SkillVariation(
                     name="debug",
@@ -307,9 +301,7 @@ description: Test loading from file
 
 Testing file loading.
 """
-        with NamedTemporaryFile(
-            mode="w", suffix=".md", delete=False, encoding="utf-8"
-        ) as f:
+        with NamedTemporaryFile(mode="w", suffix=".md", delete=False, encoding="utf-8") as f:
             f.write(content)
             path = Path(f.name)
 

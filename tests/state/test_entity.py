@@ -1,6 +1,5 @@
 """Tests for EntityWithProvenance."""
 
-import pytest
 from pydantic import BaseModel
 
 from healthsim.state import EntityWithProvenance, Provenance, SourceType
@@ -8,6 +7,7 @@ from healthsim.state import EntityWithProvenance, Provenance, SourceType
 
 class SampleModel(BaseModel):
     """Sample model for testing."""
+
     name: str
     value: int
 
@@ -112,9 +112,19 @@ class TestEntityWithProvenance:
     def test_entity_types(self):
         """Test various entity types work correctly."""
         entity_types = [
-            "patients", "encounters", "diagnoses", "labs", "vitals",
-            "members", "claims", "authorizations", "accumulators",
-            "rx_members", "prescriptions", "pharmacy_claims", "prior_auths",
+            "patients",
+            "encounters",
+            "diagnoses",
+            "labs",
+            "vitals",
+            "members",
+            "claims",
+            "authorizations",
+            "accumulators",
+            "rx_members",
+            "prescriptions",
+            "pharmacy_claims",
+            "prior_auths",
         ]
 
         for entity_type in entity_types:

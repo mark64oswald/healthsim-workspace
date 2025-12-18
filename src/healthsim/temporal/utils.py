@@ -219,11 +219,7 @@ def days_between(d1: date, d2: date) -> int:
 
 
 def relative_date(
-    base: date,
-    years: int = 0,
-    months: int = 0,
-    days: int = 0,
-    direction: str = "after"
+    base: date, years: int = 0, months: int = 0, days: int = 0, direction: str = "after"
 ) -> date:
     """Calculate a date relative to a base date.
 

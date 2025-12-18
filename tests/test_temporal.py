@@ -202,21 +202,27 @@ class TestTimeline:
         """Test events are kept in chronological order."""
         timeline = Timeline(entity_id="test")
 
-        timeline.add_event(TimelineEvent(
-            event_id="2",
-            event_type="b",
-            timestamp=datetime(2024, 1, 15),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="1",
-            event_type="a",
-            timestamp=datetime(2024, 1, 1),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="3",
-            event_type="c",
-            timestamp=datetime(2024, 1, 10),
-        ))
+        timeline.add_event(
+            TimelineEvent(
+                event_id="2",
+                event_type="b",
+                timestamp=datetime(2024, 1, 15),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="1",
+                event_type="a",
+                timestamp=datetime(2024, 1, 1),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="3",
+                event_type="c",
+                timestamp=datetime(2024, 1, 10),
+            )
+        )
 
         events = list(timeline)
         assert events[0].event_id == "1"
@@ -226,21 +232,27 @@ class TestTimeline:
     def test_get_events_by_type(self) -> None:
         """Test filtering events by type."""
         timeline = Timeline(entity_id="test")
-        timeline.add_event(TimelineEvent(
-            event_id="1",
-            event_type="login",
-            timestamp=datetime(2024, 1, 1),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="2",
-            event_type="purchase",
-            timestamp=datetime(2024, 1, 2),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="3",
-            event_type="login",
-            timestamp=datetime(2024, 1, 3),
-        ))
+        timeline.add_event(
+            TimelineEvent(
+                event_id="1",
+                event_type="login",
+                timestamp=datetime(2024, 1, 1),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="2",
+                event_type="purchase",
+                timestamp=datetime(2024, 1, 2),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="3",
+                event_type="login",
+                timestamp=datetime(2024, 1, 3),
+            )
+        )
 
         logins = timeline.get_events_by_type("login")
         assert len(logins) == 2
@@ -248,21 +260,27 @@ class TestTimeline:
     def test_get_events_in_range(self) -> None:
         """Test getting events in time range."""
         timeline = Timeline(entity_id="test")
-        timeline.add_event(TimelineEvent(
-            event_id="1",
-            event_type="a",
-            timestamp=datetime(2024, 1, 1),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="2",
-            event_type="b",
-            timestamp=datetime(2024, 1, 15),
-        ))
-        timeline.add_event(TimelineEvent(
-            event_id="3",
-            event_type="c",
-            timestamp=datetime(2024, 2, 1),
-        ))
+        timeline.add_event(
+            TimelineEvent(
+                event_id="1",
+                event_type="a",
+                timestamp=datetime(2024, 1, 1),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="2",
+                event_type="b",
+                timestamp=datetime(2024, 1, 15),
+            )
+        )
+        timeline.add_event(
+            TimelineEvent(
+                event_id="3",
+                event_type="c",
+                timestamp=datetime(2024, 2, 1),
+            )
+        )
 
         events = timeline.get_events_in_range(
             start=datetime(2024, 1, 10),
@@ -275,11 +293,13 @@ class TestTimeline:
     def test_remove_event(self) -> None:
         """Test removing an event."""
         timeline = Timeline(entity_id="test")
-        timeline.add_event(TimelineEvent(
-            event_id="1",
-            event_type="a",
-            timestamp=datetime(2024, 1, 1),
-        ))
+        timeline.add_event(
+            TimelineEvent(
+                event_id="1",
+                event_type="a",
+                timestamp=datetime(2024, 1, 1),
+            )
+        )
 
         assert timeline.remove_event("1") is True
         assert len(timeline) == 0
@@ -288,11 +308,13 @@ class TestTimeline:
     def test_contains(self) -> None:
         """Test contains check."""
         timeline = Timeline(entity_id="test")
-        timeline.add_event(TimelineEvent(
-            event_id="evt-123",
-            event_type="test",
-            timestamp=datetime(2024, 1, 1),
-        ))
+        timeline.add_event(
+            TimelineEvent(
+                event_id="evt-123",
+                event_type="test",
+                timestamp=datetime(2024, 1, 1),
+            )
+        )
 
         assert "evt-123" in timeline
         assert "evt-456" not in timeline

@@ -19,6 +19,7 @@ class Period:
 
     End date is inclusive. If end_date is None, the period is open-ended.
     """
+
     start_date: date
     end_date: date | None = None
     label: str = ""
@@ -118,7 +119,7 @@ class PeriodCollection:
         """Find overlapping period pairs."""
         overlaps = []
         for i, p1 in enumerate(self.periods):
-            for p2 in self.periods[i + 1:]:
+            for p2 in self.periods[i + 1 :]:
                 if p1.overlaps(p2):
                     overlaps.append((p1, p2))
         return overlaps

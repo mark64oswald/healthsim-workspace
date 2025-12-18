@@ -6,11 +6,16 @@ Tracks how entities were created across all HealthSim products:
 - RxMemberSim: rx_members, prescriptions, pharmacy_claims, prior_auths
 """
 
+from __future__ import annotations
+
 from datetime import datetime
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from healthsim.state.entity import EntityWithProvenance
 
 
 class SourceType(str, Enum):
@@ -36,7 +41,7 @@ class Provenance(BaseModel):
     generation_params: dict[str, Any] = Field(default_factory=dict)
 
     @classmethod
-    def generated(cls, skill_used: str | None = None, **params: Any) -> "Provenance":
+    def generated(cls, skill_used: str | None = None, **params: Any) -> Provenance:
         """Create provenance for a generated entity.
 
         Args:
@@ -53,7 +58,7 @@ class Provenance(BaseModel):
         )
 
     @classmethod
-    def loaded(cls, source_system: str) -> "Provenance":
+    def loaded(cls, source_system: str) -> Provenance:
         """Create provenance for a loaded entity.
 
         Args:
@@ -65,7 +70,7 @@ class Provenance(BaseModel):
         return cls(source_type=SourceType.LOADED, source_system=source_system)
 
     @classmethod
-    def derived(cls, derived_from: list[str]) -> "Provenance":
+    def derived(cls, derived_from: list[str]) -> Provenance:
         """Create provenance for a derived entity.
 
         Args:
@@ -90,7 +95,7 @@ class ProvenanceSummary(BaseModel):
     skills_used: list[str] = Field(default_factory=list)
 
     @classmethod
-    def from_entities(cls, entities: dict[str, list["EntityWithProvenance"]]) -> "ProvenanceSummary":
+    def from_entities(cls, entities: dict[str, list[EntityWithProvenance]]) -> ProvenanceSummary:
         """Build summary from entity collections.
 
         Args:

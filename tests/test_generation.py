@@ -104,19 +104,23 @@ class TestWeightedChoice:
 
     def test_creation(self) -> None:
         """Test creating weighted choice."""
-        wc = WeightedChoice(options=[
-            ("common", 0.7),
-            ("rare", 0.3),
-        ])
+        wc = WeightedChoice(
+            options=[
+                ("common", 0.7),
+                ("rare", 0.3),
+            ]
+        )
 
         assert len(wc.options) == 2
 
     def test_select(self) -> None:
         """Test selection."""
-        wc = WeightedChoice(options=[
-            ("a", 0.5),
-            ("b", 0.5),
-        ])
+        wc = WeightedChoice(
+            options=[
+                ("a", 0.5),
+                ("b", 0.5),
+            ]
+        )
 
         rng = random.Random(42)
         choice = wc.select(rng)
@@ -124,10 +128,12 @@ class TestWeightedChoice:
 
     def test_weighted_distribution(self) -> None:
         """Test that weights affect distribution."""
-        wc = WeightedChoice(options=[
-            ("common", 0.9),
-            ("rare", 0.1),
-        ])
+        wc = WeightedChoice(
+            options=[
+                ("common", 0.9),
+                ("rare", 0.1),
+            ]
+        )
 
         rng = random.Random(42)
         results = [wc.select(rng) for _ in range(1000)]
@@ -144,11 +150,13 @@ class TestWeightedChoice:
 
     def test_select_multiple(self) -> None:
         """Test selecting multiple items."""
-        wc = WeightedChoice(options=[
-            ("a", 1),
-            ("b", 1),
-            ("c", 1),
-        ])
+        wc = WeightedChoice(
+            options=[
+                ("a", 1),
+                ("b", 1),
+                ("c", 1),
+            ]
+        )
 
         rng = random.Random(42)
         choices = wc.select_multiple(5, rng)
@@ -158,11 +166,13 @@ class TestWeightedChoice:
 
     def test_select_multiple_unique(self) -> None:
         """Test selecting unique items."""
-        wc = WeightedChoice(options=[
-            ("a", 1),
-            ("b", 1),
-            ("c", 1),
-        ])
+        wc = WeightedChoice(
+            options=[
+                ("a", 1),
+                ("b", 1),
+                ("c", 1),
+            ]
+        )
 
         rng = random.Random(42)
         choices = wc.select_multiple(3, rng, unique=True)
@@ -505,9 +515,7 @@ class TestCohortConstraints:
 
     def test_custom_constraints(self) -> None:
         """Test custom constraints field."""
-        constraints = CohortConstraints(
-            custom={"include_veterans": True, "region": "midwest"}
-        )
+        constraints = CohortConstraints(custom={"include_veterans": True, "region": "midwest"})
 
         assert constraints.custom["include_veterans"] is True
         assert constraints.custom["region"] == "midwest"
@@ -565,15 +573,14 @@ class TestCohortGenerator:
 
     def test_progress_tracking(self) -> None:
         """Test progress tracking during generation."""
+
         # Create a simple concrete generator
         @dataclass
         class SimpleItem:
             index: int
 
         class SimpleCohortGenerator(CohortGenerator[SimpleItem]):
-            def generate_one(
-                self, index: int, constraints: CohortConstraints
-            ) -> SimpleItem:
+            def generate_one(self, index: int, constraints: CohortConstraints) -> SimpleItem:
                 return SimpleItem(index=index)
 
         gen = SimpleCohortGenerator(seed=42)
@@ -593,9 +600,7 @@ class TestCohortGenerator:
             index: int
 
         class SimpleCohortGenerator(CohortGenerator[SimpleItem]):
-            def generate_one(
-                self, index: int, constraints: CohortConstraints
-            ) -> SimpleItem:
+            def generate_one(self, index: int, constraints: CohortConstraints) -> SimpleItem:
                 return SimpleItem(index=index)
 
         gen = SimpleCohortGenerator(seed=42)
@@ -616,9 +621,7 @@ class TestCohortGenerator:
             index: int
 
         class SimpleCohortGenerator(CohortGenerator[SimpleItem]):
-            def generate_one(
-                self, index: int, constraints: CohortConstraints
-            ) -> SimpleItem:
+            def generate_one(self, index: int, constraints: CohortConstraints) -> SimpleItem:
                 return SimpleItem(index=index)
 
         gen = SimpleCohortGenerator(seed=42)
@@ -642,9 +645,7 @@ class TestCohortGenerator:
             value: int
 
         class SimpleCohortGenerator(CohortGenerator[SimpleItem]):
-            def generate_one(
-                self, index: int, constraints: CohortConstraints
-            ) -> SimpleItem:
+            def generate_one(self, index: int, constraints: CohortConstraints) -> SimpleItem:
                 return SimpleItem(value=self.seed_manager.get_random_int(1, 1000))
 
         gen = SimpleCohortGenerator(seed=42)

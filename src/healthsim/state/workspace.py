@@ -154,8 +154,7 @@ class Workspace(BaseModel):
                     search_lower = search.lower()
                     name_match = search_lower in ws.metadata.name.lower()
                     desc_match = (
-                        ws.metadata.description
-                        and search_lower in ws.metadata.description.lower()
+                        ws.metadata.description and search_lower in ws.metadata.description.lower()
                     )
                     if not (name_match or desc_match):
                         continue

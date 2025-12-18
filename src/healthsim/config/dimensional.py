@@ -3,6 +3,7 @@
 Stores user preferences including default dimensional output target.
 Configuration is stored in ~/.healthsim/config.yaml
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
@@ -36,7 +37,7 @@ class TargetConfig:
         return asdict(self)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "TargetConfig":
+    def from_dict(cls, data: dict[str, Any]) -> TargetConfig:
         """Create from dictionary.
 
         Args:
@@ -124,13 +125,11 @@ class DimensionalConfig:
         """
         return {
             "default_target": self.default_target,
-            "targets": {
-                name: config.to_dict() for name, config in self.targets.items()
-            },
+            "targets": {name: config.to_dict() for name, config in self.targets.items()},
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "DimensionalConfig":
+    def from_dict(cls, data: dict[str, Any]) -> DimensionalConfig:
         """Create from dictionary.
 
         Args:
@@ -171,7 +170,7 @@ class HealthSimPersistentConfig:
         return {"dimensional": self.dimensional.to_dict()}
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "HealthSimPersistentConfig":
+    def from_dict(cls, data: dict[str, Any]) -> HealthSimPersistentConfig:
         """Create from dictionary.
 
         Args:
@@ -317,7 +316,5 @@ class ConfigManager:
             set_as_default: Whether to set as default.
         """
         config = cls.load()
-        config.dimensional.set_target_config(
-            target_name, target_type, settings, set_as_default
-        )
+        config.dimensional.set_target_config(target_name, target_type, settings, set_as_default)
         cls.save(config)

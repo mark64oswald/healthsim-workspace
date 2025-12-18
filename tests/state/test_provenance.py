@@ -1,9 +1,8 @@
 """Tests for provenance tracking."""
 
-import pytest
 from datetime import datetime
 
-from healthsim.state import Provenance, ProvenanceSummary, SourceType, EntityWithProvenance
+from healthsim.state import EntityWithProvenance, Provenance, ProvenanceSummary, SourceType
 
 
 class TestSourceType:

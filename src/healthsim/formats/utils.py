@@ -20,9 +20,7 @@ def format_date(d: date | datetime | None, format_str: str = "%Y-%m-%d") -> str 
     return d.strftime(format_str)
 
 
-def format_datetime(
-    dt: datetime | None, format_str: str = "%Y-%m-%dT%H:%M:%S"
-) -> str | None:
+def format_datetime(dt: datetime | None, format_str: str = "%Y-%m-%dT%H:%M:%S") -> str | None:
     """Format a datetime to ISO-like string."""
     if dt is None:
         return None
@@ -40,7 +38,7 @@ def truncate(text: str, max_length: int, suffix: str = "...") -> str:
     """Truncate text to max length with suffix."""
     if len(text) <= max_length:
         return text
-    return text[:max_length - len(suffix)] + suffix
+    return text[: max_length - len(suffix)] + suffix
 
 
 class JSONExporter:

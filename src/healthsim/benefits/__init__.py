@@ -34,9 +34,9 @@ from healthsim.benefits.accumulators import (
     AccumulatorType,
     BenefitType,
     NetworkTier,
+    create_integrated_accumulators,
     create_medical_accumulators,
     create_pharmacy_accumulators,
-    create_integrated_accumulators,
 )
 
 __all__ = [

@@ -3,6 +3,7 @@
 Writers are registered automatically when their packages are available.
 This allows flexible deployment - install only what you need.
 """
+
 from __future__ import annotations
 
 import logging
@@ -38,10 +39,10 @@ class WriterRegistry:
         create: Create a writer instance.
     """
 
-    _writers: dict[str, type["BaseDimensionalWriter"]] = {}
+    _writers: dict[str, type[BaseDimensionalWriter]] = {}
 
     @classmethod
-    def register(cls, writer_class: type["BaseDimensionalWriter"]) -> None:
+    def register(cls, writer_class: type[BaseDimensionalWriter]) -> None:
         """Register a writer class.
 
         Args:
@@ -58,7 +59,7 @@ class WriterRegistry:
         logger.debug(f"Registered writer: {name}")
 
     @classmethod
-    def get(cls, target_name: str) -> type["BaseDimensionalWriter"]:
+    def get(cls, target_name: str) -> type[BaseDimensionalWriter]:
         """Get a writer class by target name.
 
         Args:
@@ -101,14 +102,10 @@ class WriterRegistry:
         Returns:
             List of available target names.
         """
-        return [
-            name
-            for name, writer_class in cls._writers.items()
-            if writer_class.is_available()
-        ]
+        return [name for name, writer_class in cls._writers.items() if writer_class.is_available()]
 
     @classmethod
-    def create(cls, target_name: str, **kwargs) -> "BaseDimensionalWriter":
+    def create(cls, target_name: str, **kwargs) -> BaseDimensionalWriter:
         """Create a writer instance.
 
         Args:
@@ -122,7 +119,7 @@ class WriterRegistry:
         return writer_class(**kwargs)
 
     @classmethod
-    def create_from_config(cls, config: "TargetConfig") -> "BaseDimensionalWriter":
+    def create_from_config(cls, config: TargetConfig) -> BaseDimensionalWriter:
         """Create a writer from a configuration object.
 
         Args:

@@ -2,8 +2,6 @@
 
 from decimal import Decimal
 
-import pytest
-
 from healthsim.benefits import (
     Accumulator,
     AccumulatorLevel,
@@ -489,9 +487,7 @@ class TestNetworkTierClassification:
             NetworkTier.PREFERRED_PHARMACY,
             NetworkTier.MAIL_ORDER,
         ]:
-            new_set, applied = acc_set.apply_to_deductible(
-                Decimal("100"), network=tier
-            )
+            new_set, applied = acc_set.apply_to_deductible(Decimal("100"), network=tier)
             assert new_set.deductible_individual_in.applied == Decimal("100")
 
     def test_out_of_network_tiers(self):
@@ -508,8 +504,6 @@ class TestNetworkTierClassification:
         for tier in [NetworkTier.OUT_OF_NETWORK, NetworkTier.TIER_3]:
             # Reset for each test
             test_set = acc_set
-            new_set, applied = test_set.apply_to_deductible(
-                Decimal("100"), network=tier
-            )
+            new_set, applied = test_set.apply_to_deductible(Decimal("100"), network=tier)
             assert new_set.deductible_individual_out.applied == Decimal("100")
             assert new_set.deductible_individual_in.applied == Decimal("0")

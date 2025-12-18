@@ -12,7 +12,7 @@ from typing import Any, Generic, TypeVar
 
 from healthsim.generation.reproducibility import SeedManager
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass
@@ -22,6 +22,7 @@ class CohortConstraints:
     Generic constraints that can be extended by product-specific
     constraint classes.
     """
+
     count: int = 100
 
     # Age constraints
@@ -48,6 +49,7 @@ class CohortConstraints:
 @dataclass
 class CohortProgress:
     """Track progress of cohort generation."""
+
     total: int = 0
     completed: int = 0
     failed: int = 0
@@ -107,7 +109,7 @@ class CohortGenerator(Generic[T]):
     def generate(
         self,
         constraints: CohortConstraints,
-        progress_callback: Callable[[CohortProgress], None] | None = None
+        progress_callback: Callable[[CohortProgress], None] | None = None,
     ) -> list[T]:
         """Generate a cohort of entities.
 
@@ -135,10 +137,7 @@ class CohortGenerator(Generic[T]):
 
         return results
 
-    def generate_iter(
-        self,
-        constraints: CohortConstraints
-    ) -> Iterator[T]:
+    def generate_iter(self, constraints: CohortConstraints) -> Iterator[T]:
         """Generate entities as an iterator (memory efficient).
 
         Args:

@@ -3,6 +3,7 @@
 All writers implement this interface, enabling pluggable target support.
 Writers only need to be installed if they're used.
 """
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -47,7 +48,7 @@ class BaseDimensionalWriter(ABC):
         self._config = kwargs
 
     @classmethod
-    def from_config(cls, config: "TargetConfig") -> "BaseDimensionalWriter":
+    def from_config(cls, config: TargetConfig) -> BaseDimensionalWriter:
         """Create writer from configuration object.
 
         Args:
@@ -82,7 +83,7 @@ class BaseDimensionalWriter(ABC):
         """Close the database connection."""
         pass
 
-    def __enter__(self) -> "BaseDimensionalWriter":
+    def __enter__(self) -> BaseDimensionalWriter:
         """Context manager entry."""
         self.connect()
         return self

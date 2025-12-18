@@ -3,6 +3,7 @@
 Provides a writer class for persisting dimensional model tables to DuckDB,
 which is ideal for local analytics workloads and fast SQL queries.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -81,7 +82,7 @@ class DuckDBDimensionalWriter(BaseDimensionalWriter):
             Path(self.db_path).parent.mkdir(parents=True, exist_ok=True)
 
     @classmethod
-    def from_config(cls, config: "TargetConfig") -> "DuckDBDimensionalWriter":
+    def from_config(cls, config: TargetConfig) -> DuckDBDimensionalWriter:
         """Create from configuration object.
 
         Args:

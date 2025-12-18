@@ -43,6 +43,7 @@ For product-specific transformers, see:
     - membersim.dimensional.MemberSimDimensionalTransformer
     - rxmembersim.dimensional.RxMemberSimDimensionalTransformer
 """
+
 from __future__ import annotations
 
 from healthsim.dimensional.generators.dim_date import generate_dim_date
