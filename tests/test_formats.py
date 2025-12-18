@@ -333,6 +333,7 @@ class TestTransformerBase:
 
     def test_transformer_is_abstract(self) -> None:
         """Test that Transformer cannot be instantiated directly."""
+
         # Transformer is abstract, so we test via concrete implementation
         class ConcreteTransformer(Transformer[str, str]):
             @property

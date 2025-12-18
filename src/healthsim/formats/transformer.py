@@ -10,8 +10,8 @@ import json
 from abc import ABC, abstractmethod
 from typing import Any, Generic, TypeVar
 
-TInput = TypeVar('TInput')
-TOutput = TypeVar('TOutput')
+TInput = TypeVar("TInput")
+TOutput = TypeVar("TOutput")
 
 
 class Transformer(ABC, Generic[TInput, TOutput]):

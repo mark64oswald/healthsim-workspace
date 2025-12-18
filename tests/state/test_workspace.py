@@ -1,16 +1,15 @@
 """Tests for Workspace persistence."""
 
-import pytest
 from datetime import datetime
-from pathlib import Path
-from uuid import uuid4
+
+import pytest
 
 from healthsim.state import (
-    Workspace,
-    WorkspaceMetadata,
     EntityWithProvenance,
     Provenance,
     ProvenanceSummary,
+    Workspace,
+    WorkspaceMetadata,
 )
 
 
@@ -221,11 +220,13 @@ class TestWorkspacePersistence:
     def test_list_all(self, temp_workspace_dir, sample_entities):
         """Test listing all workspaces."""
         # Create multiple workspaces
-        for i, (name, product) in enumerate([
-            ("Patient Cohort 1", "patientsim"),
-            ("Patient Cohort 2", "patientsim"),
-            ("Member Test", "membersim"),
-        ]):
+        for i, (name, product) in enumerate(
+            [
+                ("Patient Cohort 1", "patientsim"),
+                ("Patient Cohort 2", "patientsim"),
+                ("Member Test", "membersim"),
+            ]
+        ):
             workspace = Workspace(
                 metadata=WorkspaceMetadata(
                     name=name,

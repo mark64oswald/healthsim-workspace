@@ -6,7 +6,8 @@ are available.
 
 Available Writers:
     - DuckDBDimensionalWriter: Write to local DuckDB databases (always available)
-    - DatabricksDimensionalWriter: Write to Databricks Unity Catalog (requires databricks-sql-connector)
+    - DatabricksDimensionalWriter: Write to Databricks Unity Catalog
+      (requires databricks-sql-connector)
 
 Usage:
     >>> from healthsim.dimensional.writers import WriterRegistry, DuckDBDimensionalWriter
@@ -22,6 +23,7 @@ Usage:
     >>> WriterRegistry.list_available()
     ['duckdb', 'databricks']
 """
+
 from __future__ import annotations
 
 from healthsim.dimensional.writers.base import BaseDimensionalWriter

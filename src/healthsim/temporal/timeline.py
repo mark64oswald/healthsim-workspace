@@ -16,6 +16,7 @@ from uuid import uuid4
 
 class EventStatus(str, Enum):
     """Status of a timeline event."""
+
     PENDING = "pending"
     EXECUTED = "executed"
     SKIPPED = "skipped"
@@ -28,6 +29,7 @@ class EventDelay:
 
     Supports fixed delays, ranges, and relative timing.
     """
+
     min_days: int = 0
     max_days: int = 0
     min_hours: int = 0
@@ -36,6 +38,7 @@ class EventDelay:
     def calculate(self, rng: Any = None) -> timedelta:
         """Calculate actual delay using optional random generator."""
         import random
+
         r = rng or random
         if self.max_days > self.min_days:
             days = r.randint(self.min_days, self.max_days)
@@ -48,7 +51,7 @@ class EventDelay:
         return timedelta(days=days, hours=hours)
 
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 @dataclass
@@ -57,6 +60,7 @@ class TimelineEvent(Generic[T]):
 
     Generic type T represents the event payload/result type.
     """
+
     event_id: str = field(default_factory=lambda: str(uuid4())[:8])
     event_type: str = ""
     name: str = ""
@@ -123,6 +127,7 @@ class Timeline(Generic[T]):
     Provides methods to add, schedule, and iterate through events
     while maintaining temporal consistency.
     """
+
     timeline_id: str = field(default_factory=lambda: str(uuid4())[:8])
     name: str = ""
     start_date: date | datetime = field(default_factory=date.today)
@@ -144,6 +149,7 @@ class Timeline(Generic[T]):
 
     def _sort_events(self) -> None:
         """Sort events by timestamp/scheduled_date."""
+
         def get_sort_key(e: TimelineEvent[T]) -> datetime:
             ts = e.timestamp or e.scheduled_date
             if ts is None:
@@ -151,6 +157,7 @@ class Timeline(Generic[T]):
             if isinstance(ts, datetime):
                 return ts
             return datetime.combine(ts, datetime.min.time())
+
         self.events.sort(key=get_sort_key)
 
     def create_event(
@@ -159,7 +166,7 @@ class Timeline(Generic[T]):
         name: str = "",
         delay: EventDelay | None = None,
         depends_on: str | None = None,
-        **payload: Any
+        **payload: Any,
     ) -> TimelineEvent[T]:
         """Create and add a new event."""
         event: TimelineEvent[T] = TimelineEvent(
@@ -167,13 +174,14 @@ class Timeline(Generic[T]):
             name=name or event_type,
             delay_from_previous=delay or EventDelay(),
             depends_on=depends_on,
-            payload=payload
+            payload=payload,
         )
         return self.add_event(event)
 
     def schedule_events(self, rng: Any = None) -> None:
         """Calculate scheduled dates for all events based on delays and dependencies."""
         import random
+
         r = rng or random
 
         scheduled: dict[str, date | datetime] = {}
@@ -249,7 +257,8 @@ class Timeline(Generic[T]):
         for e in self.events:
             ts = e.timestamp or (
                 datetime.combine(e.scheduled_date, datetime.min.time())
-                if e.scheduled_date else None
+                if e.scheduled_date
+                else None
             )
             if ts and start <= ts <= end:
                 result.append(e)
@@ -278,10 +287,7 @@ class Timeline(Generic[T]):
     @property
     def is_complete(self) -> bool:
         """Check if all events are executed or skipped."""
-        return all(
-            e.status in (EventStatus.EXECUTED, EventStatus.SKIPPED)
-            for e in self.events
-        )
+        return all(e.status in (EventStatus.EXECUTED, EventStatus.SKIPPED) for e in self.events)
 
     def __len__(self) -> int:
         return len(self.events)

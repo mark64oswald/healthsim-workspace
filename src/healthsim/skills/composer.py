@@ -174,9 +174,7 @@ class SkillComposer:
 
         for skill_name in dep_graph:
             if skill_name not in visited and has_cycle(skill_name):
-                raise SkillCompositionError(
-                    f"Circular dependency detected involving: {skill_name}"
-                )
+                raise SkillCompositionError(f"Circular dependency detected involving: {skill_name}")
 
     def _merge_skills(self, skills: list[Skill]) -> Skill:
         """Merge multiple skills into one.

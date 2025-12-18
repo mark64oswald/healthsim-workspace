@@ -9,6 +9,7 @@ Authentication via environment variables (recommended):
 
 Or pass explicitly to constructor.
 """
+
 from __future__ import annotations
 
 import os
@@ -109,9 +110,7 @@ class DatabricksDimensionalWriter(BaseDimensionalWriter):
             missing.append("access_token (or DATABRICKS_TOKEN)")
 
         if missing:
-            raise ValueError(
-                f"Missing required Databricks configuration: {', '.join(missing)}"
-            )
+            raise ValueError(f"Missing required Databricks configuration: {', '.join(missing)}")
 
         # Normalize host URL
         self.host = self.host.rstrip("/")
@@ -119,7 +118,7 @@ class DatabricksDimensionalWriter(BaseDimensionalWriter):
             self.host = f"https://{self.host}"
 
     @classmethod
-    def from_config(cls, config: "TargetConfig") -> "DatabricksDimensionalWriter":
+    def from_config(cls, config: TargetConfig) -> DatabricksDimensionalWriter:
         """Create from configuration object.
 
         Args:
@@ -218,7 +217,7 @@ class DatabricksDimensionalWriter(BaseDimensionalWriter):
                     )
                 self._insert_data(cursor, full_name, df)
             else:
-                raise ValueError(f"if_exists must be 'replace' or 'append'")
+                raise ValueError("if_exists must be 'replace' or 'append'")
 
         return len(df)
 
@@ -269,9 +268,7 @@ class DatabricksDimensionalWriter(BaseDimensionalWriter):
         placeholders = ", ".join(["%s"] * len(df.columns))
         sql = f"INSERT INTO {full_name} ({columns}) VALUES ({placeholders})"
 
-        rows = [
-            tuple(None if pd.isna(v) else v for v in row) for row in df.values
-        ]
+        rows = [tuple(None if pd.isna(v) else v for v in row) for row in df.values]
 
         for i in range(0, len(rows), batch_size):
             cursor.executemany(sql, rows[i : i + batch_size])
@@ -345,9 +342,7 @@ class DatabricksDimensionalWriter(BaseDimensionalWriter):
             cursor.execute(sql)
             results = cursor.fetchall()
             if not results:
-                columns = (
-                    [d[0] for d in cursor.description] if cursor.description else []
-                )
+                columns = [d[0] for d in cursor.description] if cursor.description else []
                 return pd.DataFrame(columns=columns)
             columns = [d[0] for d in cursor.description]
             return pd.DataFrame([list(r) for r in results], columns=columns)

@@ -35,6 +35,7 @@ from .dimensional import (
     generate_dim_date,
 )
 from .state import (
+    WORKSPACES_DIR,
     EntityWithProvenance,
     Provenance,
     ProvenanceSummary,
@@ -43,7 +44,6 @@ from .state import (
     SourceType,
     Workspace,
     WorkspaceMetadata,
-    WORKSPACES_DIR,
 )
 
 __all__ = [

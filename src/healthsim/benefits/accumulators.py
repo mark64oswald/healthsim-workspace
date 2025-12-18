@@ -176,9 +176,7 @@ class Accumulator(BaseModel):
         Remaining: $350
     """
 
-    accumulator_type: AccumulatorType = Field(
-        ..., description="Type of accumulator"
-    )
+    accumulator_type: AccumulatorType = Field(..., description="Type of accumulator")
     level: AccumulatorLevel = Field(
         default=AccumulatorLevel.INDIVIDUAL,
         description="Aggregation level",
@@ -336,9 +334,7 @@ class AccumulatorSet(BaseModel):
     oop_individual_out: Accumulator | None = Field(
         default=None, description="Individual out-of-network OOP max"
     )
-    oop_family_in: Accumulator | None = Field(
-        default=None, description="Family in-network OOP max"
-    )
+    oop_family_in: Accumulator | None = Field(default=None, description="Family in-network OOP max")
     oop_family_out: Accumulator | None = Field(
         default=None, description="Family out-of-network OOP max"
     )
@@ -347,9 +343,7 @@ class AccumulatorSet(BaseModel):
     rx_deductible: Accumulator | None = Field(
         default=None, description="Pharmacy deductible (if separate)"
     )
-    rx_oop: Accumulator | None = Field(
-        default=None, description="Pharmacy OOP max (if separate)"
-    )
+    rx_oop: Accumulator | None = Field(default=None, description="Pharmacy OOP max (if separate)")
     specialty_oop: Accumulator | None = Field(
         default=None, description="Specialty drug OOP (if separate limit)"
     )

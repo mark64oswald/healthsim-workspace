@@ -277,12 +277,14 @@ class AgeDistribution:
     @classmethod
     def pediatric(cls) -> "AgeDistribution":
         """Create pediatric age distribution (0-17)."""
-        return cls(bands=[
-            (0, 2, 0.15),
-            (3, 5, 0.15),
-            (6, 12, 0.35),
-            (13, 17, 0.35),
-        ])
+        return cls(
+            bands=[
+                (0, 2, 0.15),
+                (3, 5, 0.15),
+                (6, 12, 0.35),
+                (13, 17, 0.35),
+            ]
+        )
 
     @classmethod
     def adult(cls) -> "AgeDistribution":
@@ -292,10 +294,12 @@ class AgeDistribution:
     @classmethod
     def senior(cls) -> "AgeDistribution":
         """Create senior age distribution (65+)."""
-        return cls(bands=[
-            (65, 70, 0.30),
-            (71, 75, 0.25),
-            (76, 80, 0.20),
-            (81, 85, 0.15),
-            (86, 95, 0.10),
-        ])
+        return cls(
+            bands=[
+                (65, 70, 0.30),
+                (71, 75, 0.25),
+                (76, 80, 0.20),
+                (81, 85, 0.15),
+                (86, 95, 0.10),
+            ]
+        )

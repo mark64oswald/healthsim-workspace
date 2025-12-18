@@ -125,9 +125,7 @@ class BaseDimensionalTransformer(ABC):
             return None
 
     @staticmethod
-    def calculate_age(
-        dob: date | str | None, as_of_date: date | str | None = None
-    ) -> int | None:
+    def calculate_age(dob: date | str | None, as_of_date: date | str | None = None) -> int | None:
         """Calculate age in complete years.
 
         Calculates age based on the number of complete years between
