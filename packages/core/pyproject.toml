@@ -53,9 +53,9 @@ all-writers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/mark64oswald/healthsim-common"
-Documentation = "https://github.com/mark64oswald/healthsim-common#readme"
-Repository = "https://github.com/mark64oswald/healthsim-common"
+Homepage = "https://github.com/mark64oswald/healthsim-workspace"
+Documentation = "https://github.com/mark64oswald/healthsim-workspace#readme"
+Repository = "https://github.com/mark64oswald/healthsim-workspace"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/healthsim"]
