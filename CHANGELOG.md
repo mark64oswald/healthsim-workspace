@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[TrialSim]** Comprehensive development plan (docs/TRIALSIM-DEVELOPMENT-PLAN.md)
+  - 6-phase development roadmap covering 16 weeks
+  - Architecture for skills, therapeutic areas, CDISC compliance
+  - Detailed SDTM/ADaM domain coverage planning
+  - Priority therapeutic areas: Oncology, CNS, CV, Immunology, Metabolic
+  - Reference data requirements (MedDRA, WHO Drug, country codes)
+  - Integration patterns with PatientSim and NetworkSim
 - **[Workspace]** Consolidated to single unified repository (healthsim-workspace)
 - **[Workspace]** Product Python packages merged into packages/ folder
   - packages/patientsim/ - PatientSim MCP server and utilities
