@@ -109,12 +109,45 @@ Activate TrialSim when user mentions:
 |--------|-------|----------|
 | SDTM | [../../formats/cdisc-sdtm.md](../../formats/cdisc-sdtm.md) | Regulatory submission |
 | ADaM | [../../formats/cdisc-adam.md](../../formats/cdisc-adam.md) | Statistical analysis |
+| Dimensional | [../../formats/dimensional-analytics.md](../../formats/dimensional-analytics.md) | BI dashboards, analytics |
 | JSON | Default | API integration |
 | CSV | [../../formats/csv.md](../../formats/csv.md) | Spreadsheet analysis |
 
+## Data Models & References
+
+| Resource | Location | Description |
+|----------|----------|-------------|
+| Canonical Models | [../../references/data-models.md#trialsim-models](../../references/data-models.md#trialsim-models) | 15 entity schemas (Subject, Study, Site, AE, etc.) |
+| Dimensional Schema | [../../formats/dimensional-analytics.md#trialsim-clinical-trial-analytics](../../formats/dimensional-analytics.md#trialsim-clinical-trial-analytics) | Star schema for BI (7 dims, 6 facts) |
+| Code Systems | [../../references/code-systems.md](../../references/code-systems.md) | MedDRA, LOINC, ATC |
+
 ## Core Entities
 
-### Study
+TrialSim uses 15 canonical entity schemas. See [Data Models Reference](../../references/data-models.md#trialsim-models) for complete JSON schemas.
+
+### Entity Overview
+
+| Entity | SDTM Domain | Description |
+|--------|-------------|-------------|
+| Subject | DM | Trial participant (extends Person) |
+| Study | TS | Protocol definition |
+| Site | - | Investigational site |
+| TreatmentArm | TA | Study arm definition |
+| VisitSchedule | TV | Protocol visits |
+| ActualVisit | SV | Subject visit occurrence |
+| Randomization | DM/SE | Subject randomization |
+| AdverseEvent | AE | Safety events with MedDRA |
+| Exposure | EX | Study drug dosing |
+| ConcomitantMed | CM | Prior/concomitant meds with ATC |
+| TrialLab | LB | Lab results with LOINC |
+| EfficacyAssessment | RS/TR | Response assessments |
+| MedicalHistory | MH | Pre-existing conditions |
+| DispositionEvent | DS | Subject disposition |
+| ProtocolDeviation | DV | Protocol deviations |
+
+### Key Entity Examples
+
+**Study:**
 ```json
 {
   "study_id": "ABC-123-001",
@@ -123,25 +156,21 @@ Activate TrialSim when user mentions:
   "therapeutic_area": "Oncology",
   "indication": "Non-Small Cell Lung Cancer",
   "sponsor": "Example Pharma Inc.",
-  "status": "Ongoing",
-  "sites": [],
-  "arms": []
+  "status": "Ongoing"
 }
 ```
 
-### Subject
+**Subject (with cross-product linking):**
 ```json
 {
-  "subject_id": "001-0001",
+  "subject_id": "0001",
+  "usubjid": "ABC-123-001-001-0001",
   "site_id": "001",
+  "patient_ref": "MRN-12345",
   "screening_date": "2024-01-15",
   "randomization_date": "2024-01-22",
-  "arm": "Treatment",
-  "status": "Active",
-  "demographics": {},
-  "visits": [],
-  "adverse_events": [],
-  "efficacy_assessments": []
+  "treatment_arm": "TRT",
+  "status": "Active"
 }
 ```
 
@@ -185,6 +214,31 @@ Trial subjects are patients with additional trial-specific data:
 - [PatientSim](../patientsim/SKILL.md) - Clinical patient data
 - [MemberSim](../membersim/SKILL.md) - Claims integration
 - [Code Systems](../../references/code-systems.md) - Standard terminologies
+
+## Output Formats
+
+TrialSim supports multiple output formats:
+
+| Format | Use Case | Skill Reference |
+|--------|----------|-----------------|
+| **Canonical JSON** | Internal processing, API integration | [data-models.md](../../references/data-models.md#trialsim-models) |
+| **CDISC SDTM** | Regulatory submission, FDA/EMA | [cdisc-sdtm.md](../../formats/cdisc-sdtm.md) |
+| **CDISC ADaM** | Analysis datasets, statistical programming | [cdisc-adam.md](../../formats/cdisc-adam.md) |
+| **Dimensional (Star Schema)** | Analytics, BI dashboards, DuckDB/Databricks | [dimensional-analytics.md](../../formats/dimensional-analytics.md#trialsim-clinical-trial-analytics) |
+
+### Dimensional Analytics
+
+For trial operations analytics and BI dashboards, request dimensional output:
+
+```
+Generate Phase III trial with 100 subjects as star schema for DuckDB
+```
+
+This produces:
+- **Dimensions**: dim_study, dim_site, dim_subject, dim_treatment_arm, dim_visit_schedule, dim_meddra, dim_lab_test
+- **Facts**: fact_enrollment, fact_visit, fact_adverse_event, fact_exposure, fact_efficacy, fact_lab_result
+
+See [dimensional-analytics.md](../../formats/dimensional-analytics.md#trialsim-clinical-trial-analytics) for full DDL and example queries.
 
 ## Usage Examples
 

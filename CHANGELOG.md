@@ -9,6 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[TrialSim]** Complete Canonical Data Models - 15 Entities
+  - `references/data-models.md` - Full TrialSim entity schemas added
+    - Subject (extends Person with USUBJID, patient_ref cross-product link)
+    - Study, Site, TreatmentArm, VisitSchedule, ActualVisit, Randomization
+    - AdverseEvent with full MedDRA hierarchy (SOC/HLGT/HLT/PT/LLT)
+    - Exposure with dose modification tracking
+    - ConcomitantMed with full ATC hierarchy
+    - TrialLab with LOINC and CTCAE toxicity grading
+    - EfficacyAssessment (RECIST, irRECIST, RANO, NYHA, ADAS-Cog, EDSS)
+    - MedicalHistory, DispositionEvent, ProtocolDeviation
+  - Entity relationship diagram and cross-product linking patterns
+  - USUBJID construction rules (STUDYID-SITEID-SUBJID)
+
+- **[TrialSim]** Dimensional Analytics Star Schema - 7 Dimensions, 6 Facts
+  - `formats/dimensional-analytics.md` - Full TrialSim star schema added
+    - Dimensions: dim_study, dim_site, dim_subject, dim_treatment_arm, 
+      dim_visit_schedule, dim_meddra, dim_lab_test
+    - Facts: fact_enrollment, fact_visit, fact_adverse_event, fact_exposure,
+      fact_efficacy, fact_lab_result
+    - Complete SQL DDL for DuckDB and Databricks
+    - Six analytics query examples (enrollment velocity, AE rates, ORR, 
+      visit compliance, dose intensity, lab abnormalities)
+    - Cross-product analytics examples (baseline vs response, prior therapy impact)
+    - Star schema diagram
+
+- **[Hello-HealthSim]** TrialSim Cross-Product Examples
+  - `hello-healthsim/examples/cross-domain-examples.md` - 3 new examples
+    - Trial Subject with EMR Linkage (TrialSim + PatientSim)
+    - Trial Site with Provider Linkage (TrialSim + NetworkSim)
+    - Cross-Product Dimensional Analytics queries
+  - `hello-healthsim/examples/trialsim-examples.md` - Dimensional analytics section
+    - DuckDB star schema examples
+    - Databricks enterprise loading examples
+    - Safety surveillance dashboard setup
+    - Complete trial analytics package workflow
+
+- **[Skills]** TrialSim SKILL.md Output Formats Section
+  - Added Output Formats table (Canonical JSON, SDTM, ADaM, Dimensional)
+  - Dimensional analytics quick reference with trigger phrases
+  - Links to full format documentation
+
 - **[Docs]** TrialSim Documentation Suite
   - `TRIALSIM-PROMPT-GUIDE.md` - Comprehensive usage guide with example prompts
     - Prompt patterns by use case (trial phases, domains, therapeutic areas)
