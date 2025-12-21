@@ -9,6 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[Docs]** CLAUDE-CODE-CONTEXT.md for Claude Code session context
+  - Essential patterns and rules for implementation sessions
+  - Quality patterns (frontmatter, validation tables, related skills)
+  - Skill file template with complete structure
+  - Cross-product integration overview
+  - Common pitfalls and verification checklist
+  - Ensures consistency when using Claude Code without Project Files
+
 - **[Skills Quality]** YAML frontmatter added to all scenario skills
   - 10 files updated: state-management.md, value-based-care.md, all RxMemberSim skills
   - Frontmatter includes `name` and `description` with trigger phrases
