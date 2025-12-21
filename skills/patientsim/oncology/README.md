@@ -30,6 +30,13 @@ Generate a 58-year-old with Stage III colon cancer, MSI-high status
 
 ## Cross-Product Integration
 
+### TrialSim (Clinical Trials)
+- [TrialSim Oncology](../../trialsim/therapeutic-areas/oncology.md) - Trial endpoints, RECIST 1.1, survival analysis
+- [Phase 3 Pivotal](../../trialsim/phase3-pivotal.md) - Pivotal trial scenarios
+- [Recruitment & Enrollment](../../trialsim/recruitment-enrollment.md) - Screening funnels, I/E criteria
+
+> **Integration Pattern:** Use PatientSim oncology skills for clinical care journeys. When a patient enrolls in a clinical trial, apply TrialSim skills for trial-specific data (RECIST assessments, randomization, SDTM format).
+
 ### MemberSim (Claims)
 - Facility claims for infusion center treatments
 - Professional claims for oncology office visits

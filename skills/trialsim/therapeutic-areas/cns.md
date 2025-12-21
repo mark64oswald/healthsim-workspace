@@ -156,8 +156,14 @@ This is a **therapeutic area skill** for generating CNS/neurology trial data. Ap
 
 ## Related Skills
 
+**TrialSim:**
 - [Clinical Trials Domain](../clinical-trials-domain.md) - Core trial concepts
 - [Cardiovascular](cardiovascular.md) - Stroke endpoints
+
+**Cross-Product (PatientSim):**
+- [Behavioral Health](../../patientsim/behavioral-health.md) - Psychiatric conditions (depression, anxiety, bipolar), PHQ-9/GAD-7 assessments
+
+> **Integration Pattern:** TrialSim CNS focuses on neurological diseases (Alzheimer's, Parkinson's, MS) with cognitive/motor endpoints. PatientSim behavioral-health covers psychiatric conditions with mood/anxiety assessments. For CNS trials involving psychiatric endpoints (e.g., depression scales), reference both skills.
 
 ---
 

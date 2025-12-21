@@ -338,6 +338,12 @@ Apply this skill when the user's request involves:
 - [diabetes-management.md](diabetes-management.md) - Common comorbidity
 - [chronic-kidney-disease.md](chronic-kidney-disease.md) - Cardiorenal syndrome
 
+### Cross-Product: TrialSim
+
+- [../trialsim/therapeutic-areas/cardiovascular.md](../trialsim/therapeutic-areas/cardiovascular.md) - CV outcomes trials, MACE endpoints, adjudicated events
+
+> **Integration Pattern:** Use this PatientSim skill for clinical HF care journeys. When generating CV outcomes trial data, apply TrialSim cardiovascular skill for trial-specific endpoints and SDTM mapping.
+
 ### Cross-Product: MemberSim
 
 - [../membersim/professional-claims.md](../membersim/professional-claims.md) - Cardiology office visit claims

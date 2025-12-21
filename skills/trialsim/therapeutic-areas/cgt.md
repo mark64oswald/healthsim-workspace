@@ -155,8 +155,14 @@ Long-Term Follow-Up (15 years)
 
 ## Related Skills
 
+**TrialSim:**
 - [Clinical Trials Domain](../clinical-trials-domain.md) - Core trial concepts
-- [Oncology](oncology.md) - CAR-T for hematologic malignancies
+- [Oncology](oncology.md) - CAR-T for hematologic malignancies, solid tumor patterns
+
+**Cross-Product (PatientSim):**
+- [PatientSim Oncology](../../patientsim/oncology/) - Cancer clinical care pathways (CAR-T often follows failed chemotherapy)
+
+> **Integration Pattern:** CGT trials have unique patterns (single-dose, long-term follow-up, CRS/ICANS monitoring). Use PatientSim oncology for the pre-CGT clinical journey, then apply this skill for CGT-specific trial endpoints.
 
 ---
 

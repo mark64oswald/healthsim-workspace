@@ -240,9 +240,22 @@ This is a **therapeutic area skill** for generating oncology trial data. Apply t
 
 ## Related Skills
 
+**TrialSim:**
 - [Clinical Trials Domain](../clinical-trials-domain.md) - Core trial concepts
 - [Phase 3 Pivotal](../phase3-pivotal.md) - Pivotal trial scenarios
 - [CGT](cgt.md) - CAR-T and gene therapy oncology
+
+**Shared Domain Knowledge:**
+- [Oncology Domain](../../../references/oncology-domain.md) - Foundational oncology concepts, staging, treatment modalities
+- [Oncology Reference Data](../../../references/oncology/) - ICD-10 codes, medications, regimens, tumor markers
+
+**Cross-Product (PatientSim):**
+- [PatientSim Oncology](../../patientsim/oncology/) - Clinical care pathways, treatment decision trees
+- [Lung Cancer](../../patientsim/oncology/lung-cancer.md) - NSCLC/SCLC clinical journeys, biomarker-driven therapy
+- [Breast Cancer](../../patientsim/oncology/breast-cancer.md) - Molecular subtypes, hormonal/targeted therapy
+- [Colorectal Cancer](../../patientsim/oncology/colorectal-cancer.md) - MSI status, hereditary syndromes
+
+> **Integration Pattern:** Use PatientSim oncology skills for detailed clinical care patterns (diagnosis, treatment selection, toxicity management). Use this TrialSim skill for trial-specific endpoints (RECIST, survival analysis, SDTM mapping).
 
 ---
 

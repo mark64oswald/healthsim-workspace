@@ -148,8 +148,14 @@ This is a **therapeutic area skill** for generating CV trial data. Apply this wh
 
 ## Related Skills
 
+**TrialSim:**
 - [Clinical Trials Domain](../clinical-trials-domain.md) - Core trial concepts
 - [CNS](cns.md) - Stroke and neurological endpoints
+
+**Cross-Product (PatientSim):**
+- [Heart Failure](../../patientsim/heart-failure.md) - HF clinical care pathways, GDMT optimization, hospitalization patterns
+
+> **Integration Pattern:** Use PatientSim heart-failure.md for clinical care journeys and treatment optimization. Use this TrialSim skill for CV outcomes trials (MACE endpoints, adjudicated events, SDTM mapping).
 
 ---
 

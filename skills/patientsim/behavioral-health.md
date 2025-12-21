@@ -342,3 +342,9 @@ When generating behavioral health patients:
 - [../membersim/behavioral-health.md](../membersim/behavioral-health.md) - Claims perspective for behavioral health
 - [diabetes-management.md](diabetes-management.md) - For metabolic monitoring with antipsychotics
 - [../../formats/hl7v2-adt.md](../../formats/hl7v2-adt.md) - Psychiatric admission messages
+
+### Cross-Product: TrialSim
+
+- [../trialsim/therapeutic-areas/cns.md](../trialsim/therapeutic-areas/cns.md) - CNS/neurology clinical trials, cognitive assessments
+
+> **Integration Pattern:** This PatientSim skill covers psychiatric clinical care. For CNS drug trials involving psychiatric endpoints (e.g., depression scales in dementia trials), reference TrialSim CNS skill for trial-specific patterns.

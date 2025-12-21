@@ -320,7 +320,30 @@ description: "{What this skill does}. Use when user requests: {trigger 1}, {trig
 4. Update VS Code workspace
 5. Add hello-healthsim quickstart
 
-### 8.3 Checklist
+### 8.3 Cross-Product Integration
+
+When developing skills that span multiple products (e.g., therapeutic areas that exist in both PatientSim and TrialSim), follow these patterns:
+
+**Shared Domain Knowledge:**
+- Place foundational concepts in `references/` (e.g., `oncology-domain.md`)
+- Reference data (codes, medications) goes in `references/{domain}/`
+
+**Cross-Referencing:**
+- Add explicit links in "Related Skills" sections
+- Include integration pattern notes explaining when to use each product's skill
+- Example: PatientSim oncology → clinical care journeys; TrialSim oncology → trial endpoints
+
+**Current Cross-Product Mappings:**
+
+| Domain | PatientSim | TrialSim | Shared Reference |
+|--------|------------|----------|------------------|
+| Oncology | `oncology/*.md` | `therapeutic-areas/oncology.md` | `references/oncology-domain.md` |
+| Cardiovascular | `heart-failure.md` | `therapeutic-areas/cardiovascular.md` | - |
+| CNS/Behavioral | `behavioral-health.md` | `therapeutic-areas/cns.md` | - |
+
+**Best Practice:** When creating a new scenario skill, check if related skills exist in other products. Add bidirectional cross-references.
+
+### 8.4 Checklist
 
 - [ ] YAML frontmatter with name and description
 - [ ] Trigger phrases included
