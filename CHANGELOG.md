@@ -28,6 +28,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - 7 structural gaps identified with severity ratings
   - Implementation roadmap with 4 phases
   - Status tracking for gap resolution
+- **[Docs]** Architecture Guide expanded (Section 8.3)
+  - Comprehensive cross-product mapping table (all 4 products)
+  - Integration pattern examples with timing
+  - Reference to identity correlation in data-models.md
+- **[Docs]** Product SKILL.md files enhanced with cross-product sections
+  - PatientSim SKILL.md: Added MemberSim, RxMemberSim, TrialSim integration tables
+  - MemberSim SKILL.md: Expanded beyond oncology to all scenarios
+  - RxMemberSim SKILL.md: Added full cross-product integration section
+  - TrialSim SKILL.md: Enhanced therapeutic area mapping
+- **[Docs]** README.md cross-product integration section
+  - Visual diagram showing product relationships
+  - Example patient journey table (HF admission flow)
+  - Links to architecture guide and gap analysis
 - **[TrialSim]** Comprehensive development plan (docs/TRIALSIM-DEVELOPMENT-PLAN.md)
   - 6-phase development roadmap covering 16 weeks
   - Architecture for skills, therapeutic areas, CDISC compliance
