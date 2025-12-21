@@ -580,6 +580,218 @@ Generate a breast cancer patient with clinical data, facility infusion claim, an
 
 ---
 
+## Example 5: Clinical Trial Subject with EMR Linkage (TrialSim + PatientSim)
+
+### Prompt
+```
+Generate a clinical trial subject enrolled in a Phase III oncology trial with linked PatientSim medical history for baseline characteristics analysis
+```
+
+### Expected Output
+```json
+{
+  "trial_subject": {
+    "usubjid": "ONCO-2025-001-005-0042",
+    "subject_id": "0042",
+    "site_id": "005",
+    "study_id": "ONCO-2025-001",
+    "patient_ref": "MRN00000042",
+    "screening_date": "2025-01-08",
+    "informed_consent_date": "2025-01-08",
+    "randomization_date": "2025-01-15",
+    "treatment_arm": "TRT",
+    "status": "Active",
+    "demographics": {
+      "age": 62,
+      "sex": "F",
+      "race": "White",
+      "ethnicity": "Not Hispanic or Latino"
+    }
+  },
+  "linked_patient": {
+    "mrn": "MRN00000042",
+    "name": { "given_name": "Margaret", "family_name": "Thompson" },
+    "birth_date": "1962-09-14",
+    "diagnoses": [
+      { 
+        "code": "C34.90", 
+        "description": "Malignant neoplasm of unspecified part of bronchus or lung",
+        "onset_date": "2024-11-15"
+      },
+      { "code": "J44.9", "description": "COPD, unspecified" },
+      { "code": "I10", "description": "Essential hypertension" }
+    ],
+    "baseline_tumor_size_mm": 45,
+    "egfr_status": "Wild-type",
+    "pdl1_expression": "50%",
+    "prior_therapies": []
+  },
+  "trial_medical_history": {
+    "domain": "MH",
+    "records": [
+      {
+        "USUBJID": "ONCO-2025-001-005-0042",
+        "MHSEQ": 1,
+        "MHTERM": "Chronic obstructive pulmonary disease",
+        "MHDECOD": "Chronic obstructive pulmonary disease",
+        "MHBODSYS": "Respiratory, thoracic and mediastinal disorders",
+        "MHCAT": "GENERAL MEDICAL HISTORY",
+        "MHSTDTC": "2019-06-01",
+        "MHONGO": "Y"
+      },
+      {
+        "USUBJID": "ONCO-2025-001-005-0042",
+        "MHSEQ": 2,
+        "MHTERM": "Hypertension",
+        "MHDECOD": "Hypertension",
+        "MHBODSYS": "Vascular disorders",
+        "MHCAT": "GENERAL MEDICAL HISTORY",
+        "MHSTDTC": "2015-03-15",
+        "MHONGO": "Y"
+      }
+    ]
+  },
+  "baseline_efficacy": {
+    "assessment_type": "RECIST",
+    "assessment_date": "2025-01-12",
+    "response": "NE",
+    "target_lesion_sum": 45,
+    "measurable_disease": true
+  },
+  "correlation_keys": {
+    "usubjid_to_mrn": "ONCO-2025-001-005-0042 → MRN00000042",
+    "ssn": "shared for cross-product identity"
+  }
+}
+```
+
+### Key Points
+
+- **Subject.patient_ref** links to **Patient.mrn** for cross-product analytics
+- Medical history from PatientSim populates SDTM MH domain
+- Baseline tumor characteristics correlate with trial efficacy endpoints
+- Same person identity (SSN) maintained across both products
+- Enables analytics: "Does baseline tumor burden predict response?"
+
+---
+
+## Example 6: Trial Subject with Site Provider Linkage (TrialSim + NetworkSim)
+
+### Prompt
+```
+Generate a Phase III trial site with principal investigator from NetworkSim provider registry
+```
+
+### Expected Output
+```json
+{
+  "trial_site": {
+    "site_id": "012",
+    "study_id": "CV-OUTCOMES-001",
+    "site_name": "Memorial Heart Institute",
+    "facility_id": "FAC-MHI-001",
+    "country": "USA",
+    "region": "Southeast",
+    "status": "Active",
+    "activation_date": "2024-06-15",
+    "enrollment_target": 50,
+    "enrollment_actual": 38,
+    "principal_investigator": {
+      "name": "Dr. James Chen",
+      "npi": "1234567890",
+      "specialty": "Cardiovascular Medicine"
+    }
+  },
+  "linked_provider": {
+    "npi": "1234567890",
+    "name": { "given_name": "James", "family_name": "Chen" },
+    "credentials": ["MD", "FACC"],
+    "specialty": "Cardiovascular Medicine",
+    "primary_taxonomy": "207RC0000X",
+    "practice_address": {
+      "street": "500 Medical Center Drive",
+      "city": "Atlanta",
+      "state": "GA",
+      "postal_code": "30322"
+    }
+  },
+  "linked_facility": {
+    "facility_id": "FAC-MHI-001",
+    "name": "Memorial Heart Institute",
+    "type": "specialty_hospital",
+    "beds": 250,
+    "address": {
+      "street": "500 Medical Center Drive",
+      "city": "Atlanta",
+      "state": "GA",
+      "postal_code": "30322"
+    },
+    "certifications": ["JCI", "ACC Chest Pain Center"]
+  },
+  "correlation_keys": {
+    "site_facility_id": "012 → FAC-MHI-001",
+    "pi_npi": "Site PI → Provider.npi"
+  }
+}
+```
+
+### Key Points
+
+- **Site.facility_id** links to **NetworkSim Facility**
+- **PI.npi** links to **NetworkSim Provider**
+- Enables geographic analysis of trial sites
+- Supports site feasibility assessments with real provider data
+
+---
+
+## Example 7: Cross-Product Dimensional Analytics (TrialSim + PatientSim)
+
+### Prompt
+```
+Generate star schema data for analyzing trial efficacy by baseline patient characteristics.
+Include 20 subjects with PatientSim linkage for cross-product queries.
+```
+
+### Expected Output Summary
+```sql
+-- Dimensional model enables cross-product analytics
+
+-- TrialSim tables created:
+-- dim_study, dim_site, dim_subject (with patient_mrn), dim_treatment_arm
+-- fact_enrollment, fact_efficacy, fact_adverse_event
+
+-- PatientSim tables created (matching subjects):
+-- dim_patient (with mrn matching dim_subject.patient_mrn)
+-- fact_diagnoses (baseline conditions)
+
+-- Example cross-product query: Response by baseline tumor burden
+SELECT
+    CASE 
+        WHEN p.baseline_tumor_size < 50 THEN 'Low (<50mm)'
+        WHEN p.baseline_tumor_size < 100 THEN 'Medium (50-100mm)'
+        ELSE 'High (>100mm)'
+    END as tumor_burden,
+    COUNT(DISTINCT ts.subject_key) as subjects,
+    SUM(CASE WHEN fe.is_responder THEN 1 ELSE 0 END) as responders,
+    ROUND(100.0 * SUM(CASE WHEN fe.is_responder THEN 1 ELSE 0 END) / 
+        COUNT(DISTINCT ts.subject_key), 1) as orr_pct
+FROM trialsim.dim_subject ts
+JOIN patientsim.dim_patient p ON ts.patient_mrn = p.mrn
+JOIN trialsim.fact_efficacy fe ON ts.subject_key = fe.subject_key
+WHERE fe.assessment_type = 'RECIST'
+GROUP BY 1
+ORDER BY orr_pct DESC;
+```
+
+### Key Points
+
+- **dim_subject.patient_mrn** joins to **dim_patient.mrn**
+- Enables analysis of trial outcomes by EMR-sourced baseline characteristics
+- Star schema optimized for BI tools (Tableau, Power BI, Looker)
+- Works in both DuckDB (local) and Databricks (enterprise)
+
+---
+
 ## More Examples
 
 These cross-domain examples show how HealthSim maintains consistency across products. Use them as templates for your own complex scenarios.
@@ -587,3 +799,4 @@ These cross-domain examples show how HealthSim maintains consistency across prod
 See also:
 - [Format Examples](format-examples.md) - Transform cross-domain data to standards
 - [Oncology Examples](oncology-examples.md) - Detailed oncology patient scenarios
+- [TrialSim Examples](trialsim-examples.md) - Clinical trial specific scenarios

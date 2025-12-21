@@ -116,8 +116,14 @@ Load these for clinical trial data generation:
 |----------|----------|--------------|
 | **Clinical Trials Domain** | trial concepts, phases, CDISC | Phase definitions, regulatory, standards |
 | **Recruitment & Enrollment** | screening, enrollment, consent | Screening funnel, I/E criteria, randomization |
+| **Phase 1 Dose Escalation** | Phase 1, FIH, MTD, 3+3, BOIN, CRM | Dose escalation, DLT, PK sampling |
+| **Phase 2 Proof-of-Concept** | Phase 2, Simon's, MCP-Mod | Futility stopping, dose-response |
 | **Phase 3 Pivotal** | Phase 3, pivotal, registration trial | Multi-site, endpoints, safety monitoring |
 | **Oncology Trials** | oncology trial, tumor endpoints | RECIST, survival endpoints, biomarkers |
+| **Cardiovascular Trials** | CV outcomes, MACE | Cardiac events, biomarkers |
+| **CNS Trials** | CNS, Alzheimer's, MS | Cognitive scales, imaging |
+| **Cell & Gene Therapy** | CAR-T, gene therapy, CGT | Long-term follow-up, CRS, ICANS |
+| **Dimensional Analytics** | trial analytics, star schema, dashboard | fact/dim tables, DuckDB, Databricks |
 
 See: [skills/trialsim/](skills/trialsim/) for detailed skills
 
@@ -152,6 +158,15 @@ Request specific formats:
 | **CDISC ADaM** | "as ADaM", "analysis datasets" | Clinical trial statistical analysis |
 
 See: [formats/](formats/) for transformation skills
+
+### Analytics Formats
+
+| Format | Request Phrases | Use Case |
+|--------|-----------------|----------|
+| **Dimensional (DuckDB)** | "star schema for DuckDB", "dimensional model", "for analytics" | Local BI development |
+| **Dimensional (Databricks)** | "star schema for Databricks", "load to Databricks", "Unity Catalog" | Enterprise analytics |
+
+See: [formats/dimensional-analytics.md](formats/dimensional-analytics.md) for star schema details
 
 ### Export Formats
 
