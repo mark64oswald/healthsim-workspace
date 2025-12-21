@@ -5,7 +5,7 @@ description: "Generate realistic clinical trial synthetic data including study d
 
 # TrialSim
 
-**Status**: In Development
+**Status**: Active Development
 
 TrialSim generates realistic synthetic clinical trial data for testing, training, and development purposes.
 
@@ -29,15 +29,44 @@ Activate TrialSim when user mentions:
 - "adverse events" or "safety data"
 - "efficacy endpoints"
 - Trial therapeutic areas (oncology, cardiology, etc.)
+- SDTM domains (DM, AE, VS, LB, CM, EX, DS)
 
 ## Quick Links
+
+### Core Skills
 
 | Topic | Skill | Description |
 |-------|-------|-------------|
 | Domain Knowledge | [clinical-trials-domain.md](clinical-trials-domain.md) | Core trial concepts, phases, regulatory |
 | Recruitment | [recruitment-enrollment.md](recruitment-enrollment.md) | Screening funnel, enrollment patterns |
 | Phase 3 Trials | [phase3-pivotal.md](phase3-pivotal.md) | Pivotal registration trials |
-| Oncology | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | Oncology-specific patterns |
+
+### SDTM Domain Skills
+
+| Domain | Skill | Description |
+|--------|-------|-------------|
+| DM | [domains/demographics-dm.md](domains/demographics-dm.md) | Subject demographics, treatment arms |
+| AE | [domains/adverse-events-ae.md](domains/adverse-events-ae.md) | Adverse events with MedDRA coding |
+| VS | [domains/vital-signs-vs.md](domains/vital-signs-vs.md) | Vital sign measurements |
+| LB | [domains/laboratory-lb.md](domains/laboratory-lb.md) | Laboratory results with LOINC |
+| CM | [domains/concomitant-meds-cm.md](domains/concomitant-meds-cm.md) | Concomitant medications with ATC |
+| Domain Index | [domains/README.md](domains/README.md) | All SDTM domains overview |
+
+### Therapeutic Areas
+
+| Area | Skill | Key Endpoints |
+|------|-------|---------------|
+| Oncology | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | RECIST, ORR, PFS, OS |
+| Cardiovascular | [therapeutic-areas/cardiovascular.md](therapeutic-areas/cardiovascular.md) | MACE, CV outcomes |
+| CNS | [therapeutic-areas/cns.md](therapeutic-areas/cns.md) | Cognitive scales, imaging |
+| CGT | [therapeutic-areas/cgt.md](therapeutic-areas/cgt.md) | CAR-T, gene therapy |
+
+### Real World Evidence
+
+| Topic | Skill | Description |
+|-------|-------|-------------|
+| RWE Overview | [rwe/overview.md](rwe/overview.md) | RWE concepts, data sources |
+| Synthetic Controls | [rwe/synthetic-control.md](rwe/synthetic-control.md) | External control arm generation |
 
 ## Output Formats
 
@@ -102,24 +131,20 @@ Trial subjects are patients with additional trial-specific data:
 
 > **Integration Pattern:** Use PatientSim for baseline clinical characteristics. TrialSim adds protocol-specific assessments (RECIST, NYHA class changes), randomization, and SDTM-formatted data.
 
-### Therapeutic Area Skills
-
-| Area | PatientSim Skill | TrialSim Skill |
-|------|------------------|----------------|
-| Oncology | `oncology/*.md` | `therapeutic-areas/oncology.md` |
-| Cardiovascular | `heart-failure.md` | `therapeutic-areas/cardiovascular.md` |
-| CNS/Neurology | `behavioral-health.md` | `therapeutic-areas/cns.md` |
-
 ## Development Status
 
 | Component | Status |
 |-----------|--------|
 | SKILL.md (this file) | ✅ Complete |
-| clinical-trials-domain.md | 🔄 In Progress |
-| recruitment-enrollment.md | 📋 Planned |
-| phase3-pivotal.md | 🔄 In Progress |
-| formats/cdisc-sdtm.md | 📋 Planned |
-| formats/cdisc-adam.md | 📋 Planned |
+| clinical-trials-domain.md | ✅ Complete |
+| recruitment-enrollment.md | ✅ Complete |
+| phase3-pivotal.md | ✅ Complete |
+| domains/ (DM, AE, VS, LB, CM) | ✅ Complete |
+| therapeutic-areas/ | ✅ Complete |
+| rwe/ | ✅ Complete |
+| domains/ (EX, DS, MH) | 📋 Planned |
+| phase1-dose-escalation.md | 📋 Planned |
+| phase2-proof-of-concept.md | 📋 Planned |
 
 ## Related Skills
 
@@ -166,39 +191,41 @@ Trial subjects are patients with additional trial-specific data:
 }
 ```
 
-### Example 2: Adverse Events
+### Example 2: Adverse Events with MedDRA
 
 **Prompt:** "Generate adverse events for a 50-subject immunotherapy trial"
 
 **Output:**
 ```json
 {
+  "domain": "AE",
   "adverse_events": [
     {
-      "subject_id": "001-0023",
-      "ae_term": "Fatigue",
-      "meddra_pt": "Fatigue",
-      "meddra_soc": "General disorders and administration site conditions",
-      "severity": "Mild",
-      "ctcae_grade": 1,
-      "onset_date": "2025-02-10",
-      "resolution_date": "2025-02-18",
-      "relationship": "Possibly Related",
-      "serious": false,
-      "action_taken": "None"
+      "USUBJID": "IO-001-0023",
+      "AESEQ": 1,
+      "AETERM": "Fatigue",
+      "AEDECOD": "Fatigue",
+      "AEBODSYS": "General disorders and administration site conditions",
+      "AESEV": "MILD",
+      "AESER": "N",
+      "AEREL": "POSSIBLY RELATED",
+      "AESTDTC": "2025-02-10",
+      "AEENDTC": "2025-02-18",
+      "AEOUT": "RECOVERED/RESOLVED"
     },
     {
-      "subject_id": "001-0007",
-      "ae_term": "Immune-mediated colitis",
-      "meddra_pt": "Colitis",
-      "meddra_soc": "Gastrointestinal disorders",
-      "severity": "Severe",
-      "ctcae_grade": 3,
-      "onset_date": "2025-03-05",
-      "resolution_date": null,
-      "relationship": "Related",
-      "serious": true,
-      "action_taken": "Drug Interrupted"
+      "USUBJID": "IO-001-0007",
+      "AESEQ": 1,
+      "AETERM": "Immune-mediated colitis",
+      "AEDECOD": "Colitis",
+      "AEBODSYS": "Gastrointestinal disorders",
+      "AESEV": "SEVERE",
+      "AESER": "Y",
+      "AESHOSP": "Y",
+      "AEREL": "RELATED",
+      "AEACN": "DRUG INTERRUPTED",
+      "AESTDTC": "2025-03-05",
+      "AEOUT": "NOT RECOVERED/NOT RESOLVED"
     }
   ]
 }
@@ -230,20 +257,11 @@ Trial subjects are patients with additional trial-specific data:
       "failure_detail": "Prior immunotherapy within 6 months",
       "screening_date": "2025-01-25"
     }
-  ],
-  "enrolled_subjects": [
-    {
-      "subject_id": "001-0001",
-      "screening_id": "SCR-0001",
-      "consent_date": "2025-01-10",
-      "screening_date": "2025-01-12",
-      "randomization_date": "2025-01-22"
-    }
   ]
 }
 ```
 
-### Example 4: SDTM Output
+### Example 4: DM Domain SDTM Output
 
 **Prompt:** "Generate DM domain for 10 subjects as SDTM"
 
@@ -256,7 +274,7 @@ Trial subjects are patients with additional trial-specific data:
       "STUDYID": "ONCO-2025-001",
       "DOMAIN": "DM",
       "USUBJID": "ONCO-2025-001-001-0001",
-      "SUBJID": "001-0001",
+      "SUBJID": "0001",
       "SITEID": "001",
       "RFSTDTC": "2025-01-22",
       "RFENDTC": null,
@@ -266,9 +284,42 @@ Trial subjects are patients with additional trial-specific data:
       "SEX": "M",
       "RACE": "WHITE",
       "ETHNIC": "NOT HISPANIC OR LATINO",
-      "ARMCD": "A",
+      "ARMCD": "TRT",
       "ARM": "ABC-123 + SOC",
       "COUNTRY": "USA"
+    }
+  ]
+}
+```
+
+### Example 5: Laboratory Results with LOINC
+
+**Prompt:** "Generate LB domain with liver function tests for safety monitoring"
+
+**Output:**
+```json
+{
+  "domain": "LB",
+  "records": [
+    {
+      "STUDYID": "SAFE-001",
+      "DOMAIN": "LB",
+      "USUBJID": "SAFE-001-001-0042",
+      "LBSEQ": 1,
+      "LBTESTCD": "ALT",
+      "LBTEST": "Alanine Aminotransferase",
+      "LBCAT": "CHEMISTRY",
+      "LBORRES": "32",
+      "LBORRESU": "U/L",
+      "LBSTRESN": 32,
+      "LBSTRESU": "U/L",
+      "LBSTNRLO": 7,
+      "LBSTNRHI": 56,
+      "LBNRIND": "NORMAL",
+      "LBLOINC": "1742-6",
+      "LBBLFL": "Y",
+      "VISITNUM": 2,
+      "VISIT": "BASELINE"
     }
   ]
 }

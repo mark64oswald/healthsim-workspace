@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[TrialSim]** SDTM Domain Skills (Phase 2 Implementation)
+  - `skills/trialsim/domains/` directory with README.md overview
+  - DM (Demographics) domain - subject identifiers, demographics, treatment arms
+  - AE (Adverse Events) domain - MedDRA coding hierarchy, SAE flags, outcomes
+  - VS (Vital Signs) domain - BP, HR, temp, weight with visit scheduling
+  - LB (Laboratory) domain - LOINC coding, reference ranges, chemistry/hematology
+  - CM (Concomitant Medications) domain - ATC classification, polypharmacy patterns
+  - All skills include: YAML frontmatter, 2+ examples, validation rules, business rules
+  - Cross-product integration with PatientSim documented
+- **[TrialSim]** Updated SKILL.md with domain skill references in Quick Links
+- **[TrialSim]** Updated README.md with implementation status for all domain skills
+
 - **[Docs]** CLAUDE-CODE-CONTEXT.md for Claude Code session context
   - Essential patterns and rules for implementation sessions
   - Quality patterns (frontmatter, validation tables, related skills)
