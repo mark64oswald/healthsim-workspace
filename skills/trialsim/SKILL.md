@@ -37,7 +37,7 @@ Activate TrialSim when user mentions:
 | Domain Knowledge | [clinical-trials-domain.md](clinical-trials-domain.md) | Core trial concepts, phases, regulatory |
 | Recruitment | [recruitment-enrollment.md](recruitment-enrollment.md) | Screening funnel, enrollment patterns |
 | Phase 3 Trials | [phase3-pivotal.md](phase3-pivotal.md) | Pivotal registration trials |
-| Oncology | [therapeutic-areas/oncology-trials.md](therapeutic-areas/oncology-trials.md) | Oncology-specific patterns |
+| Oncology | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | Oncology-specific patterns |
 
 ## Output Formats
 
@@ -126,3 +126,150 @@ Trial subjects are patients with additional trial-specific data:
 - [PatientSim](../patientsim/SKILL.md) - Clinical patient data
 - [MemberSim](../membersim/SKILL.md) - Claims integration
 - [Code Systems](../../references/code-systems.md) - Standard terminologies
+
+## Usage Examples
+
+### Example 1: Basic Phase 3 Trial
+
+**Prompt:** "Generate a Phase 3 oncology trial with 200 subjects"
+
+**Output:**
+```json
+{
+  "study": {
+    "study_id": "ONCO-2025-001",
+    "protocol_title": "A Phase 3, Randomized, Double-Blind, Placebo-Controlled Study of ABC-123 in Advanced NSCLC",
+    "phase": "Phase 3",
+    "therapeutic_area": "Oncology",
+    "indication": "Non-Small Cell Lung Cancer",
+    "design": "Randomized, Double-Blind, Placebo-Controlled",
+    "primary_endpoint": "Overall Survival",
+    "target_enrollment": 200,
+    "arms": [
+      { "arm_id": "A", "name": "ABC-123 + SOC", "allocation_ratio": 1 },
+      { "arm_id": "B", "name": "Placebo + SOC", "allocation_ratio": 1 }
+    ]
+  },
+  "sites": [
+    { "site_id": "001", "name": "Memorial Cancer Center", "country": "USA", "enrolled": 25 },
+    { "site_id": "002", "name": "University Oncology", "country": "USA", "enrolled": 22 }
+  ],
+  "subjects": [
+    {
+      "subject_id": "001-0001",
+      "site_id": "001",
+      "arm": "A",
+      "status": "Active",
+      "randomization_date": "2025-01-15"
+    }
+  ]
+}
+```
+
+### Example 2: Adverse Events
+
+**Prompt:** "Generate adverse events for a 50-subject immunotherapy trial"
+
+**Output:**
+```json
+{
+  "adverse_events": [
+    {
+      "subject_id": "001-0023",
+      "ae_term": "Fatigue",
+      "meddra_pt": "Fatigue",
+      "meddra_soc": "General disorders and administration site conditions",
+      "severity": "Mild",
+      "ctcae_grade": 1,
+      "onset_date": "2025-02-10",
+      "resolution_date": "2025-02-18",
+      "relationship": "Possibly Related",
+      "serious": false,
+      "action_taken": "None"
+    },
+    {
+      "subject_id": "001-0007",
+      "ae_term": "Immune-mediated colitis",
+      "meddra_pt": "Colitis",
+      "meddra_soc": "Gastrointestinal disorders",
+      "severity": "Severe",
+      "ctcae_grade": 3,
+      "onset_date": "2025-03-05",
+      "resolution_date": null,
+      "relationship": "Related",
+      "serious": true,
+      "action_taken": "Drug Interrupted"
+    }
+  ]
+}
+```
+
+### Example 3: Screening and Enrollment
+
+**Prompt:** "Generate screening data with 30% screen failure rate for 100 subjects"
+
+**Output:**
+```json
+{
+  "screening_summary": {
+    "total_screened": 143,
+    "screen_passed": 100,
+    "screen_failed": 43,
+    "screen_failure_rate": 0.30
+  },
+  "screen_failures": [
+    {
+      "screening_id": "SCR-0015",
+      "failure_reason": "Inclusion criteria not met",
+      "failure_detail": "EGFR mutation negative",
+      "screening_date": "2025-01-20"
+    },
+    {
+      "screening_id": "SCR-0028",
+      "failure_reason": "Exclusion criteria met",
+      "failure_detail": "Prior immunotherapy within 6 months",
+      "screening_date": "2025-01-25"
+    }
+  ],
+  "enrolled_subjects": [
+    {
+      "subject_id": "001-0001",
+      "screening_id": "SCR-0001",
+      "consent_date": "2025-01-10",
+      "screening_date": "2025-01-12",
+      "randomization_date": "2025-01-22"
+    }
+  ]
+}
+```
+
+### Example 4: SDTM Output
+
+**Prompt:** "Generate DM domain for 10 subjects as SDTM"
+
+**Output:**
+```json
+{
+  "domain": "DM",
+  "records": [
+    {
+      "STUDYID": "ONCO-2025-001",
+      "DOMAIN": "DM",
+      "USUBJID": "ONCO-2025-001-001-0001",
+      "SUBJID": "001-0001",
+      "SITEID": "001",
+      "RFSTDTC": "2025-01-22",
+      "RFENDTC": null,
+      "BRTHDTC": "1958-05-15",
+      "AGE": 66,
+      "AGEU": "YEARS",
+      "SEX": "M",
+      "RACE": "WHITE",
+      "ETHNIC": "NOT HISPANIC OR LATINO",
+      "ARMCD": "A",
+      "ARM": "ABC-123 + SOC",
+      "COUNTRY": "USA"
+    }
+  ]
+}
+```
