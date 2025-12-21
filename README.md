@@ -29,6 +29,9 @@ The getting started guide includes:
 | **PatientSim** | Clinical/EMR data | "Generate a 65-year-old diabetic with recent labs" |
 | **MemberSim** | Claims/payer data | "Generate a denied MRI claim requiring prior auth" |
 | **RxMemberSim** | Pharmacy/PBM data | "Generate a drug interaction alert for warfarin" |
+| **TrialSim** | Clinical trial data | "Generate a Phase III oncology trial with 200 subjects" |
+| **PopulationSim** | Demographics/SDOH *(planned)* | "Generate a population cohort for rural diabetes study" |
+| **NetworkSim** | Provider networks *(planned)* | "Generate a cardiology provider network for Atlanta" |
 
 ### Clinical Domains
 
@@ -45,6 +48,19 @@ The getting started guide includes:
 | **Surgical** | elective-joint.md | Hip/knee replacement, pre-op, post-op, PT |
 | **ADT Workflows** | adt-workflow.md | Admission, transfer, discharge, bed management |
 
+### Clinical Trials (TrialSim)
+
+| Domain | Scenario | Example Use Cases |
+|--------|----------|-------------------|
+| **Phase 1** | phase1-dose-escalation.md | FIH, 3+3, BOIN, CRM, MTD determination |
+| **Phase 2** | phase2-proof-of-concept.md | Simon's two-stage, MCP-Mod, futility stopping |
+| **Phase 3** | phase3-pivotal.md | Pivotal trials, superiority, non-inferiority |
+| **Oncology Trials** | therapeutic-areas/oncology.md | RECIST, tumor response, survival endpoints |
+| **CV Trials** | therapeutic-areas/cardiovascular.md | MACE, CV outcomes, cardiac biomarkers |
+| **CNS Trials** | therapeutic-areas/cns.md | ADAS-Cog, EDSS, cognitive scales |
+| **Cell & Gene Therapy** | therapeutic-areas/cgt.md | CAR-T, gene therapy, CRS, long-term follow-up |
+| **SDTM Domains** | domains/*.md | DM, AE, VS, LB, CM, EX, DS, MH |
+
 ### Output Formats
 
 | Format | Request With | Use Case |
@@ -56,6 +72,9 @@ The getting started guide includes:
 | X12 837/835 | "as 837", "as X12 claim" | Claims submission |
 | X12 834 | "as 834", "enrollment file" | Benefit enrollment |
 | NCPDP D.0 | "as NCPDP" | Pharmacy transactions |
+| CDISC SDTM | "as SDTM", "SDTM domains" | Clinical trial regulatory submission |
+| CDISC ADaM | "as ADaM", "analysis datasets" | Clinical trial statistical analysis |
+| Star Schema | "as star schema for DuckDB" | BI analytics, dashboards |
 | CSV | "as CSV" | Analytics, spreadsheets |
 | SQL | "as SQL" | Database loading |
 
@@ -126,11 +145,21 @@ healthsim-common/
 │   │   ├── professional-claims.md
 │   │   ├── behavioral-health.md
 │   │   └── ...
-│   └── rxmembersim/           # Pharmacy data (8 scenarios)
-│       ├── SKILL.md
-│       ├── retail-pharmacy.md
-│       ├── specialty-pharmacy.md
-│       └── ...
+│   ├── rxmembersim/           # Pharmacy data (8 scenarios)
+│   │   ├── SKILL.md
+│   │   ├── retail-pharmacy.md
+│   │   ├── specialty-pharmacy.md
+│   │   └── ...
+│   ├── trialsim/              # Clinical trials (20+ skills)
+│   │   ├── SKILL.md
+│   │   ├── phase1-dose-escalation.md
+│   │   ├── phase2-proof-of-concept.md
+│   │   ├── phase3-pivotal.md
+│   │   ├── domains/           # SDTM domains (DM, AE, LB, etc.)
+│   │   ├── therapeutic-areas/ # Oncology, CV, CNS, CGT
+│   │   └── rwe/               # Real-world evidence
+│   ├── populationsim/         # Demographics/SDOH (planned)
+│   └── networksim/            # Provider networks (planned)
 │
 ├── formats/                    # Output transformations (12 files)
 │   ├── fhir-r4.md
