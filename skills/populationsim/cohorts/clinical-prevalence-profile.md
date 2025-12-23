@@ -2,32 +2,32 @@
 name: clinical-prevalence-profile
 description: >
   Build clinical profiles with disease prevalence, comorbidity patterns, and
-  severity distributions for cohorts. Uses CDC PLACES, MEPS, and clinical
-  literature. Triggers: "clinical profile", "comorbidity rates", "disease
-  prevalence for cohort", "severity distribution".
+  severity distributions for cohorts. Combines CDC PLACES data with clinical
+  evidence for realistic disease patterns. Triggers: "clinical profile",
+  "comorbidity rates", "disease prevalence for cohort", "condition patterns".
 ---
 
 # Clinical Prevalence Profile Skill
 
 ## Overview
 
-The clinical-prevalence-profile skill creates comprehensive clinical profiles for cohorts, including primary condition prevalence, comorbidity patterns, severity distributions, and medication expectations. It combines population health data with clinical evidence to produce realistic clinical cohort specifications.
+The clinical-prevalence-profile skill creates comprehensive clinical characterizations for cohorts, including primary condition prevalence, comorbidity patterns, severity distributions, and expected medication use. It draws from CDC PLACES data and clinical literature to produce realistic disease patterns.
 
 **Primary Use Cases**:
-- Define disease-specific cohorts
-- Set comorbidity expectations
+- Define disease cohort clinical characteristics
+- Set realistic comorbidity rates
 - Establish severity distributions
-- Guide medication patterns
+- Guide medication assignment
 
 ---
 
 ## Trigger Phrases
 
-- "Clinical profile for [condition] patients"
-- "Comorbidity rates for diabetics"
-- "What conditions co-occur with heart failure?"
-- "Severity distribution for [condition]"
-- "Build clinical profile for [population]"
+- "Clinical profile for [condition] cohort"
+- "What comorbidities for diabetics?"
+- "Comorbidity rates for [condition]"
+- "Severity distribution for [disease]"
+- "Disease patterns in [geography]"
 
 ---
 
@@ -35,99 +35,88 @@ The clinical-prevalence-profile skill creates comprehensive clinical profiles fo
 
 | Parameter | Type | Required | Default | Description |
 |-----------|------|----------|---------|-------------|
-| `condition` | string | Yes | - | Primary condition (ICD-10 or name) |
-| `geography` | string | No | "national" | Geographic scope |
-| `age_range` | array | No | [18, 100] | Age filter |
-| `include_medications` | bool | No | true | Include Rx patterns |
+| `primary_condition` | string | Yes | - | ICD-10 code or condition name |
+| `geography` | string | No | "national" | Geographic context |
+| `age_range` | array | No | [18, 100] | Age range for rates |
 | `severity_detail` | bool | No | true | Include severity breakdown |
 
 ---
 
-## Comorbidity Data Sources
-
-| Source | Content | Use For |
-|--------|---------|---------|
-| CDC PLACES | Population prevalence | Geographic rates |
-| MEPS | Healthcare utilization | Comorbidity pairs |
-| CMS CCW | Medicare claims | 65+ populations |
-| Clinical Literature | Evidence-based rates | Condition-specific |
-
----
-
-## Major Condition Profiles
+## Common Condition Profiles
 
 ### Type 2 Diabetes (E11)
 
 **Comorbidity Rates**:
 | Condition | ICD-10 | Rate | Correlation |
 |-----------|--------|------|-------------|
-| Hypertension | I10 | 71% | High |
-| Hyperlipidemia | E78.5 | 68% | High |
-| Obesity | E66.9 | 62% | High |
-| Depression | F32.9 | 28% | Moderate |
-| CKD Stage 3+ | N18.3+ | 24% | High |
-| CAD | I25.10 | 18% | Moderate |
-| Neuropathy | G62.9 | 22% | High |
-| Retinopathy | H35.0 | 16% | High |
-| Heart Failure | I50.9 | 12% | Moderate |
+| Hypertension | I10 | 71% | Very High |
+| Hyperlipidemia | E78 | 68% | Very High |
+| Obesity | E66 | 62% | Very High |
+| CKD | N18 | 25% | High |
+| Depression | F32 | 28% | Moderate |
+| CAD | I25 | 18% | Moderate |
+| Neuropathy | G62 | 22% | High |
+| Retinopathy | H35.0 | 18% | High |
+| Heart Failure | I50 | 12% | Moderate |
 
 **Severity Distribution**:
-| Category | ICD-10 Codes | Rate |
+| Severity | ICD-10 Codes | Rate |
 |----------|--------------|------|
 | Without complications | E11.9 | 35% |
 | With kidney | E11.2x | 18% |
 | With ophthalmic | E11.3x | 12% |
-| With neurological | E11.4x | 16% |
-| With peripheral | E11.5x | 8% |
-| With multiple | E11.65 | 11% |
+| With neurological | E11.4x | 15% |
+| With circulatory | E11.5x | 8% |
+| With multiple | E11.65 | 12% |
 
 ### Heart Failure (I50)
 
 **Comorbidity Rates**:
 | Condition | ICD-10 | Rate | Correlation |
 |-----------|--------|------|-------------|
-| Hypertension | I10 | 82% | High |
-| CAD | I25.10 | 58% | High |
+| Hypertension | I10 | 82% | Very High |
+| CAD | I25 | 58% | Very High |
 | Atrial Fibrillation | I48 | 42% | High |
-| Diabetes | E11 | 38% | Moderate |
-| CKD | N18 | 42% | High |
+| Diabetes | E11 | 42% | High |
+| CKD | N18 | 48% | Very High |
 | COPD | J44 | 28% | Moderate |
-| Anemia | D64.9 | 32% | Moderate |
-| Depression | F32.9 | 24% | Moderate |
+| Depression | F32 | 24% | Moderate |
+| Anemia | D64 | 32% | High |
 
 **Severity Distribution**:
 | Type | ICD-10 | Rate |
 |------|--------|------|
-| HFrEF (reduced EF) | I50.2x | 45% |
-| HFpEF (preserved EF) | I50.3x | 40% |
-| Unspecified | I50.9 | 15% |
+| HFrEF (systolic) | I50.2x | 45% |
+| HFpEF (diastolic) | I50.3x | 40% |
+| Combined | I50.4x | 10% |
+| Unspecified | I50.9 | 5% |
 
 ### COPD (J44)
 
 **Comorbidity Rates**:
-| Condition | ICD-10 | Rate | Correlation |
-|-----------|--------|------|-------------|
-| Hypertension | I10 | 52% | Moderate |
-| Heart Failure | I50 | 22% | Moderate |
-| CAD | I25.10 | 28% | Moderate |
-| Diabetes | E11 | 18% | Low |
-| Depression | F32.9 | 28% | Moderate |
-| Anxiety | F41.1 | 32% | High |
-| Osteoporosis | M81 | 18% | Moderate |
-| Lung Cancer | C34 | 4% | High |
+| Condition | ICD-10 | Rate |
+|-----------|--------|------|
+| Hypertension | I10 | 52% |
+| CAD | I25 | 28% |
+| Heart Failure | I50 | 24% |
+| Diabetes | E11 | 22% |
+| Depression | F32 | 38% |
+| Anxiety | F41 | 32% |
+| Osteoporosis | M81 | 28% |
+| Lung Cancer | C34 | 8% |
 
 ### Depression (F32)
 
 **Comorbidity Rates**:
-| Condition | ICD-10 | Rate | Correlation |
-|-----------|--------|------|-------------|
-| Anxiety | F41.1 | 62% | High |
-| Chronic Pain | G89 | 38% | Moderate |
-| Substance Use | F10-F19 | 24% | Moderate |
-| Diabetes | E11 | 18% | Moderate |
-| Hypertension | I10 | 32% | Low |
-| Obesity | E66 | 28% | Moderate |
-| Insomnia | G47.0 | 48% | High |
+| Condition | ICD-10 | Rate |
+|-----------|--------|------|
+| Anxiety | F41 | 62% |
+| Chronic Pain | G89 | 45% |
+| Insomnia | G47 | 48% |
+| Diabetes | E11 | 18% |
+| CAD | I25 | 12% |
+| Obesity | E66 | 28% |
+| Substance Use | F10-F19 | 22% |
 
 ---
 
@@ -136,142 +125,133 @@ The clinical-prevalence-profile skill creates comprehensive clinical profiles fo
 ```json
 {
   "clinical_profile": {
-    "cohort_context": {
-      "geography": "Harris County, TX",
-      "age_range": [40, 85],
-      "population_type": "chronic_disease"
-    },
-    
     "primary_condition": {
       "code": "E11",
       "name": "Type 2 Diabetes Mellitus",
-      "prevalence_in_cohort": 1.0,
-      "prevalence_in_geography": 0.128,
-      "affected_population": 412000
+      "category": "endocrine",
+      "prevalence_source": 1.0
     },
     
     "severity_distribution": {
-      "without_complications": {
+      "mild": {
         "codes": ["E11.9"],
         "rate": 0.35,
-        "typical_a1c": "<7.5%"
+        "description": "Without complications, controlled"
       },
-      "mild_complications": {
-        "codes": ["E11.21", "E11.31", "E11.41"],
-        "rate": 0.32,
-        "typical_a1c": "7.5-8.5%"
+      "moderate": {
+        "codes": ["E11.21", "E11.311", "E11.42"],
+        "rate": 0.45,
+        "description": "Single organ involvement"
       },
-      "moderate_complications": {
-        "codes": ["E11.22", "E11.32", "E11.42", "E11.51"],
-        "rate": 0.22,
-        "typical_a1c": "8.5-10%"
-      },
-      "severe_complications": {
-        "codes": ["E11.65", "E11.52", "E11.69"],
-        "rate": 0.11,
-        "typical_a1c": ">10%"
+      "severe": {
+        "codes": ["E11.65", "E11.52"],
+        "rate": 0.20,
+        "description": "Multiple complications"
       }
     },
     
     "comorbidities": {
-      "I10": {
-        "name": "Essential Hypertension",
-        "rate": 0.71,
-        "correlation": "high",
-        "onset_pattern": "concurrent_or_prior"
-      },
-      "E78.5": {
-        "name": "Hyperlipidemia, unspecified",
-        "rate": 0.68,
-        "correlation": "high",
-        "onset_pattern": "concurrent"
-      },
-      "E66.9": {
-        "name": "Obesity, unspecified",
-        "rate": 0.62,
-        "correlation": "high",
-        "onset_pattern": "prior"
-      },
-      "F32.9": {
-        "name": "Major depressive disorder",
-        "rate": 0.28,
-        "correlation": "moderate",
-        "onset_pattern": "variable"
-      },
-      "N18.3": {
-        "name": "CKD Stage 3",
-        "rate": 0.18,
-        "correlation": "high",
-        "onset_pattern": "subsequent"
-      }
+      "very_high_correlation": [
+        {
+          "code": "I10",
+          "name": "Essential Hypertension",
+          "rate": 0.71,
+          "evidence": "NHANES, Framingham"
+        },
+        {
+          "code": "E78.5",
+          "name": "Hyperlipidemia, unspecified",
+          "rate": 0.68,
+          "evidence": "NHANES, ADA guidelines"
+        }
+      ],
+      "high_correlation": [
+        {
+          "code": "E66.9",
+          "name": "Obesity, unspecified",
+          "rate": 0.62,
+          "evidence": "CDC obesity-diabetes link"
+        },
+        {
+          "code": "N18.3",
+          "name": "CKD Stage 3",
+          "rate": 0.18,
+          "evidence": "USRDS, diabetic nephropathy"
+        }
+      ],
+      "moderate_correlation": [
+        {
+          "code": "F32.9",
+          "name": "Major depressive disorder",
+          "rate": 0.28,
+          "evidence": "Depression-diabetes bidirectional"
+        },
+        {
+          "code": "I25.10",
+          "name": "CAD without angina",
+          "rate": 0.14,
+          "evidence": "Cardiovascular risk"
+        }
+      ]
     },
     
     "multimorbidity_distribution": {
-      "primary_only": 0.08,
-      "plus_1_comorbidity": 0.18,
+      "primary_only": 0.12,
+      "plus_1_comorbidity": 0.24,
       "plus_2_comorbidities": 0.28,
-      "plus_3_comorbidities": 0.26,
-      "plus_4_or_more": 0.20
+      "plus_3_comorbidities": 0.22,
+      "plus_4_or_more": 0.14
     },
     
-    "common_comorbidity_clusters": [
-      {
-        "name": "Metabolic Syndrome",
-        "conditions": ["E11", "I10", "E78.5", "E66"],
-        "prevalence": 0.42
-      },
-      {
-        "name": "Cardiometabolic",
-        "conditions": ["E11", "I10", "I25.10"],
-        "prevalence": 0.18
-      },
-      {
-        "name": "Diabetes with Complications",
-        "conditions": ["E11.65", "N18.3", "H35.0"],
-        "prevalence": 0.12
-      }
-    ],
-    
-    "medications": {
-      "antidiabetics": {
+    "expected_medications": {
+      "diabetes_specific": {
         "metformin": 0.72,
         "sulfonylurea": 0.28,
         "sglt2_inhibitor": 0.22,
         "glp1_agonist": 0.18,
         "dpp4_inhibitor": 0.14,
-        "insulin_any": 0.34
+        "insulin_basal": 0.28,
+        "insulin_bolus": 0.12
       },
-      "cardiovascular": {
-        "ace_arb": 0.68,
-        "statin": 0.64,
-        "beta_blocker": 0.32,
-        "calcium_channel": 0.24,
-        "diuretic": 0.28
-      },
-      "other": {
+      "comorbidity_related": {
+        "ace_inhibitor_arb": 0.68,
+        "statin": 0.72,
         "aspirin": 0.42,
-        "antidepressant": 0.24,
-        "ppi": 0.28
-      },
-      "polypharmacy": {
-        "1_3_meds": 0.12,
-        "4_6_meds": 0.28,
-        "7_9_meds": 0.32,
-        "10_plus": 0.28
+        "beta_blocker": 0.24
       }
     },
     
-    "lab_expectations": {
-      "a1c": { "mean": 7.8, "std": 1.4, "range": [5.7, 14.0] },
-      "fasting_glucose": { "mean": 142, "std": 42, "range": [70, 350] },
-      "ldl": { "mean": 102, "std": 32, "range": [40, 220] },
-      "egfr": { "mean": 72, "std": 24, "range": [15, 120] },
-      "creatinine": { "mean": 1.2, "std": 0.4, "range": [0.6, 4.0] }
+    "lab_patterns": {
+      "hba1c": {
+        "mean": 7.8,
+        "controlled_under_7": 0.42,
+        "moderate_7_9": 0.38,
+        "uncontrolled_over_9": 0.20
+      },
+      "egfr": {
+        "normal_over_90": 0.45,
+        "mild_60_89": 0.30,
+        "moderate_30_59": 0.18,
+        "severe_under_30": 0.07
+      }
+    },
+    
+    "geographic_variation": {
+      "geography": "Harris County, TX",
+      "vs_national": {
+        "diabetes_prevalence": "+2.4%",
+        "hypertension_comorbidity": "+3.2%",
+        "obesity_comorbidity": "+4.8%"
+      }
     }
   },
   
   "validation": {
-    "sources": ["CDC_PLACES_2024", "MEPS_2021", "CMS_CCW", "ADA_Standards"],
+    "sources": [
+      "CDC_PLACES_2024",
+      "NHANES_2017-2020",
+      "ADA_Standards_2024"
+    ],
     "confidence": "high"
   }
 }
@@ -281,122 +261,128 @@ The clinical-prevalence-profile skill creates comprehensive clinical profiles fo
 
 ## Examples
 
-### Example 1: Heart Failure Profile
+### Example 1: Diabetes Clinical Profile
 
-**Request**: "Clinical profile for heart failure patients in Florida"
-
-**Response**:
-
-**Heart Failure Clinical Profile - Florida**
-
-**Primary Condition**: I50 (Heart Failure)
-- Prevalence in FL: 3.8% (age 45+)
-- Affected population: ~820,000
-
-**HF Type Distribution**:
-| Type | Rate | Mean Age | Male % |
-|------|------|----------|--------|
-| HFrEF (I50.2x) | 45% | 68 | 58% |
-| HFpEF (I50.3x) | 40% | 74 | 42% |
-| Unspecified | 15% | 72 | 50% |
-
-**Top Comorbidities**:
-| Condition | Rate | Clinical Notes |
-|-----------|------|----------------|
-| Hypertension (I10) | 82% | Often causative |
-| CAD (I25.10) | 58% | Ischemic etiology |
-| AFib (I48) | 42% | Bidirectional relationship |
-| CKD (N18) | 42% | Cardiorenal syndrome |
-| Diabetes (E11) | 38% | Worsens prognosis |
-| COPD (J44) | 28% | Complicates Dx |
-
-**Medication Patterns**:
-| Class | Rate | Key Drugs |
-|-------|------|-----------|
-| ACE/ARB/ARNI | 78% | Entresto, Lisinopril |
-| Beta Blocker | 82% | Carvedilol, Metoprolol |
-| Diuretic | 72% | Furosemide, Bumetanide |
-| MRA | 42% | Spironolactone |
-| SGLT2i | 28% | Dapagliflozin, Empagliflozin |
-| Digoxin | 18% | Declining use |
-
----
-
-### Example 2: COPD with Comorbidities
-
-**Request**: "Comorbidity clustering for COPD patients"
+**Request**: "Clinical profile for diabetics in South Texas"
 
 **Response**:
 
-**COPD Comorbidity Clusters**
+**Type 2 Diabetes Clinical Profile - South Texas**
 
-**Cluster 1: Cardiovascular-Dominant (38%)**
-```
-COPD (J44) + HTN (I10) + CAD (I25) + HF (I50)
-Mean age: 72, Male: 58%
-High mortality risk
-```
-
-**Cluster 2: Metabolic (24%)**
-```
-COPD (J44) + DM (E11) + HTN (I10) + Obesity (E66)
-Mean age: 64, Male: 48%
-Moderate severity
-```
-
-**Cluster 3: Anxiety-Depression (22%)**
-```
-COPD (J44) + Anxiety (F41) + Depression (F32) + Insomnia (G47)
-Mean age: 58, Female: 62%
-Younger, worse QoL
-```
-
-**Cluster 4: Isolated COPD (16%)**
-```
-COPD (J44) minimal comorbidity
-Mean age: 62, Male: 52%
-Lower complexity
-```
-
----
-
-### Example 3: Pediatric Asthma
-
-**Request**: "Clinical profile for pediatric asthma"
-
-**Response**:
-
-**Pediatric Asthma Clinical Profile**
-
-**Primary Condition**: J45 (Asthma)
-- Prevalence (0-17): 8.4%
-- Peak prevalence age: 5-11 years
+**Primary Condition**: E11 - Type 2 Diabetes Mellitus
 
 **Severity Distribution**:
-| Severity | ICD-10 | Rate | Controller Need |
-|----------|--------|------|-----------------|
-| Intermittent | J45.20 | 42% | PRN only |
-| Mild Persistent | J45.30 | 28% | Low-dose ICS |
-| Moderate Persistent | J45.40 | 22% | Medium ICS |
-| Severe Persistent | J45.50 | 8% | High ICS + add-on |
+| Severity | Rate | Typical Codes |
+|----------|------|---------------|
+| Controlled, no complications | 30% | E11.9 |
+| Single complication | 45% | E11.2x, E11.3x, E11.4x |
+| Multiple complications | 25% | E11.65 |
 
-**Comorbidities**:
-| Condition | Rate | Notes |
-|-----------|------|-------|
-| Allergic Rhinitis (J30) | 62% | Atopic march |
-| Eczema (L20) | 28% | Atopic triad |
-| Food Allergy (T78.1) | 14% | Elevated risk |
-| Obesity (E66) | 22% | Worsens control |
-| GERD (K21) | 12% | Trigger |
+*Note: South Texas has higher complication rates than national average (+5%)*
 
-**Medications**:
+**Top Comorbidities**:
+| Condition | Rate | vs National |
+|-----------|------|-------------|
+| Hypertension (I10) | 74% | +3% |
+| Hyperlipidemia (E78) | 68% | - |
+| Obesity (E66) | 72% | +10% ⚠️ |
+| CKD (N18) | 28% | +3% |
+| Depression (F32) | 26% | -2% |
+| Retinopathy (H35.0) | 22% | +4% |
+
+**Multimorbidity**:
+- Average comorbidities: 3.2
+- 4+ conditions: 42% of patients
+
+**Expected Medications**:
 | Class | Rate |
 |-------|------|
-| SABA (albuterol) | 95% |
-| ICS | 58% |
-| ICS/LABA combo | 22% |
-| LTRA (montelukast) | 32% |
-| Biologics | 4% |
+| Metformin | 72% |
+| Insulin (any) | 38% |
+| SGLT2i | 18% |
+| GLP1-RA | 14% |
+| ACE/ARB | 72% |
+| Statin | 68% |
+
+---
+
+### Example 2: Heart Failure Profile
+
+**Request**: "Comorbidity patterns for heart failure"
+
+**Response**:
+
+**Heart Failure (I50) Comorbidity Profile**
+
+**HF Type Distribution**:
+| Type | Rate | Description |
+|------|------|-------------|
+| HFrEF (I50.2x) | 45% | EF ≤ 40% |
+| HFpEF (I50.3x) | 40% | EF ≥ 50% |
+| HFmrEF (I50.4x) | 10% | EF 41-49% |
+| Unspecified | 5% | I50.9 |
+
+**Comorbidity Cascade**:
+```
+Heart Failure (I50)
+├── Hypertension (I10): 82% ────────────────▶ Near universal
+├── CAD (I25): 58% ─────────────────────────▶ Ischemic HF driver
+├── CKD (N18): 48% ─────────────────────────▶ Cardiorenal syndrome
+├── Atrial Fibrillation (I48): 42% ─────────▶ Rhythm complication
+├── Diabetes (E11): 42% ────────────────────▶ Metabolic overlap
+├── Anemia (D64): 32% ──────────────────────▶ Outcome modifier
+├── COPD (J44): 28% ────────────────────────▶ Shared risk factors
+└── Depression (F32): 24% ──────────────────▶ Quality of life
+```
+
+**Medication Profile**:
+| Category | Medications | Rate |
+|----------|-------------|------|
+| RAAS inhibition | ACEi/ARB/ARNI | 78% |
+| Beta blocker | Carvedilol, metoprolol | 82% |
+| Diuretic | Furosemide, bumetanide | 72% |
+| MRA | Spironolactone | 42% |
+| SGLT2i | Dapagliflozin, empagliflozin | 28% |
+
+---
+
+### Example 3: Multimorbidity Pattern
+
+**Request**: "Generate multimorbidity profile for elderly Medicare population"
+
+**Response**:
+
+**Medicare 65+ Multimorbidity Profile**
+
+**Condition Prevalence** (Medicare 65+):
+| Condition | Prevalence |
+|-----------|------------|
+| Hypertension | 62% |
+| Hyperlipidemia | 52% |
+| Diabetes | 28% |
+| Ischemic Heart Disease | 24% |
+| Heart Failure | 14% |
+| COPD | 12% |
+| CKD | 18% |
+| Depression | 16% |
+| Atrial Fibrillation | 11% |
+| Alzheimer's/Dementia | 12% |
+
+**Multimorbidity Distribution**:
+| Conditions | Rate | Cumulative |
+|------------|------|------------|
+| 0 | 8% | 8% |
+| 1 | 14% | 22% |
+| 2 | 18% | 40% |
+| 3 | 20% | 60% |
+| 4 | 16% | 76% |
+| 5+ | 24% | 100% |
+
+**Common Clusters**:
+1. **Cardiovascular** (42%): HTN + HLD + CAD
+2. **Cardiometabolic** (28%): HTN + HLD + DM
+3. **Cardiopulmonary** (12%): HTN + HF + COPD
+4. **Mental-Physical** (18%): Depression + Chronic Pain + DM
 
 ---
 
@@ -404,18 +390,18 @@ Lower complexity
 
 ### Rate Checks
 - [ ] All rates between 0 and 1
-- [ ] Comorbidity rates clinically plausible
 - [ ] Severity distribution sums to ~1.0
+- [ ] Primary condition rate = 1.0 for disease cohort
 
-### Consistency Checks
-- [ ] Medications match conditions
-- [ ] Lab ranges appropriate for condition
-- [ ] Age patterns match epidemiology
+### Clinical Plausibility
+- [ ] Comorbidity rates consistent with literature
+- [ ] Medication rates match condition guidelines
+- [ ] Geographic variations reasonable
 
 ---
 
 ## Related Skills
 
 - [cohort-specification.md](cohort-specification.md) - Full cohort
-- [chronic-disease-prevalence.md](../health-patterns/chronic-disease-prevalence.md) - Population rates
-- [health-outcome-disparities.md](../health-patterns/health-outcome-disparities.md) - Demographic variation
+- [chronic-disease-prevalence.md](../health-patterns/chronic-disease-prevalence.md) - Geographic rates
+- [demographic-distribution.md](demographic-distribution.md) - Age effects
