@@ -20,6 +20,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `CLAUDE-CODE-CONTEXT.md` - Product table
   - PopulationSim v1 includes: population profiles, cohort specifications, SDOH analysis, health disparities, SVI/ADI integration, trial feasibility support
 
+- **[TrialSim]** Version 1.0 Complete - Status Updated to Active (2024-12-23)
+  - Updated product status from "In Development" to "Active"
+  - Files updated:
+    - `docs/HEALTHSIM-ARCHITECTURE-GUIDE.md` - Product table and directory tree
+    - `SKILL.md` - Product table and section headers
+  - TrialSim v1 includes: CDISC SDTM domains, therapeutic areas, trial phases, adverse events, efficacy endpoints, dimensional analytics
+
 ### Added
 
 - **[PopulationSim]** Documentation Audit Gaps Resolved (2024-12-23)

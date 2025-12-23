@@ -60,7 +60,7 @@ HealthSim replaces traditional programming with conversational AI. Users describ
 | **PatientSim** | Clinical/EMR | FHIR R4, HL7v2, C-CDA | Active |
 | **MemberSim** | Payer/Claims | X12 837/835, 834, 270/271 | Active |
 | **RxMemberSim** | Pharmacy/PBM | NCPDP D.0 | Active |
-| **TrialSim** | Clinical Trials | CDISC SDTM/ADaM | In Development |
+| **TrialSim** | Clinical Trials | CDISC SDTM/ADaM | Active |
 | **PopulationSim** | Demographics/SDOH | Census, ACS, SDOH indices | Active |
 | **NetworkSim** | Provider Networks | NPPES, NPI, taxonomy | Planned |
 
@@ -143,7 +143,7 @@ healthsim-workspace/
 │   │   ├── SKILL.md
 │   │   └── retail-pharmacy.md
 │   │
-│   ├── trialsim/                      # Clinical trials (In Development)
+│   ├── trialsim/                      # Clinical trials (Active)
 │   │   ├── SKILL.md
 │   │   ├── clinical-trials-domain.md
 │   │   ├── phase3-pivotal.md
