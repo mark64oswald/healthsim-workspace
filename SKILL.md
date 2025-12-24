@@ -18,7 +18,7 @@ HealthSim generates realistic synthetic healthcare data through natural conversa
 | **RxMemberSim** | Pharmacy/PBM | Prescriptions, pharmacy claims, formularies, DUR alerts, prior auths | Active |
 | **TrialSim** | Clinical Trials | Studies, sites, subjects, visits, adverse events, efficacy, CDISC output | Active |
 | **PopulationSim** | Demographics/SDOH | Population profiles, cohort specifications, health disparities, SVI/ADI analysis | Active |
-| **NetworkSim** | Provider Networks | Providers, facilities, networks, coverage patterns, contracts | Planned |
+| **NetworkSim** | Provider Networks | Providers, facilities, pharmacies, networks, benefit structures | Active |
 
 ## Quick Start
 
@@ -143,11 +143,24 @@ Load these for population intelligence and cohort definition:
 
 See: [skills/populationsim/](skills/populationsim/) for detailed skills
 
-### NetworkSim (Planned)
+### NetworkSim Scenarios
 
-This product is in planning:
+Load these for provider network knowledge and entity generation:
 
-- **NetworkSim**: Provider networks, facilities, contracts - [skills/networksim/](skills/networksim/)
+| Scenario | Use When | Key Elements |
+|----------|----------|---------------|
+| **Network Types** | HMO, PPO, EPO, POS, HDHP | Network definitions, cost/flexibility tradeoffs |
+| **Plan Structures** | deductible, copay, coinsurance, OOP | Benefit design, cost sharing, accumulators |
+| **Pharmacy Benefits** | tier structure, formulary, PBM | Tier design, formulary types, pharmacy networks |
+| **PBM Operations** | BIN, PCN, claims processing, rebates | Claim flow, adjudication, manufacturer rebates |
+| **Utilization Management** | prior auth, step therapy, QL | PA process, step requirements, quantity limits |
+| **Specialty Pharmacy** | specialty drugs, hub model, REMS | Limited distribution, specialty services |
+| **Network Adequacy** | access standards, time distance | Time/distance, provider ratios, ECPs |
+| **Provider Generation** | generate provider, NPI, physician | Synthetic providers with taxonomy, credentials |
+| **Facility Generation** | generate hospital, facility, CCN | Synthetic facilities with beds, services |
+| **Pharmacy Generation** | generate pharmacy, NCPDP | Synthetic pharmacies with type, chain |
+
+See: [skills/networksim/](skills/networksim/) for detailed skills
 
 ## Output Formats
 
