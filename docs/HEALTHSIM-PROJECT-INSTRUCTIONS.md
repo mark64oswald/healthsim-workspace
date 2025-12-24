@@ -12,6 +12,54 @@
 
 ---
 
+## Session Protocol (MANDATORY)
+
+### Starting Every Session
+
+1. **Read `CURRENT-WORK.md` FIRST** - This file tracks live state across sessions
+2. **Verify git state** matches documented state:
+   ```bash
+   cd /Users/markoswald/Developer/projects/healthsim-workspace
+   git log --oneline -3
+   ```
+3. **Confirm which phase/task is next** from the "Next Session Should" section
+4. **If recovering from interruption**: Run tests first to verify clean state
+
+### During a Session
+
+- **Commit frequently** - After each major file group, not at the very end
+- **If context feels heavy** - Commit current work, update CURRENT-WORK.md, suggest continuing in new session
+- **Verify as you go** - Don't batch all verification to the end
+
+### Ending Every Session
+
+1. **Run tests**: `cd packages/core && pytest tests/ -v`
+2. **Commit all changes** with descriptive message
+3. **Update `CURRENT-WORK.md`** with:
+   - What was completed (with commit hash)
+   - What's next
+   - Any important notes for next session
+4. **Push to remote**: `git push`
+
+### Multi-Session Initiatives
+
+For large initiatives (like NetworkSim), create atomic session prompts:
+
+```
+docs/initiatives/{initiative-name}/
+  MASTER-PLAN.md              # High-level roadmap (stable)
+  SESSION-01-description.md   # One session's work
+  SESSION-02-description.md   # One session's work
+  ...
+```
+
+Each session prompt should:
+- Fit comfortably in context (avoid 2000+ line monoliths)
+- Have ONE clear deliverable
+- End with verification steps and "update CURRENT-WORK.md"
+
+---
+
 ## Repository Structure
 
 **Single Repository**: `healthsim-workspace` (https://github.com/mark64oswald/healthsim-workspace)
@@ -160,6 +208,8 @@ From within `skills/{product}/`:
 
 ## Key Reminders
 
+- **FIRST: Read CURRENT-WORK.md** - Always check state before starting work
+- **LAST: Update CURRENT-WORK.md** - Always update state before ending session
 - **Single repo**: Clone `healthsim-workspace` to get everything
 - **Follow existing patterns**: Review similar files before creating new ones
 - **Cross-product integration**: Check for related skills in other products, add bidirectional references
@@ -168,6 +218,7 @@ From within `skills/{product}/`:
 - **Packages for Python**: Python infrastructure in `packages/`, not in `skills/`
 - **Progressive disclosure**: Master skill routes to detailed skills
 - **Extend, don't duplicate**: Reference canonical models
+- **Commit frequently**: Don't batch all commits to session end
 - **Test frequently**: Verify after each change
 - **Document as you go**: CHANGELOG.md every session
 
