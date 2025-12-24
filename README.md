@@ -22,6 +22,42 @@ The getting started guide includes:
 
 ---
 
+## 🆕 PopulationSim v2.0 - Data-Driven Generation
+
+**PopulationSim v2.0** embeds 148 MB of real CDC/Census data directly in the repository, enabling **evidence-based synthetic data generation** grounded in actual population statistics.
+
+| Data Source | Coverage | Records | Key Use |
+|-------------|----------|---------|--------|
+| CDC PLACES 2024 | 100% US counties, 100% tracts | 86,665 | Disease prevalence |
+| CDC SVI 2022 | 100% US counties, 100% tracts | 87,264 | Social vulnerability |
+| HRSA ADI 2023 | 100% US block groups | 242,336 | Area deprivation |
+
+### What This Enables
+
+```
+# Instead of generic data:
+"Generate 10 diabetic patients" → Generic 10.2% prevalence applied
+
+# With PopulationSim v2.0:
+"Generate 10 diabetic patients in Harris County, TX" → 
+  - Uses actual 12.1% diabetes rate from CDC PLACES
+  - Applies 72% minority population from SVI
+  - Includes real comorbidity correlations (HTN: 32.4%, obesity: 32.8%)
+  - Tracks data provenance in output
+```
+
+### Cross-Product Integration
+
+PopulationSim v2.0 data flows to all downstream products:
+- **PatientSim**: Demographics, conditions, SDOH Z-codes grounded in real rates
+- **MemberSim**: Plan mix, utilization patterns, risk adjustment based on actual prevalence
+- **RxMemberSim**: Adherence modeling using SVI socioeconomic factors
+- **TrialSim**: Site selection, feasibility, diversity planning with real population data
+
+See: [skills/populationsim/SKILL.md](skills/populationsim/SKILL.md) | [hello-healthsim/populationsim/](hello-healthsim/populationsim/)
+
+---
+
 ## What Can HealthSim Generate?
 
 | Product | What It Creates | Example Request |

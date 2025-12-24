@@ -340,4 +340,4 @@ Healthcare access data comes from multiple embedded sources:
 - [county-profile.md](../geographic/county-profile.md) - Full profiles
 - [svi-analysis.md](../sdoh/svi-analysis.md) - SDOH context
 - [health-outcome-disparities.md](health-outcome-disparities.md) - Access disparities
-- [membersim-cohort.md](../cohorts/membersim-cohort.md) - Coverage mix
+- [cohort-specification.md](../cohorts/cohort-specification.md) - Coverage mix

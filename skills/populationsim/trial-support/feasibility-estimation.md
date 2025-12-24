@@ -3,8 +3,10 @@ name: feasibility-estimation
 description: >
   Estimate eligible patient populations for clinical trial protocols based on
   inclusion/exclusion criteria. Uses disease prevalence, demographics, and
-  clinical characteristics to model the eligibility funnel. Triggers: "feasibility",
+  clinical characteristics to model the eligibility funnel. Supports PopulationSim
+  v2.0 embedded data for real CDC PLACES prevalence rates. Triggers: "feasibility",
   "eligible population", "how many patients qualify", "protocol feasibility".
+version: "2.0"
 ---
 
 # Feasibility Estimation Skill
@@ -41,6 +43,50 @@ The feasibility-estimation skill calculates eligible patient populations for cli
 | `exclusion` | object | No | {} | Exclusion criteria |
 | `geography` | string/array | No | "national" | Geographic scope |
 | `diversity_requirements` | object | No | - | Enrollment targets by demographic |
+
+---
+
+## Data Sources (Embedded v2.0)
+
+When geography is specified, feasibility estimation uses real CDC PLACES and SVI data:
+
+| Data Source | File | Key Measures |
+|-------------|------|-------------|
+| CDC PLACES (County) | `data/county/places_county_2024.csv` | DIABETES_CrudePrev, OBESITY_CrudePrev, BPHIGH_CrudePrev |
+| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | All 36 health measures at tract level |
+| CDC SVI (County) | `data/county/svi_county_2022.csv` | RPL_THEMES, EP_MINRTY, EP_UNINSUR |
+| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | All SVI themes for retention modeling |
+
+### Data-Driven Feasibility Pattern
+
+```python
+# Instead of generic national prevalence:
+diabetes_national = 0.102  # Generic
+
+# Look up actual county-level prevalence:
+from data/county/places_county_2024.csv where CountyFIPS = '48201':
+  DIABETES_CrudePrev = 12.1%  # Harris County actual rate
+  OBESITY_CrudePrev = 32.8%
+  BPHIGH_CrudePrev = 32.4%
+
+# Apply to site catchment population for accurate eligible counts
+```
+
+### Provenance Tracking
+
+Feasibility outputs include data source attribution:
+
+```json
+{
+  "data_provenance": {
+    "prevalence_source": "CDC_PLACES_2024",
+    "prevalence_year": 2022,
+    "svi_source": "CDC_SVI_2022",
+    "geography_level": "county",
+    "file_reference": "populationsim/data/county/places_county_2024.csv"
+  }
+}
+```
 
 ---
 

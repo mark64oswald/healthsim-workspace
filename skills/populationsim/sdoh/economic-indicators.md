@@ -351,4 +351,4 @@ The Area Deprivation Index (`data/block_group/adi_blockgroup_2023.csv`) incorpor
 - [svi-analysis.md](svi-analysis.md) - Includes economic theme
 - [adi-analysis.md](adi-analysis.md) - Economic deprivation
 - [healthcare-access-analysis.md](../health-patterns/healthcare-access-analysis.md) - Insurance
-- [membersim-cohort.md](../cohorts/membersim-cohort.md) - Coverage distribution
+- [cohort-specification.md](../cohorts/cohort-specification.md) - Coverage distribution

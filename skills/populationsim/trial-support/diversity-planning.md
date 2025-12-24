@@ -2,9 +2,10 @@
 name: diversity-planning
 description: >
   Plan for diverse clinical trial enrollment meeting FDA requirements and
-  reflecting disease epidemiology. Uses population demographics to set targets
-  and identify high-potential sites. Triggers: "diversity requirements",
+  reflecting disease epidemiology. Uses PopulationSim v2.0 embedded CDC SVI data
+  for minority population % by geography. Triggers: "diversity requirements",
   "minority enrollment", "representative sample", "diversity action plan".
+version: "2.0"
 ---
 
 # Diversity Planning Skill
@@ -39,6 +40,55 @@ The diversity-planning skill supports development of FDA-compliant diversity act
 | `target_enrollment` | int | No | 500 | Total enrollment |
 | `geography` | string | No | "national" | Geographic scope |
 | `phase` | string | No | "Phase 3" | Trial phase |
+
+---
+
+## Data Sources (Embedded v2.0)
+
+Diversity planning uses SVI and PLACES data for evidence-based demographic targeting:
+
+| Data Source | File | Application |
+|-------------|------|-------------|
+| CDC SVI (County) | `data/county/svi_county_2022.csv` | EP_MINRTY (minority %), demographic breakdown |
+| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | Granular minority population for site catchment |
+| CDC PLACES (County) | `data/county/places_county_2024.csv` | Disease prevalence by geography |
+| Geography Crosswalks | `data/crosswalks/*.csv` | FIPS to metro area mapping |
+
+### Data-Driven Diversity Targeting
+
+```python
+# Find high-diversity metros for trial sites:
+for county in us_counties:
+    minority_pct = lookup(svi_county, county.fips, 'EP_MINRTY')
+    disease_prev = lookup(places_county, county.fips, 'DIABETES_CrudePrev')
+    
+    # Calculate minority disease population
+    minority_eligible = county.population * minority_pct * disease_prev
+    
+    if minority_pct > 0.50 and minority_eligible > 10000:
+        high_diversity_sites.append(county)
+
+# Result: Evidence-based list for FDA Diversity Action Plan
+```
+
+### Provenance for FDA Submission
+
+```json
+{
+  "diversity_plan": {
+    "target_minority_enrollment": 0.45,
+    "data_provenance": {
+      "demographic_source": "CDC_SVI_2022",
+      "prevalence_source": "CDC_PLACES_2024",
+      "methodology": "Population-weighted minority disease burden",
+      "file_references": [
+        "populationsim/data/county/svi_county_2022.csv",
+        "populationsim/data/county/places_county_2024.csv"
+      ]
+    }
+  }
+}
+```
 
 ---
 
@@ -445,7 +495,7 @@ The diversity-planning skill supports development of FDA-compliant diversity act
 
 ## Related Skills
 
-- [site-feasibility.md](site-feasibility.md) - Site-level demographics
-- [enrollment-projections.md](enrollment-projections.md) - Timeline impact
+- [site-selection-support.md](site-selection-support.md) - Site-level demographics
+- [enrollment-projection.md](enrollment-projection.md) - Timeline impact
 - [health-outcome-disparities.md](../health-patterns/health-outcome-disparities.md) - Disparity data
 - [county-profile.md](../geographic/county-profile.md) - Geographic demographics

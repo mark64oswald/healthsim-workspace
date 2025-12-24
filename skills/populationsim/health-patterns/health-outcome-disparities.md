@@ -367,4 +367,4 @@ Disparity analysis uses embedded data with geographic stratification:
 - [svi-analysis.md](../sdoh/svi-analysis.md) - SDOH context
 - [diversity-planning.md](../trial-support/diversity-planning.md) - Trial diversity
 - [census-tract-analysis.md](../geographic/census-tract-analysis.md) - Tract hotspots
-- [patientsim-cohort.md](../cohorts/patientsim-cohort.md) - Diverse cohorts
+- [cohort-specification.md](../cohorts/cohort-specification.md) - Diverse cohorts

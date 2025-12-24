@@ -3,8 +3,10 @@ name: site-selection-support
 description: >
   Support clinical trial site selection with population-based analysis of
   eligible patient density, demographic diversity, and geographic accessibility.
-  Triggers: "site selection", "where to conduct trial", "best locations for
-  trial", "site recommendations", "trial site analysis".
+  Uses PopulationSim v2.0 embedded CDC PLACES and SVI data for evidence-based
+  site recommendations. Triggers: "site selection", "where to conduct trial",
+  "best locations for trial", "site recommendations", "trial site analysis".
+version: "2.0"
 ---
 
 # Site Selection Support Skill
@@ -43,6 +45,55 @@ The site-selection-support skill provides data-driven recommendations for clinic
 | `diversity_targets` | object | No | - | Demographic enrollment goals |
 | `geography_constraints` | object | No | - | Region/state restrictions |
 | `site_type` | string | No | "all" | "academic", "community", "integrated" |
+
+---
+
+## Data Sources (Embedded v2.0)
+
+Site selection uses real CDC PLACES and SVI data for evidence-based recommendations:
+
+| Data Source | File | Application |
+|-------------|------|-------------|
+| CDC PLACES (County) | `data/county/places_county_2024.csv` | Disease prevalence by county |
+| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | Granular prevalence for site catchment |
+| CDC SVI (County) | `data/county/svi_county_2022.csv` | Minority population %, access barriers |
+| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | SDOH factors for retention modeling |
+| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | Deprivation for recruitment challenges |
+
+### Data-Driven Site Scoring
+
+```python
+# Score candidate site locations using real data:
+for county in candidate_counties:
+    # Look up actual prevalence
+    prevalence = lookup(places_county, county.fips, 'DIABETES_CrudePrev')
+    
+    # Get diversity potential from SVI
+    minority_pct = lookup(svi_county, county.fips, 'EP_MINRTY')
+    
+    # Calculate eligible population
+    eligible = county.population * prevalence * protocol_filters
+    
+    # Score with real data, not estimates
+    score = weighted_score(eligible, minority_pct, competition)
+```
+
+### Provenance in Output
+
+```json
+{
+  "site_recommendation": {
+    "metro": "Houston-The Woodlands-Sugar Land",
+    "eligible_population": 128000,
+    "data_provenance": {
+      "source": "CDC_PLACES_2024",
+      "geography": "Harris County (48201)",
+      "prevalence_rate": 0.121,
+      "file": "populationsim/data/county/places_county_2024.csv"
+    }
+  }
+}
+```
 
 ---
 

@@ -395,7 +395,7 @@ High-SDOH populations show different cost patterns:
 
 ## Related Skills
 
-- [Geographic Intelligence](../skills/geographic-intelligence.md)
-- [Cohort Definition](../skills/cohort-definition.md)
-- [MemberSim Enrollment](../../scenarios/membersim/skills/member-enrollment.md)
-- [MemberSim Claims](../../scenarios/membersim/skills/claims-generation.md)
+- [Geographic Intelligence](../geographic/county-profile.md)
+- [Cohort Definition](../cohorts/cohort-specification.md)
+- [MemberSim SKILL](../../membersim/SKILL.md)
+- [Cross-Product Integration](cross-product-integration.md)

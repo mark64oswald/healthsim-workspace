@@ -133,7 +133,7 @@ SDTM domains use CDISC Controlled Terminology. Key codelists:
 - [../phase3-pivotal.md](../phase3-pivotal.md) - Phase 3 trial patterns
 
 ### Formats
-- [../../formats/cdisc-sdtm.md](../../formats/cdisc-sdtm.md) - SDTM output format
+- [../../../formats/cdisc-sdtm.md](../../../formats/cdisc-sdtm.md) - SDTM output format
 
 ### External References
 - [CDISC SDTM IG](https://www.cdisc.org/standards/foundational/sdtm) - Official implementation guide

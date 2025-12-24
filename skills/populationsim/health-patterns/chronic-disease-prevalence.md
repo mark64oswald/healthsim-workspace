@@ -378,7 +378,7 @@ The PLACES files use a **wide format** with columns for each measure:
 - [health-outcome-disparities.md](health-outcome-disparities.md) - Disparities by group
 - [county-profile.md](../geographic/county-profile.md) - Full county profile
 - [cohort-specification.md](../cohorts/cohort-specification.md) - Clinical profiles
-- [feasibility-assessment.md](../trial-support/feasibility-assessment.md) - Trial planning
+- [feasibility-estimation.md](../trial-support/feasibility-estimation.md) - Trial planning
 
 ---
 

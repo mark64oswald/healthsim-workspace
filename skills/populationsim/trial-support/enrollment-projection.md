@@ -2,9 +2,10 @@
 name: enrollment-projection
 description: >
   Project clinical trial enrollment timelines based on site network, eligible
-  population, and historical recruitment rates. Models site ramp-up, seasonal
-  effects, and competitive impact. Triggers: "enrollment projection", "recruitment
-  timeline", "enrollment rate", "how long to enroll", "enrollment forecast".
+  population, and historical recruitment rates. Uses PopulationSim v2.0 embedded
+  data for SDOH-adjusted retention modeling. Triggers: "enrollment projection",
+  "recruitment timeline", "enrollment rate", "how long to enroll", "enrollment forecast".
+version: "2.0"
 ---
 
 # Enrollment Projection Skill
@@ -43,6 +44,57 @@ The enrollment-projection skill models clinical trial enrollment timelines by co
 | `screen_to_enroll` | float | No | 0.35 | Screen-to-randomize ratio |
 | `site_activation_schedule` | object | No | standard | Site ramp-up pattern |
 | `competition_factor` | float | No | 1.0 | Competitive adjustment |
+
+---
+
+## Data Sources (Embedded v2.0)
+
+Enrollment projections use SVI data for SDOH-adjusted retention modeling:
+
+| Data Source | File | Application |
+|-------------|------|-------------|
+| CDC SVI (County) | `data/county/svi_county_2022.csv` | Access barriers, retention risk |
+| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | Granular SDOH for site-level adjustment |
+| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | Deprivation-based dropout risk |
+| CDC PLACES (County) | `data/county/places_county_2024.csv` | Uninsured rate, access to care |
+
+### SDOH-Adjusted Retention Model
+
+```python
+# Base retention rate
+base_retention = 0.85
+
+# Look up site catchment SVI
+site_svi = lookup(svi_county, site.county_fips, 'RPL_THEMES')
+uninsured = lookup(svi_county, site.county_fips, 'EP_UNINSUR')
+
+# Apply SDOH adjustments
+if site_svi > 0.75:  # High vulnerability
+    retention_modifier = 0.90  # 10% higher dropout
+elif site_svi > 0.50:  # Moderate
+    retention_modifier = 0.95
+else:
+    retention_modifier = 1.0
+
+adjusted_retention = base_retention * retention_modifier
+```
+
+### Provenance in Projections
+
+```json
+{
+  "enrollment_projection": {
+    "months_to_target": 14,
+    "retention_rate": 0.81,
+    "sdoh_adjustment": {
+      "source": "CDC_SVI_2022",
+      "mean_svi": 0.62,
+      "retention_modifier": 0.95,
+      "file": "populationsim/data/county/svi_county_2022.csv"
+    }
+  }
+}
+```
 
 ---
 

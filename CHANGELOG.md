@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **[PopulationSim]** Trial Support Skills v2.0 Update (2024-12-24)
+  - Updated all trial-support skills with embedded data references:
+    - `feasibility-estimation.md` - Added CDC PLACES lookup for prevalence, SVI for retention
+    - `site-selection-support.md` - Added data-driven site scoring with provenance
+    - `enrollment-projection.md` - Added SDOH-adjusted retention modeling
+    - `diversity-planning.md` - Added SVI minority population % for FDA Diversity Action Plans
+    - `README.md` - Updated Data Sources section with v2.0 embedded files
+  - All skills now explicitly reference embedded data files and include provenance tracking
+  - Version markers added to YAML frontmatter
+
+- **[Documentation]** Main README PopulationSim v2.0 Highlight (2024-12-24)
+  - Added prominent "PopulationSim v2.0 - Data-Driven Generation" section
+  - Includes data source table (148 MB across 3 sources)
+  - Shows before/after example of data-driven generation
+  - Cross-product integration summary with links
+
 - **[MemberSim]** PopulationSim v2.0 Data Integration (2024-12-23)
   - Updated SKILL.md with comprehensive "Cross-Product: PopulationSim v2.0" section
   - Added data-driven generation pattern with embedded data lookup

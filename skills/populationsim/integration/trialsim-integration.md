@@ -508,7 +508,8 @@ PopulationSim SDOH profiles predict retention challenges:
 
 ## Related Skills
 
-- [Geographic Intelligence](../skills/geographic-intelligence.md)
-- [Health Patterns](../skills/health-patterns.md)
-- [Trial Site Analysis](../skills/trial-site-analysis.md)
-- [TrialSim Protocol Design](../../scenarios/trialsim/skills/protocol-design.md)
+- [Geographic Intelligence](../geographic/county-profile.md)
+- [Health Patterns](../health-patterns/chronic-disease-prevalence.md)
+- [Feasibility Estimation](../trial-support/feasibility-estimation.md)
+- [Site Selection Support](../trial-support/site-selection-support.md)
+- [TrialSim SKILL](../../trialsim/SKILL.md)

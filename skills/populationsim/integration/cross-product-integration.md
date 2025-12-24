@@ -401,7 +401,10 @@ MemberSim plan mix should reflect PopulationProfile insurance coverage.
 
 ## Related Documentation
 
-- [PatientSim Integration](../../scenarios/patientsim/README.md)
-- [MemberSim Integration](../../scenarios/membersim/README.md)
-- [RxMemberSim Integration](../../scenarios/rxmembersim/README.md)
-- [TrialSim Integration](../../scenarios/trialsim/README.md)
+- [PatientSim Integration](patientsim-integration.md)
+- [MemberSim Integration](membersim-integration.md)
+- [TrialSim Integration](trialsim-integration.md)
+- [PatientSim SKILL](../../patientsim/SKILL.md)
+- [MemberSim SKILL](../../membersim/SKILL.md)
+- [RxMemberSim SKILL](../../rxmembersim/SKILL.md)
+- [TrialSim SKILL](../../trialsim/SKILL.md)

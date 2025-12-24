@@ -444,7 +444,7 @@ Metro area profiles aggregate data from embedded files:
 - [county-profile.md](county-profile.md) - Individual county profiles
 - [census-tract-analysis.md](census-tract-analysis.md) - Tract-level within metro
 - [custom-region-builder.md](custom-region-builder.md) - Custom multi-county regions
-- [site-selection.md](../trial-support/site-selection.md) - Rank metros for trial sites
+- [site-selection-support.md](../trial-support/site-selection-support.md) - Rank metros for trial sites
 - [chronic-disease-prevalence.md](../health-patterns/chronic-disease-prevalence.md) - Disease focus
 
 ---

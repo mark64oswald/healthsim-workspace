@@ -3,7 +3,9 @@ name: populationsim-trial-support
 description: >
   Trial support skills for clinical trial feasibility and planning. Provides
   population-level insights for site selection, enrollment projection, and
-  diversity planning. Complements TrialSim's subject-level generation.
+  diversity planning. Uses v2.0 embedded CDC PLACES and SVI data for evidence-based
+  trial planning. Complements TrialSim's subject-level generation.
+version: "2.0"
 ---
 
 # Trial Support Skills
@@ -148,15 +150,24 @@ Screen-to-enroll: 35%
 
 ---
 
-## Data Sources
+## Data Sources (Embedded v2.0)
 
-| Source | Content | Use |
-|--------|---------|-----|
-| CDC PLACES | Disease prevalence | Base population estimates |
-| Census ACS | Demographics | Age, race, geography |
-| CDC SVI | Vulnerability | Diversity, access factors |
-| AHRQ HCUP | Utilization | Care-seeking behavior |
-| ClinicalTrials.gov | Competition | Active trials by indication |
+Trial support skills use PopulationSim's embedded data package with 100% US coverage:
+
+| Source | Embedded File | Records | Application |
+|--------|---------------|---------|-------------|
+| CDC PLACES (County) | `data/county/places_county_2024.csv` | 3,143 | Disease prevalence |
+| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | 83,522 | Site catchment analysis |
+| CDC SVI (County) | `data/county/svi_county_2022.csv` | 3,144 | Diversity, retention risk |
+| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | 84,120 | SDOH-based adjustments |
+| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | 242,336 | Deprivation-based modeling |
+
+### v2.0 Benefits
+
+- **Real Prevalence Rates**: Use actual CDC PLACES data instead of generic estimates
+- **Evidence-Based Diversity**: SVI EP_MINRTY field for minority population %
+- **SDOH-Adjusted Retention**: Model dropout risk using real vulnerability data
+- **Provenance Tracking**: All outputs cite data source, year, and file reference
 
 ---
 
