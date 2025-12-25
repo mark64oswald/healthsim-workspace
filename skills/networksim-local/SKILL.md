@@ -1,163 +1,157 @@
 ---
-name: NetworkSim-Local Master Skill
-description: Real provider data integration using NPPES NPI Registry. Lookup providers, facilities, and pharmacies by NPI, geography, or specialty. Trigger phrases include "lookup NPI", "find provider", "real provider data", "NPPES lookup", "actual NPI"
-version: 0.1.0
-status: development
+name: NetworkSim-Local
+description: Real provider network data integration using local NPPES registry. Provides actual NPIs, provider names, specialties, and locations for cross-product integration.
+version: 1.1.0
+status: active
 product: networksim-local
+data_source: NPPES NPI Registry (CMS)
+record_count: 8,937,975
+last_updated: 2024-12-25
 ---
 
 # NetworkSim-Local
 
-> Real provider data from NPPES NPI Registry for authentic healthcare simulations.
+Real provider network data from NPPES NPI Registry for HealthSim cross-product integration.
 
 ## Overview
 
-NetworkSim-Local provides **actual provider, facility, and pharmacy data** from public CMS sources. Unlike NetworkSim (which synthesizes data), NetworkSim-Local returns real NPIs, addresses, and specialties from the NPPES registry.
+NetworkSim-Local provides access to **8.9 million real healthcare providers** from the CMS NPPES registry, enabling realistic provider data in synthetic healthcare scenarios. Unlike NetworkSim v1.0 (which generates synthetic providers), NetworkSim-Local uses actual registered providers.
+
+## Quick Start
+
+```
+"Find cardiologists in California"
+"Look up NPI 1234567890"
+"Pharmacies near ZIP 92101"
+"Hospitals in Texas"
+"Get a random physician for a patient encounter in NY"
+```
 
 ## Trigger Phrases
 
-- "Look up NPI [number]"
-- "Find real provider for..."
-- "What actual providers are in [location]?"
-- "NPPES lookup for..."
-- "Find cardiologists in [city/state]"
-- "Real pharmacy near [location]"
-- "Actual hospital in [area]"
-
-## Capabilities
-
-| Capability | Description |
-|------------|-------------|
-| **Provider Lookup** | Find provider by NPI, name, or specialty |
-| **Geographic Search** | Find providers in city, state, or ZIP |
-| **Specialty Search** | Find providers by taxonomy code |
-| **Facility Lookup** | Find hospitals, ASCs, SNFs by location |
-| **Pharmacy Lookup** | Find pharmacies by location or type |
-
-## Data Coverage
-
-- **Provider Types**: Physicians, NPs, PAs, pharmacies, facilities
-- **Geographic**: Top 10 US states (CA, TX, NY, FL, IL, PA, OH, GA, NC, MI)
-- **Records**: ~3 million active providers
-- **Source**: NPPES NPI Registry (updated monthly)
-
-## Response Format
-
-All responses include **provenance tracking**:
-
-```
-Provider: John Smith, MD
-NPI: 1234567890
-Specialty: Internal Medicine (207R00000X)
-Address: 123 Medical Center Dr, San Diego, CA 92101
-
-Source: NPPES Registry, November 2025
-```
+| Category | Example Phrases |
+|----------|-----------------|
+| **Provider Lookup** | "lookup NPI", "find provider", "who is NPI" |
+| **Geographic Search** | "providers in [city]", "doctors in [state]", "near ZIP" |
+| **Specialty Search** | "find cardiologists", "primary care in", "specialists" |
+| **Facility Search** | "hospitals in", "clinics near", "urgent care" |
+| **Pharmacy Search** | "pharmacies in", "drugstore near", "retail pharmacy" |
+| **Integration** | "real NPI for", "actual provider for PatientSim" |
 
 ## Skills
 
-### Provider Skills
-- [provider-lookup](skills/provider-lookup.md) - Lookup by NPI or name
-- [specialty-search](skills/specialty-search.md) - Search by taxonomy code
-- [geographic-search](skills/geographic-search.md) - Search by location
+| Skill | Description | Status |
+|-------|-------------|--------|
+| [Provider Lookup](skills/provider-lookup.md) | Look up by NPI or name | ✅ Active |
+| [Geographic Search](skills/geographic-search.md) | Find by city, state, ZIP | ✅ Active |
+| [Specialty Search](skills/specialty-search.md) | Find by taxonomy code | ✅ Active |
+| [Facility Lookup](skills/facility-lookup.md) | Find hospitals, clinics | ✅ Active |
+| [Pharmacy Lookup](skills/pharmacy-lookup.md) | Find pharmacies | ✅ Active |
+| [Cross-Product Integration](skills/cross-product-integration.md) | Integration with other HealthSim products | ✅ Active |
 
-### Facility Skills
-- [facility-lookup](skills/facility-lookup.md) - Hospitals and facilities
-- [pharmacy-lookup](skills/pharmacy-lookup.md) - Pharmacies by location
+## Database Statistics
+
+| Metric | Value |
+|--------|-------|
+| **Total Providers** | 8,937,975 |
+| **Individuals** | 7,063,800 (79%) |
+| **Organizations** | 1,874,175 (21%) |
+| **States/Territories** | 56 |
+| **Database Size** | 1.7 GB |
+| **Source Date** | December 2024 |
+
+### Top Provider Categories
+
+| Category | Count |
+|----------|-------|
+| Physicians (Allopathic) | 1,475,196 |
+| Physical Therapists | 680,315 |
+| Nurse Practitioners | 477,961 |
+| Psychologists | 451,029 |
+| Pharmacists | 319,976 |
+| Clinics | 270,523 |
+| Physician Assistants | 211,133 |
 
 ## Cross-Product Integration
 
-| Product | Use Case |
-|---------|----------|
-| **PatientSim** | Real attending physician NPIs |
-| **MemberSim** | Actual provider network data |
-| **RxMemberSim** | Real pharmacy NPIs and addresses |
-| **PopulationSim** | Provider density by geography |
+NetworkSim-Local enhances other HealthSim products:
 
-## Prerequisites
+| Product | Integration Use Case |
+|---------|---------------------|
+| **PatientSim** | Real attending physician NPIs for encounters |
+| **MemberSim** | Actual facility NPIs for claims |
+| **RxMemberSim** | Real pharmacy NPIs for prescriptions |
+| **TrialSim** | Real investigator NPIs for trial sites |
+| **PopulationSim** | Provider density analysis by geography |
 
-NetworkSim-Local requires local data setup:
+## Data Sources
 
-1. Download NPPES data: `python setup/download-nppes.py`
-2. Build database: `python setup/build-local-db.py`
-3. Verify: `python setup/validate-db.py`
+| Source | Description | Size |
+|--------|-------------|------|
+| **NPPES Registry** | National Plan and Provider Enumeration System | 8.9M records |
+| **NUCC Taxonomy** | Provider taxonomy code reference | 900+ codes |
 
-See [developer-guide.md](developer-guide.md) for complete setup instructions.
+## Setup Requirements
 
-## Examples
+```bash
+# Install dependencies
+pip install duckdb pandas
 
-### Example 1: NPI Lookup
-
-**User**: Look up NPI 1234567890
-
-**Response**:
-```
-Provider: Jane Doe, MD, FACC
-NPI: 1234567890
-Entity Type: Individual
-Specialty: Cardiovascular Disease (207RC0000X)
-Practice Location: 456 Heart Center Blvd, Los Angeles, CA 90001
-Phone: (310) 555-1234
-
-Source: NPPES Registry, November 2025
+# Run setup (downloads and builds database)
+cd skills/networksim-local/setup
+python setup-all.py
 ```
 
-### Example 2: Geographic Search
+## File Structure
 
-**User**: Find orthopedic surgeons in Houston, TX
-
-**Response**:
 ```
-Found 847 orthopedic surgeons in Houston, TX
-
-Top Results:
-1. Robert Johnson, MD - NPI: 1122334455
-   Texas Orthopedic Associates, 789 Spine Way, Houston, TX 77001
-   
-2. Maria Garcia, DO - NPI: 2233445566
-   Houston Sports Medicine, 321 Joint Dr, Houston, TX 77002
-   
-[... additional results available]
-
-Source: NPPES Registry, November 2025
-```
-
-### Example 3: Facility Search
-
-**User**: What hospitals are in Cook County, IL?
-
-**Response**:
-```
-Found 52 hospitals in Cook County, IL
-
-Major Facilities:
-1. Northwestern Memorial Hospital
-   NPI: 1234567890 | CCN: 140281
-   Beds: 894 | Type: General Acute Care
-   
-2. Rush University Medical Center
-   NPI: 2345678901 | CCN: 140119
-   Beds: 671 | Type: Academic Medical Center
-
-[... additional facilities]
-
-Source: NPPES Registry + CMS Provider of Services, November 2025
+networksim-local/
+├── SKILL.md              # This file
+├── README.md             # Product overview
+├── developer-guide.md    # Developer documentation
+├── data/                 # Local data (not in git)
+│   ├── nppes/            # NPPES CSV files
+│   ├── taxonomy/         # Taxonomy reference
+│   └── networksim-local.duckdb  # Built database
+├── setup/                # Setup scripts
+│   ├── download-nppes.py
+│   ├── build-database.py
+│   └── validate-db.py
+├── skills/               # Skill definitions
+│   ├── provider-lookup.md
+│   ├── geographic-search.md
+│   ├── specialty-search.md
+│   ├── facility-lookup.md
+│   ├── pharmacy-lookup.md
+│   └── cross-product-integration.md
+└── queries/              # SQL templates
+    └── provider-queries.sql
 ```
 
-## Validation Rules
+## Comparison: NetworkSim vs NetworkSim-Local
 
-1. NPIs must be 10-digit numbers passing Luhn check
-2. Taxonomy codes must exist in NUCC code set
-3. State codes must be valid 2-letter abbreviations
-4. Results limited to active providers (no deactivation date)
+| Feature | NetworkSim v1.0 | NetworkSim-Local |
+|---------|-----------------|------------------|
+| **Data Source** | Generated/Synthetic | Real NPPES data |
+| **NPIs** | Synthetic (valid format) | Actual registered |
+| **Provider Names** | Generated | Real names |
+| **Locations** | Based on PopulationSim | Actual addresses |
+| **Use Case** | Full synthetic data | Real data integration |
+| **Setup** | None (on-demand) | Requires data download |
+| **Size** | N/A | 1.7 GB database |
 
-## Related Skills
+## Related Products
 
 - [NetworkSim](../networksim/SKILL.md) - Synthetic provider generation
-- [PopulationSim](../populationsim/SKILL.md) - Geographic demographics
+- [PatientSim](../patientsim/SKILL.md) - Patient and EMR data
+- [MemberSim](../membersim/SKILL.md) - Health plan claims
+- [RxMemberSim](../rxmembersim/SKILL.md) - Pharmacy claims
+- [TrialSim](../trialsim/SKILL.md) - Clinical trial data
+- [PopulationSim](../populationsim/SKILL.md) - Demographics and SDOH
 
-## Notes
+## Version History
 
-- **Data is local only** - requires setup before use
-- **Updates manually** - download new NPPES monthly as needed
-- **Experimental** - parallel implementation to NetworkSim v1.0
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.1.0 | 2024-12-25 | Added cross-product integration skill |
+| 1.0.0 | 2024-12-24 | Initial release with 8.9M providers |
