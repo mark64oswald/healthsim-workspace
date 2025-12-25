@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- **[PopulationSim]** CSV data file parsing issues (2024-12-25)
+  - Removed UTF-8 BOM from `svi_tract_2022.csv` that corrupted first column header
+  - Cleaned `adi_blockgroup_2023.csv`: removed R export index column and unnecessary quotes
+  - All 9 data files now have consistent, clean header formatting
+
 ### Changed
 
 - **[NetworkSim]** Post-implementation polish (2024-12-24)
