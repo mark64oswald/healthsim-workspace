@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **[NetworkSim]** Post-implementation polish (2024-12-24)
+  - Updated root README.md: NetworkSim status changed from "planned" to active
+  - Added NetworkSim cross-product section to RxMemberSim SKILL.md
+  - Verified all cross-product references in place across ecosystem
+
 ### Added
 
 - **[NetworkSim]** Phase 1 Complete - Foundation and Reference Knowledge (2024-12-24)

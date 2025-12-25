@@ -440,6 +440,18 @@ Read from: skills/populationsim/data/county/svi_county_2022.csv
 
 > **Key Principle:** When geography is specified, always ground generation in real PopulationSim data. Never use generic national averages when local data is available.
 
+### Cross-Product: NetworkSim (Provider Networks)
+
+NetworkSim provides realistic provider and facility entities for clinical encounters:
+
+| PatientSim Need | NetworkSim Skill | Generated Entity |
+|-----------------|------------------|------------------|
+| Attending physician | [provider-for-encounter.md](../networksim/integration/provider-for-encounter.md) | Provider with NPI, credentials |
+| Hospital/facility | [synthetic-facility.md](../networksim/synthetic/synthetic-facility.md) | Facility with CCN |
+| Specialty referral | [synthetic-provider.md](../networksim/synthetic/synthetic-provider.md) | Specialist with taxonomy |
+
+> **Integration Pattern:** Generate encounters in PatientSim first, then use NetworkSim to add realistic provider entities with proper NPIs, credentials, and hospital affiliations.
+
 ### Cross-Product: TrialSim (Clinical Trials)
 
 For patients enrolled in clinical trials:

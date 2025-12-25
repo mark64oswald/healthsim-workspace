@@ -528,6 +528,18 @@ From svi_county_2022.csv (FIPS 04013):
 
 > **Key Principle:** When geography is specified, always ground member generation in real PopulationSim data. This enables actuarially realistic synthetic member panels for testing claims systems, risk adjustment, and care management.
 
+### Cross-Product: NetworkSim (Provider Networks)
+
+NetworkSim provides network context for claims processing:
+
+| MemberSim Need | NetworkSim Skill | Integration |
+|----------------|------------------|-------------|
+| Provider network status | [network-for-member.md](../networksim/integration/network-for-member.md) | In-network vs OON determination |
+| Benefit cost sharing | [benefit-for-claim.md](../networksim/integration/benefit-for-claim.md) | Copay, coinsurance, deductible |
+| Network configuration | [synthetic-network.md](../networksim/synthetic/synthetic-network.md) | HMO/PPO/tiered structure |
+
+> **Integration Pattern:** Use NetworkSim to determine network status before adjudicating claims. Network type (HMO/PPO) affects whether out-of-network claims are covered and at what cost share.
+
 ### Cross-Product: TrialSim (Clinical Trials)
 
 Members may participate in clinical trials with claims integration:

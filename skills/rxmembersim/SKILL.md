@@ -530,6 +530,19 @@ From svi_county_2022.csv (FIPS 21195):
 
 > **Key Principle:** When geography is specified, ground pharmacy claims in real PopulationSim data. This enables realistic medication adherence modeling, generic utilization patterns, and SDOH-influenced pharmacy access behaviors.
 
+### Cross-Product: NetworkSim (Pharmacy Networks)
+
+NetworkSim provides realistic pharmacy entities and benefit structures for prescription claims:
+
+| RxMemberSim Need | NetworkSim Skill | Generated Entity |
+|------------------|------------------|------------------|
+| Dispensing pharmacy | [pharmacy-for-rx.md](../networksim/integration/pharmacy-for-rx.md) | Pharmacy with NCPDP, NPI |
+| Formulary context | [formulary-for-rx.md](../networksim/integration/formulary-for-rx.md) | Tier, PA requirements |
+| Pharmacy benefit | [synthetic-pharmacy-benefit.md](../networksim/synthetic/synthetic-pharmacy-benefit.md) | Benefit design |
+| Specialty pharmacy | [specialty-pharmacy.md](../networksim/reference/specialty-pharmacy.md) | Limited distribution, hub model |
+
+> **Integration Pattern:** Generate prescription claims in RxMemberSim first, then use NetworkSim to add realistic pharmacy entities with proper NCPDP IDs, network status, and formulary context.
+
 ### Output Formats
 - [../../formats/ncpdp-d0.md](../../formats/ncpdp-d0.md) - NCPDP D.0 format
 - [../../formats/csv.md](../../formats/csv.md) - CSV export

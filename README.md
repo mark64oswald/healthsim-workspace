@@ -67,7 +67,7 @@ See: [skills/populationsim/SKILL.md](skills/populationsim/SKILL.md) | [hello-hea
 | **RxMemberSim** | Pharmacy/PBM data | "Generate a drug interaction alert for warfarin" |
 | **TrialSim** | Clinical trial data | "Generate a Phase III oncology trial with 200 subjects" |
 | **PopulationSim** | Demographics/SDOH | "Generate a population profile for Maricopa County" |
-| **NetworkSim** | Provider networks *(planned)* | "Generate a cardiology provider network for Atlanta" |
+| **NetworkSim** | Provider networks | "Generate a cardiology provider network for Atlanta" |
 
 ### Clinical Domains
 
