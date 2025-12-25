@@ -1,25 +1,24 @@
-# NetworkSim-Local Data Files
-# These files are stored locally and NOT committed to Git
+# NetworkSim-Local Data - Excluded from Git
+# Only README.md and .gitignore are committed
 
-# Raw data directories
-raw/
+# NPPES files
+nppes/
+*.csv
+*.zip
 
-# Processed database files
-processed/
+# Taxonomy files
+taxonomy/*.csv
+
+# CMS Provider of Services
+cms-pos/
+
+# DuckDB database
 *.duckdb
 *.duckdb.wal
 
-# Source data files
-*.csv
-*.CSV
-*.zip
-*.ZIP
+# Parquet files
 *.parquet
 
 # Temporary files
 *.tmp
-*.temp
-
-# OS files
-.DS_Store
-Thumbs.db
+*.log

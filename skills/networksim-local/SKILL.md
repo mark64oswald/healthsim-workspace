@@ -1,149 +1,163 @@
 ---
-name: NetworkSim-Local
-description: Real-world provider data lookup using NPPES NPI Registry. Query actual provider NPIs, addresses, specialties from local DuckDB database. Triggers include "real provider", "NPPES lookup", "actual NPI", "real NPI", "provider database", "lookup provider", "find real provider".
+name: NetworkSim-Local Master Skill
+description: Real provider data integration using NPPES NPI Registry. Lookup providers, facilities, and pharmacies by NPI, geography, or specialty. Trigger phrases include "lookup NPI", "find provider", "real provider data", "NPPES lookup", "actual NPI"
 version: 0.1.0
 status: development
-category: data-lookup
+product: networksim-local
 ---
 
 # NetworkSim-Local
 
-Real-world provider data from the NPPES NPI Registry stored in a local DuckDB database.
+> Real provider data from NPPES NPI Registry for authentic healthcare simulations.
 
 ## Overview
 
-NetworkSim-Local provides access to **actual provider data** from CMS's National Plan and Provider Enumeration System (NPPES). Unlike NetworkSim (which generates synthetic providers), this product queries real NPI records.
-
-**Key Capabilities**:
-- Look up real providers by NPI
-- Search providers by geography (state, city, ZIP)
-- Filter by specialty/taxonomy
-- Access actual practice addresses and phone numbers
-- Query ~7 million active US providers
+NetworkSim-Local provides **actual provider, facility, and pharmacy data** from public CMS sources. Unlike NetworkSim (which synthesizes data), NetworkSim-Local returns real NPIs, addresses, and specialties from the NPPES registry.
 
 ## Trigger Phrases
 
-- "Look up real provider..."
-- "Find actual NPI for..."
-- "NPPES lookup..."
-- "Search real providers in..."
-- "What's the real NPI for..."
-- "Find providers in [city/state] from NPPES"
-- "Query the provider database for..."
+- "Look up NPI [number]"
+- "Find real provider for..."
+- "What actual providers are in [location]?"
+- "NPPES lookup for..."
+- "Find cardiologists in [city/state]"
+- "Real pharmacy near [location]"
+- "Actual hospital in [area]"
 
-## Data Source
+## Capabilities
 
-| Attribute | Value |
-|-----------|-------|
-| Source | CMS NPPES NPI Registry |
-| Records | ~7 million active US providers |
-| Update Frequency | Monthly |
-| Storage | Local DuckDB (~200 MB) |
+| Capability | Description |
+|------------|-------------|
+| **Provider Lookup** | Find provider by NPI, name, or specialty |
+| **Geographic Search** | Find providers in city, state, or ZIP |
+| **Specialty Search** | Find providers by taxonomy code |
+| **Facility Lookup** | Find hospitals, ASCs, SNFs by location |
+| **Pharmacy Lookup** | Find pharmacies by location or type |
 
-## Quick Examples
+## Data Coverage
 
-### Provider Lookup by NPI
+- **Provider Types**: Physicians, NPs, PAs, pharmacies, facilities
+- **Geographic**: Top 10 US states (CA, TX, NY, FL, IL, PA, OH, GA, NC, MI)
+- **Records**: ~3 million active providers
+- **Source**: NPPES NPI Registry (updated monthly)
+
+## Response Format
+
+All responses include **provenance tracking**:
+
 ```
-User: "Look up NPI 1234567890 from NPPES"
+Provider: John Smith, MD
+NPI: 1234567890
+Specialty: Internal Medicine (207R00000X)
+Address: 123 Medical Center Dr, San Diego, CA 92101
 
-Response: "From the NPPES registry:
-- Provider: John Smith, MD
-- NPI: 1234567890
-- Specialty: Internal Medicine (207R00000X)
-- Practice: 123 Medical Center Dr, Boston, MA 02101
-- Phone: (617) 555-1234"
-```
-
-### Geographic Search
-```
-User: "Find cardiologists in San Diego from NPPES"
-
-Response: "NPPES shows 847 cardiologists in San Diego, CA.
-Here are the first 10:
-1. Dr. Maria Garcia, MD - 207RC0000X - La Jolla
-2. Dr. James Chen, MD - 207RC0000X - Downtown
-..."
+Source: NPPES Registry, November 2025
 ```
 
-### Pharmacy Lookup
+## Skills
+
+### Provider Skills
+- [provider-lookup](skills/provider-lookup.md) - Lookup by NPI or name
+- [specialty-search](skills/specialty-search.md) - Search by taxonomy code
+- [geographic-search](skills/geographic-search.md) - Search by location
+
+### Facility Skills
+- [facility-lookup](skills/facility-lookup.md) - Hospitals and facilities
+- [pharmacy-lookup](skills/pharmacy-lookup.md) - Pharmacies by location
+
+## Cross-Product Integration
+
+| Product | Use Case |
+|---------|----------|
+| **PatientSim** | Real attending physician NPIs |
+| **MemberSim** | Actual provider network data |
+| **RxMemberSim** | Real pharmacy NPIs and addresses |
+| **PopulationSim** | Provider density by geography |
+
+## Prerequisites
+
+NetworkSim-Local requires local data setup:
+
+1. Download NPPES data: `python setup/download-nppes.py`
+2. Build database: `python setup/build-local-db.py`
+3. Verify: `python setup/validate-db.py`
+
+See [developer-guide.md](developer-guide.md) for complete setup instructions.
+
+## Examples
+
+### Example 1: NPI Lookup
+
+**User**: Look up NPI 1234567890
+
+**Response**:
 ```
-User: "Find real pharmacies near ZIP 10001"
+Provider: Jane Doe, MD, FACC
+NPI: 1234567890
+Entity Type: Individual
+Specialty: Cardiovascular Disease (207RC0000X)
+Practice Location: 456 Heart Center Blvd, Los Angeles, CA 90001
+Phone: (310) 555-1234
 
-Response: "NPPES shows 156 pharmacies in the 10001 ZIP area:
-1. CVS Pharmacy #1234 - NPI: 1234567890 - 42nd St
-2. Walgreens #5678 - NPI: 0987654321 - 34th St
-..."
+Source: NPPES Registry, November 2025
 ```
 
-## Parameters
+### Example 2: Geographic Search
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `npi` | string | For lookup | 10-digit NPI to look up |
-| `state` | string | For geo search | 2-letter state code |
-| `city` | string | Optional | City name |
-| `zip` | string | Optional | ZIP code (5-digit or prefix) |
-| `taxonomy` | string | Optional | Provider taxonomy code |
-| `category` | string | Optional | Provider category (Physician, Hospital, etc.) |
-| `limit` | integer | Optional | Max results (default: 20) |
+**User**: Find orthopedic surgeons in Houston, TX
 
-## Provider Categories
+**Response**:
+```
+Found 847 orthopedic surgeons in Houston, TX
 
-The database includes these provider types:
+Top Results:
+1. Robert Johnson, MD - NPI: 1122334455
+   Texas Orthopedic Associates, 789 Spine Way, Houston, TX 77001
+   
+2. Maria Garcia, DO - NPI: 2233445566
+   Houston Sports Medicine, 321 Joint Dr, Houston, TX 77002
+   
+[... additional results available]
 
-| Category | Taxonomy Prefix | Example |
-|----------|-----------------|---------|
-| Physician (Allopathic) | 207%, 208% | Internal Medicine, Cardiology |
-| Physician (Osteopathic) | 204% | Family Medicine DO |
-| Nurse Practitioner | 363L% | Adult NP, Family NP |
-| Physician Assistant | 363A% | Medical PA |
-| Pharmacy | 3336% | Retail, Mail Order, Specialty |
-| Hospital | 282% | General Acute, Psychiatric |
-| Clinic | 261Q% | Urgent Care, Mental Health |
-| DME Supplier | 332% | Medical Equipment |
+Source: NPPES Registry, November 2025
+```
 
-## Setup Requirements
+### Example 3: Facility Search
 
-**Prerequisites**: DuckDB database must be built from NPPES data.
+**User**: What hospitals are in Cook County, IL?
 
-1. Download NPPES: https://download.cms.gov/nppes/NPI_Files.html
-2. Extract to: `skills/networksim-local/data/raw/nppes/`
-3. Run: `python setup/build-database.py`
+**Response**:
+```
+Found 52 hospitals in Cook County, IL
 
-See [developer-guide.md](developer-guide.md) for detailed setup.
+Major Facilities:
+1. Northwestern Memorial Hospital
+   NPI: 1234567890 | CCN: 140281
+   Beds: 894 | Type: General Acute Care
+   
+2. Rush University Medical Center
+   NPI: 2345678901 | CCN: 140119
+   Beds: 671 | Type: Academic Medical Center
 
-## Integration with HealthSim
+[... additional facilities]
 
-NetworkSim-Local provides real NPIs that can be referenced by:
+Source: NPPES Registry + CMS Provider of Services, November 2025
+```
 
-- **PatientSim**: Use real provider NPIs in encounter records
-- **MemberSim**: Reference actual provider networks
-- **RxMemberSim**: Link prescriptions to real pharmacies
-- **PopulationSim**: Correlate provider density with population data
+## Validation Rules
 
-## Provenance
-
-All responses from NetworkSim-Local include data source attribution:
-
-- ✓ "From NPPES registry (as of [date])"
-- ✓ Real NPI, verified format
-- ✓ Actual practice address
-- ✓ Taxonomy code from registry
-
-## Limitations
-
-- Data is as current as last NPPES download (monthly refresh)
-- No prescription/claims history (just provider registration)
-- Deactivated providers are excluded
-- Non-US providers are excluded
+1. NPIs must be 10-digit numbers passing Luhn check
+2. Taxonomy codes must exist in NUCC code set
+3. State codes must be valid 2-letter abbreviations
+4. Results limited to active providers (no deactivation date)
 
 ## Related Skills
 
-- [provider-lookup.md](skills/provider-lookup.md) - Detailed provider lookup
-- [geographic-analysis.md](skills/geographic-analysis.md) - Provider distribution analysis
-- [pharmacy-lookup.md](skills/pharmacy-lookup.md) - Pharmacy-specific queries
+- [NetworkSim](../networksim/SKILL.md) - Synthetic provider generation
+- [PopulationSim](../populationsim/SKILL.md) - Geographic demographics
 
-## See Also
+## Notes
 
-- [NetworkSim](../networksim/SKILL.md) - Synthetic provider generation (parallel implementation)
-- [PopulationSim](../populationsim/SKILL.md) - Geographic and demographic data
+- **Data is local only** - requires setup before use
+- **Updates manually** - download new NPPES monthly as needed
+- **Experimental** - parallel implementation to NetworkSim v1.0

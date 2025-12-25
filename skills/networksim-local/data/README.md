@@ -1,87 +1,121 @@
 # NetworkSim-Local Data Directory
 
-**IMPORTANT**: This directory contains LOCAL data files that are NOT committed to Git.
+This directory contains downloaded public healthcare data files. **These files are NOT committed to git.**
+
+---
+
+## Data Sources
+
+### 1. NPPES NPI Registry
+
+**Download URL**: https://download.cms.gov/nppes/NPI_Files.html
+
+**Files**:
+- `nppes/npidata_pfile_YYYYMMDD-YYYYMMDD.csv` (~9GB extracted)
+- `nppes/othername_pfile_*.csv`
+- `nppes/pl_pfile_*.csv` (Practice locations)
+- `nppes/endpoint_pfile_*.csv`
+
+**Download Command**:
+```bash
+curl -o nppes/nppes_full.zip \
+  "https://download.cms.gov/nppes/NPPES_Data_Dissemination_November_2025.zip"
+unzip nppes/nppes_full.zip -d nppes/
+```
+
+---
+
+### 2. NUCC Taxonomy Codes
+
+**Download URL**: https://www.nucc.org/index.php/code-sets-mainmenu-41/provider-taxonomy-mainmenu-40/csv-mainmenu-57
+
+**Files**:
+- `taxonomy/nucc_taxonomy.csv`
+
+**Note**: Requires form submission on NUCC website. Download manually.
+
+---
+
+### 3. CMS Provider of Services
+
+**Download URL**: https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities/provider-of-services-file-hospital-non-hospital-facilities
+
+**Files**:
+- `cms-pos/provider_of_services.csv`
+
+---
 
 ## Directory Structure
 
 ```
 data/
-├── README.md          # This file (committed)
-├── .gitignore         # Excludes data files (committed)
-├── raw/               # Downloaded source files (local only)
-│   ├── nppes/         # NPPES NPI Registry files
-│   └── pos/           # Provider of Services files
-└── processed/         # DuckDB database (local only)
-    └── networksim.duckdb
+├── README.md            # This file (committed)
+├── .gitignore           # Excludes data files (committed)
+├── nppes/               # NPPES NPI Registry files
+│   └── (downloaded CSV files)
+├── taxonomy/            # NUCC Taxonomy codes
+│   └── (downloaded CSV files)
+├── cms-pos/             # CMS Provider of Services
+│   └── (downloaded CSV files)
+└── networksim-local.duckdb  # Processed database
 ```
-
-## Data Sources
-
-### NPPES NPI Registry
-
-| Attribute | Value |
-|-----------|-------|
-| URL | https://download.cms.gov/nppes/NPI_Files.html |
-| File | `NPPES_Data_Dissemination_[Month]_[Year].zip` |
-| Size | ~1 GB compressed, ~9 GB uncompressed |
-| Update | Monthly (full replacement) |
-
-**Download Steps**:
-1. Visit https://download.cms.gov/nppes/NPI_Files.html
-2. Download "NPPES Data Dissemination" (Version 1 or V2)
-3. Extract to `data/raw/nppes/`
-4. Run `setup/build-database.py`
-
-### Provider of Services (POS)
-
-| Attribute | Value |
-|-----------|-------|
-| URL | https://data.cms.gov/provider-characteristics/hospitals-and-other-facilities |
-| File | Provider of Services File - Hospital & Non-Hospital Facilities |
-| Size | ~50 MB |
-| Update | Quarterly |
-
-**Download Steps**:
-1. Visit the CMS data portal
-2. Search for "Provider of Services File"
-3. Download CSV export
-4. Save to `data/raw/pos/`
-
-## Building the Database
-
-```bash
-cd skills/networksim-local
-python setup/build-database.py
-```
-
-This will:
-1. Read raw NPPES CSV files
-2. Apply filters (active providers, US only)
-3. Select relevant columns
-4. Create DuckDB database at `data/processed/networksim.duckdb`
-
-## Estimated Sizes
-
-| File | Raw Size | Processed Size |
-|------|----------|----------------|
-| NPPES CSV | ~9 GB | N/A |
-| DuckDB (providers) | N/A | ~200 MB |
-| POS CSV | ~50 MB | N/A |
-| DuckDB (facilities) | N/A | ~10 MB |
-| **Total** | ~9 GB | **~210 MB** |
-
-## Refresh Schedule
-
-- **NPPES**: Monthly (first week of each month)
-- **POS**: Quarterly
-
-## Data Not Included
-
-The following data sources were evaluated but NOT included:
-
-- **NCPDP Pharmacy Database**: Proprietary, requires paid subscription
-  - Pharmacies with NPIs are available in NPPES as alternative
 
 ---
 
-*Last Updated: 2024-12-24*
+## Setup Instructions
+
+### Option A: Automated Download
+
+```bash
+cd skills/networksim-local
+python setup/download-nppes.py
+python setup/download-taxonomy.py
+python setup/download-cms-pos.py
+python setup/build-local-db.py
+```
+
+### Option B: Manual Download
+
+1. Download NPPES from CMS website
+2. Download Taxonomy from NUCC website
+3. Download POS from data.cms.gov
+4. Run `python setup/build-local-db.py`
+
+---
+
+## Estimated Sizes
+
+| File | Raw Size | After Filtering |
+|------|----------|-----------------|
+| NPPES Full | ~9 GB | ~700 MB (Top 10 states) |
+| Taxonomy | ~500 KB | ~500 KB (no filtering) |
+| CMS POS | ~50 MB | ~50 MB (no filtering) |
+| DuckDB Database | - | ~800 MB |
+
+---
+
+## Update Schedule
+
+| Source | Frequency | Action |
+|--------|-----------|--------|
+| NPPES | Monthly | Re-download full file |
+| Taxonomy | Semi-annual | Check Jan/Jul |
+| CMS POS | Quarterly | Check for updates |
+
+---
+
+## Verification
+
+After download, verify with:
+
+```bash
+python setup/validate-db.py
+```
+
+Expected output:
+```
+NPPES: 3,000,000+ records
+Taxonomy: 900+ codes
+Facilities: 50,000+ records
+Database: networksim-local.duckdb (valid)
+```
