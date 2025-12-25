@@ -439,6 +439,164 @@ See [examples/trialsim-examples.md](examples/trialsim-examples.md) for comprehen
 
 ---
 
+## Hello, Population Intelligence!
+
+PopulationSim provides access to **real population health data** from CDC PLACES, Social Vulnerability Index, and Area Deprivation Index. Unlike other HealthSim products that generate synthetic data, PopulationSim queries embedded real-world statistics to ground your data generation in evidence.
+
+### County Health Profile
+
+```
+Profile Maricopa County, Arizona for health indicators and SDOH
+```
+
+This returns real data including:
+
+- Demographics (population, age distribution, race/ethnicity)
+- Chronic disease prevalence (diabetes 10.2%, obesity 31.5%, etc.)
+- Health behaviors (smoking, binge drinking, physical inactivity)
+- Social vulnerability themes (economic, housing, minority status)
+
+### Census Tract Analysis
+
+```
+Show health disparities across census tracts in Los Angeles County
+```
+
+This provides neighborhood-level granularity:
+
+- Tract-by-tract health measures from CDC PLACES
+- SVI vulnerability scores for each tract
+- ADI deprivation rankings at block group level
+
+### Cohort Specification
+
+```
+Build a cohort specification for a Phase III diabetes trial targeting the Midwest
+```
+
+This creates an evidence-based CohortSpecification:
+
+- Target demographics grounded in actual county distributions
+- Expected disease prevalence from CDC data
+- SDOH factors affecting enrollment feasibility
+- Ready to use with PatientSim for realistic patient generation
+
+### Trial Site Selection
+
+```
+Identify top 5 counties for a NASH trial based on patient availability and site access
+```
+
+This provides trial planning intelligence:
+
+- Disease prevalence rankings from CDC PLACES
+- Population size and demographic fit
+- Healthcare access indicators from SVI
+- Site selection recommendations
+
+### Data-Driven Generation
+
+When you specify a geography, PopulationSim's embedded data grounds generation across all products:
+
+```
+Generate 20 diabetic patients for Harris County, TX with real prevalence data
+```
+
+This produces patients reflecting actual Harris County statistics:
+
+- 12.1% diabetes prevalence (not generic 10%)
+- Real comorbidity correlations (33% obesity, 32% hypertension)
+- Demographics matching county distributions
+- Data provenance tracking in output
+
+See [examples/populationsim-examples.md](examples/populationsim-examples.md) for detailed examples.
+
+---
+
+## Hello, Provider Networks!
+
+NetworkSim generates realistic healthcare provider entities and explains how provider networks work. It provides both **reference knowledge** (explaining concepts) and **synthetic generation** (creating entities).
+
+### Understanding Network Types
+
+```
+Explain the differences between HMO, PPO, and EPO network structures
+```
+
+NetworkSim provides educational content about:
+
+- Network design patterns and access rules
+- Cost sharing differences
+- Referral and authorization requirements
+- Member choice vs. cost trade-offs
+
+### Generate a Provider
+
+```
+Generate a cardiologist in Houston, Texas
+```
+
+This creates a realistic physician entity with:
+
+- Valid-format NPI (synthetic, not real)
+- Appropriate specialty taxonomy code
+- Practice address in the specified location
+- Credential abbreviations (MD, FACC, etc.)
+
+### Generate a Facility
+
+```
+Generate an acute care hospital with 350 beds in Phoenix, AZ
+```
+
+This creates a facility entity with:
+
+- Facility NPI and taxonomy classification
+- Bed count and service lines
+- Address and contact information
+- Accreditation indicators
+
+### Generate a Pharmacy
+
+```
+Generate a specialty pharmacy for oncology medications
+```
+
+This creates pharmacy entities with:
+
+- NCPDP ID and NPI
+- Pharmacy type (retail, mail-order, specialty)
+- Specialty certifications and capabilities
+- Limited distribution drug handling
+
+### Provider for PatientSim Encounters
+
+```
+Generate a provider for this cardiology encounter
+```
+
+NetworkSim integrates with PatientSim to provide:
+
+- Appropriate specialty for the encounter type
+- Consistent provider entity across the care episode
+- Network status for claims adjudication
+
+### Pharmacy for RxMemberSim Claims
+
+```
+Generate a dispensing pharmacy for this specialty drug claim
+```
+
+NetworkSim integrates with RxMemberSim to provide:
+
+- Pharmacy entity with proper NCPDP identifier
+- Specialty pharmacy capabilities for biologics
+- Hub program integration for patient support
+
+See [examples/networksim-examples.md](examples/networksim-examples.md) for detailed examples.
+
+---
+
 ## Hello, Analytics!
 
 HealthSim data can be loaded directly into analytics databases. You have flexibility in how you structure the data - from simple flat tables to full star schemas.
@@ -676,6 +834,15 @@ Once you're comfortable with basic generation:
 | "SVI analysis for rural Texas" | Social vulnerability by census tract |
 | "define cohort for diabetes study" | CohortSpecification for generation |
 | "trial feasibility for NASH" | Site recommendations + enrollment projection |
+
+### NetworkSim (Provider Networks)
+
+| Request | What You Get |
+|---------|--------------|
+| "generate a cardiologist" | Provider + NPI + specialty + credentials |
+| "generate a hospital" | Facility + NPI + beds + services |
+| "generate a specialty pharmacy" | Pharmacy + NCPDP + capabilities |
+| "explain HMO vs PPO networks" | Network type comparison + trade-offs |
 
 ### Format Requests
 

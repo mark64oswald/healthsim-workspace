@@ -1,31 +1,30 @@
 # PopulationSim
 
-> Access real population health data and generate evidence-based cohort specifications grounded in CDC, Census, and SDOH sources.
+> Access real US population data including demographics, disease prevalence, social determinants of health, and geographic health intelligence.
 
 ## What PopulationSim Does
 
-PopulationSim is the **data intelligence** layer of HealthSim. Unlike other products that generate synthetic data, PopulationSim provides **access to real, embedded population statistics** from CDC PLACES, Social Vulnerability Index, and Area Deprivation Index.
+PopulationSim is the **data intelligence** engine of HealthSim. Unlike other products that generate synthetic data, PopulationSim provides **access to real CDC and Census data**—148 MB of embedded population statistics covering every US county, census tract, and block group.
 
-This grounds all HealthSim data generation in evidence—when you generate a diabetic patient in Harris County, TX, the prevalence rates, comorbidities, and demographics reflect actual population data, not generic national averages.
+This data grounds all other HealthSim products in reality. When you generate a diabetic patient in Harris County, TX, PatientSim uses PopulationSim's actual 12.1% diabetes prevalence rate instead of a generic national average.
 
 ## Quick Start
 
-**Data lookup:**
+**Data Lookup:**
 ```
 What is the diabetes prevalence in Harris County, TX?
-Show health indicators for San Diego County
+Look up SVI vulnerability scores for San Diego census tracts
 ```
 
-**Geographic profiling:**
+**Geographic Profiles:**
 ```
-Profile census tract 06073010802 for SDOH factors
-Compare health outcomes across Los Angeles County census tracts
+Profile the health indicators for Maricopa County, AZ
+Compare chronic disease rates across California metro areas
 ```
 
-**Cohort specification:**
+**Cohort Definition:**
 ```
-Build a cohort for a Phase III diabetes trial in the Midwest
-Generate demographic distribution for a Medicare population in Florida
+Build a cohort specification for 500 diabetic patients in Cook County, IL
 ```
 
 See [hello-healthsim examples](../../hello-healthsim/examples/populationsim-examples.md) for detailed examples with expected outputs.
@@ -34,88 +33,102 @@ See [hello-healthsim examples](../../hello-healthsim/examples/populationsim-exam
 
 | Capability | Description | Skill Reference |
 |------------|-------------|-----------------|
-| **Data Lookup** | Query embedded CDC/Census data | [data-access/data-lookup.md](data-access/data-lookup.md) |
-| **County Profiles** | Comprehensive county health reports | [geographic/county-profile.md](geographic/county-profile.md) |
-| **Tract Analysis** | Neighborhood-level health patterns | [geographic/census-tract-analysis.md](geographic/census-tract-analysis.md) |
-| **SDOH Analysis** | Vulnerability and deprivation scoring | [sdoh/svi-analysis.md](sdoh/svi-analysis.md) |
-| **Cohort Builder** | Evidence-based population specifications | [cohorts/cohort-specification.md](cohorts/cohort-specification.md) |
-| **Trial Support** | Feasibility, site selection, diversity | [trial-support/](trial-support/) |
+| **Data Lookup** | Direct access to CDC PLACES, SVI, ADI | [data-access/](data-access/) |
+| **County Profiles** | Comprehensive county health profiles | [geographic/county-profile.md](geographic/county-profile.md) |
+| **Tract Analysis** | Census tract-level health patterns | [geographic/census-tract-analysis.md](geographic/census-tract-analysis.md) |
+| **Chronic Disease** | 40 health measures from CDC PLACES | [health-patterns/](health-patterns/) |
+| **SDOH Analysis** | Social vulnerability, deprivation | [sdoh/](sdoh/) |
+| **Cohort Builder** | Evidence-based cohort specifications | [cohorts/](cohorts/) |
+| **Trial Feasibility** | Site selection, enrollment projections | [trial-support/](trial-support/) |
 
-## Embedded Data (v2.0)
+## Embedded Data Sources (v2.0)
 
-PopulationSim embeds **148 MB of real population data** covering 100% of US geographies:
+| Source | Coverage | Records | Key Measures |
+|--------|----------|---------|--------------|
+| **CDC PLACES 2024** | 100% US counties + tracts | 86,665 | 40 health measures (diabetes, obesity, COPD, etc.) |
+| **CDC SVI 2022** | 100% US counties + tracts | 87,264 | 16 vulnerability indicators |
+| **HRSA ADI 2023** | 100% US block groups | 242,336 | Area deprivation scores |
 
-| Data Source | Coverage | Records | Key Measures |
-|-------------|----------|---------|--------------|
-| CDC PLACES 2024 | All US counties + tracts | 86,665 | 40 health measures (diabetes, obesity, BP meds, etc.) |
-| CDC SVI 2022 | All US counties + tracts | 87,264 | 16 vulnerability indicators |
-| HRSA ADI 2023 | All US block groups | 242,336 | Area Deprivation Index |
+**Total**: 148 MB of real population data embedded in the skills.
 
-## Data Categories
+## I Want To...
 
-### Health Measures (CDC PLACES)
-| Category | Examples |
-|----------|----------|
-| Chronic Disease | Diabetes, obesity, coronary heart disease, stroke, COPD, CKD, cancer |
-| Health Behaviors | Smoking, binge drinking, physical inactivity, sleep <7 hours |
-| Prevention | Mammography, colonoscopy, dental visit, flu shot, core preventive services |
-| Health Status | Fair/poor health, mental health not good, physical health not good |
-
-### Social Vulnerability (CDC SVI)
-| Theme | Indicators |
-|-------|------------|
-| Socioeconomic | Below 150% poverty, unemployed, housing cost burden, no health insurance, no high school diploma |
-| Household Composition | Age 65+, age 17 and younger, civilian with disability, single-parent households, English language proficiency |
-| Minority Status | Minority population, speaks English "less than well" |
-| Housing/Transportation | Multi-unit structures, mobile homes, crowding, no vehicle, group quarters |
+| Goal | Skill to Use |
+|------|--------------|
+| Look up a specific health measure | [data-lookup.md](data-access/data-lookup.md) |
+| Get all data for a county | [county-profile.md](geographic/county-profile.md) |
+| Analyze a census tract | [census-tract-analysis.md](geographic/census-tract-analysis.md) |
+| Compare regions | [custom-region-builder.md](geographic/custom-region-builder.md) |
+| Find disease prevalence | [chronic-disease-prevalence.md](health-patterns/chronic-disease-prevalence.md) |
+| Assess social vulnerability | [svi-analysis.md](sdoh/svi-analysis.md) |
+| Build a study cohort | [cohort-specification.md](cohorts/cohort-specification.md) |
+| Plan trial site selection | [site-selection-support.md](trial-support/site-selection-support.md) |
 
 ## Integration with Other Products
 
-PopulationSim **grounds generation** across all HealthSim products:
+PopulationSim provides **data grounding** for all other HealthSim products:
 
-| Product | Integration | Effect |
-|---------|-------------|--------|
-| **PatientSim** | Demographics, conditions | Real prevalence rates, comorbidity correlations |
-| **MemberSim** | Utilization, risk | Actuarially realistic member panels |
-| **RxMemberSim** | Adherence patterns | SDOH-adjusted medication adherence |
-| **TrialSim** | Feasibility, diversity | Evidence-based site selection |
+| Product | Integration | Data Used |
+|---------|-------------|-----------|
+| **PatientSim** | Demographics, condition prevalence | PLACES chronic disease rates, SVI demographics |
+| **MemberSim** | Utilization patterns, risk adjustment | PLACES health measures, SVI socioeconomic |
+| **RxMemberSim** | Adherence modeling, channel preferences | SVI transportation, poverty indicators |
+| **TrialSim** | Feasibility, diversity planning | PLACES prevalence, SVI demographics |
+| **NetworkSim** | Facility distribution, access patterns | SVI healthcare access indicators |
 
-**Example:**
+## Example: Data-Driven Patient Generation
+
+**Without PopulationSim (generic):**
 ```
-# Without PopulationSim:
-"Generate 10 diabetic patients" → Generic 10.2% national prevalence
+Generate 10 diabetic patients → Uses national 10.2% baseline
+```
 
-# With PopulationSim v2.0:
-"Generate 10 diabetic patients in Harris County, TX" →
+**With PopulationSim (grounded):**
+```
+Generate 10 diabetic patients in Harris County, TX →
   - Uses actual 12.1% diabetes rate from CDC PLACES
-  - Applies 72% minority population from SVI
-  - Includes real comorbidity correlations
+  - Applies 72% minority population from SVI  
+  - Includes real comorbidity correlations (33% obesity, 32% HTN)
   - Tracks data provenance in output
 ```
 
-## Output Types
+## Output: CohortSpecification
 
-| Output | Purpose | Use Case |
-|--------|---------|----------|
-| Data Query Results | Raw data from embedded sources | Research, analysis |
-| Geographic Profile | Comprehensive area health report | Planning, assessment |
-| Cohort Specification | Evidence-based population definition | Trial design, product development |
-| Cross-Product Integration | Grounding data for other products | Realistic data generation |
+PopulationSim's primary output is a **CohortSpecification**—a data structure that other products consume:
+
+```json
+{
+  "cohort_id": "harris-diabetic-500",
+  "geography": { "fips": "48201", "name": "Harris County, TX" },
+  "size": 500,
+  "conditions": {
+    "diabetes": { "prevalence": 0.121, "source": "CDC_PLACES_2024" }
+  },
+  "demographics": {
+    "age_distribution": { ... },
+    "race_ethnicity": { ... }
+  },
+  "sdoh_profile": {
+    "svi_overall": 0.68,
+    "poverty_rate": 0.157
+  }
+}
+```
 
 ## Skills Reference
 
-For complete parameters, examples, and data dictionaries, see:
+For complete data access patterns, examples, and integration details, see:
 
 - **[SKILL.md](SKILL.md)** - Full skill reference with all capabilities
-- **[../../SKILL.md](../../SKILL.md)** - Master skill file (cross-product routing)
 - **[data/README.md](data/README.md)** - Data package documentation
+- **[../../SKILL.md](../../SKILL.md)** - Master skill file (cross-product routing)
 
 ## Related Documentation
 
 - [hello-healthsim PopulationSim Examples](../../hello-healthsim/examples/populationsim-examples.md)
-- [Data Package Documentation](data/README.md)
-- [Cross-Product Integration Guide](../../docs/HEALTHSIM-ARCHITECTURE-GUIDE.md#83-cross-product-integration)
+- [Data Integration Guide](data-integration.md)
+- [Cross-Product Integration](../../docs/HEALTHSIM-ARCHITECTURE-GUIDE.md#83-cross-product-integration)
 
 ---
 
-*PopulationSim provides access to public CDC/Census data. Individual-level data is synthetic.*
+*PopulationSim uses publicly available CDC and Census data. No PHI is included.*
