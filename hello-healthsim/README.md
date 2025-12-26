@@ -29,8 +29,25 @@ Before starting, ensure you have:
 | Requirement | Version | Check Command |
 |-------------|---------|---------------|
 | Git | 2.0+ | `git --version` |
+| Python | 3.10+ | `python3 --version` |
 | Claude Desktop **or** Claude Code | Latest | See installation links below |
 | Anthropic API Key (for Claude Code) | - | [Get API Key](https://console.anthropic.com/) |
+
+### Python Environment
+
+HealthSim uses DuckDB for state management and reference data. The `healthsim-core` package includes DuckDB as a dependency - no separate installation required.
+
+```bash
+# Create and activate a virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install healthsim-core (includes DuckDB)
+cd packages/core
+pip install -e .
+```
+
+The DuckDB database is created automatically at `~/.healthsim/healthsim.duckdb` on first use.
 
 ### Install Claude (Choose One)
 
@@ -427,14 +444,6 @@ This creates dimensional analytics tables:
 - **Facts**: fact_enrollment, fact_adverse_event, fact_efficacy, fact_visit
 - Ready for enrollment dashboards, safety surveillance, site performance
 
-### Load to Databricks
-
-```
-Generate Phase II CNS trial data for Databricks, catalog 'dev_catalog', schema 'gold'
-```
-
-Claude will create tables and load trial data to your enterprise analytics environment.
-
 See [examples/trialsim-examples.md](examples/trialsim-examples.md) for comprehensive clinical trial examples.
 
 ---
@@ -599,11 +608,11 @@ See [examples/networksim-examples.md](examples/networksim-examples.md) for detai
 
 ## Hello, Analytics!
 
-HealthSim data can be loaded directly into analytics databases. You have flexibility in how you structure the data - from simple flat tables to full star schemas.
+HealthSim data can be loaded directly into DuckDB for local analytics. Star schema format enables BI dashboards and SQL-based analysis.
 
 ### Local Analytics with DuckDB
 
-Perfect for local development, testing, and demos. No authentication required.
+Perfect for local development, testing, and demos. No additional setup required - DuckDB is bundled with healthsim-core.
 
 **Simple tables:**
 
@@ -623,30 +632,7 @@ This creates properly normalized analytics tables with:
 - Fact tables (fact_encounters, fact_lab_results)
 - Pre-calculated metrics (age bands, LOS, readmission flags)
 
-### Enterprise Analytics with Databricks
-
-For production analytics, team collaboration, and large-scale testing.
-
-**Prerequisites:** Authenticate via Databricks CLI first:
-
-```bash
-databricks auth profiles  # Verify authentication
-```
-
-**Load to Databricks:**
-
-```
-Generate 10 patients in dimensional format for Databricks, catalog 'dev_catalog', schema 'gold'
-```
-
-Claude will:
-
-1. Generate the dimensional data
-2. Create tables (if needed)
-3. Load via SQL Statements API
-4. Report success with row counts
-
-### Claims Analytics
+### Claims and Pharmacy Analytics
 
 Same flexibility works for claims and pharmacy data:
 
@@ -655,8 +641,12 @@ Generate 20 members with claims in star schema format for DuckDB
 ```
 
 ```
-Generate pharmacy data with prescription fills as a fact table, load to Databricks
+Generate pharmacy data with prescription fills as a fact table for DuckDB
 ```
+
+### Enterprise Analytics (Future)
+
+Support for enterprise platforms (Databricks, Snowflake, MotherDuck) is planned for Phase 3. For now, export dimensional data from DuckDB and load to your enterprise platform using standard ETL tools.
 
 See [../formats/dimensional-analytics.md](../formats/dimensional-analytics.md) for complete star schema definitions and sample queries.
 
@@ -763,7 +753,7 @@ healthsim-common/
 │   ├── x12-837.md
 │   ├── cdisc-sdtm.md          # CDISC SDTM for trials
 │   ├── cdisc-adam.md          # CDISC ADaM for trials
-│   ├── dimensional-analytics.md  # DuckDB/Databricks star schemas
+│   ├── dimensional-analytics.md  # DuckDB star schemas (enterprise exports planned)
 │   └── ...
 ├── references/                 # Code systems and rules
 │   ├── data-models.md
@@ -863,7 +853,6 @@ Once you're comfortable with basic generation:
 | "as 837" | X12 837 EDI |
 | "as CSV" | CSV file format |
 | "for DuckDB" | SQL for local analytics |
-| "for Databricks" | SQL loaded to Databricks |
 | "in star schema" | Dimensional fact/dimension tables |
 
 ### State Management

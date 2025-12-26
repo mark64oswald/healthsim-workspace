@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[Docs]** DuckDB prerequisites in README and hello-healthsim (SESSION-06.5) (2024-12-26)
+  - Added Python 3.10+ and DuckDB installation instructions
+  - Explained that DuckDB is bundled with healthsim-core package
+- **[Docs]** Reference Data Philosophy section in data-architecture.md (SESSION-06.5)
+  - Explains why skills use text files vs. DuckDB for different reference data types
+  - Decision guide for when to use each approach
+- **[Docs]** NetworkSim dual-mode architecture documentation (SESSION-06.5)
+  - Documented planned NetworkSim-Gen (synthetic) vs NetworkSim-DB (real NPPES) approach
+  - Future skill-based mode selection design
+
+### Changed
+
+- **[Docs]** Enterprise platform references now indicate "Phase 3 planned" (SESSION-06.5)
+  - Databricks and Snowflake marked as future enterprise export options
+  - DuckDB is now the primary/only analytics target for Phase 1
+  - Updated dimensional-analytics.md, hello-healthsim README, examples
+
 - **[Core]** DuckDB Unified Data Architecture - Phase 1 Complete (2024-12-26)
   - **Database Foundation**: New `packages/core/src/healthsim/db/` module with:
     - Connection management with singleton pattern

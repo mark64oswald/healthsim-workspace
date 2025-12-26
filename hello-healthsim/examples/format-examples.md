@@ -650,30 +650,11 @@ INSERT INTO analytics.fact_encounters VALUES
 (3, 3, '2025-01-14', 'E', 6, FALSE);
 ```
 
-### Load to Databricks
+### Enterprise Exports (Future)
 
-**Prompt:**
-```
-Load 5 patients to Databricks. Use catalog 'dev_catalog', schema 'gold'.
-```
+Direct loading to enterprise platforms (Databricks, Snowflake, MotherDuck) is planned for Phase 3.
 
-**Claude's Workflow:**
-1. Confirms CLI authentication via `databricks auth profiles`
-2. Generates CREATE TABLE and INSERT statements
-3. Executes via SQL Statements API
-4. Reports success with table counts
-
-**Example execution:**
-```bash
-# Claude uses SQL Statements API
-databricks api post /api/2.0/sql/statements --json '{
-  "warehouse_id": "YOUR_WAREHOUSE_ID",
-  "statement": "CREATE TABLE IF NOT EXISTS dev_catalog.gold.dim_patient (...)",
-  "wait_timeout": "30s"
-}'
-```
-
-**No Python scripts or MCP servers required** - just CLI auth and the SQL Statements API.
+For now, export dimensional data from DuckDB and load to your enterprise platform using standard ETL tools or COPY commands.
 
 ---
 
@@ -687,4 +668,4 @@ databricks api post /api/2.0/sql/statements --json '{
 
 4. **Specify version** - "Generate as HL7v2.5.1" when version matters
 
-5. **Specify target database** - "Generate for DuckDB" or "Load to Databricks catalog 'X'"
+5. **Use DuckDB for analytics** - "Generate in star schema format for DuckDB"
