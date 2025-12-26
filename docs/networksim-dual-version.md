@@ -1,59 +1,41 @@
-# NetworkSim Dual-Version Architecture
+# NetworkSim Data Architecture
 
-**Purpose**: Explains the relationship between NetworkSim (public) and NetworkSim-Local (private)
+**Purpose**: Explains the two data source options for NetworkSim provider/facility/pharmacy data
 
 ---
 
 ## Overview
 
-NetworkSim exists in two versions to address different needs:
+NetworkSim supports two data modes, allowing users to choose between lightweight synthetic generation or comprehensive real provider data:
 
-| Aspect | NetworkSim (Public) | NetworkSim-Local (Private) |
-|--------|---------------------|----------------------------|
-| **Repository** | healthsim-workspace (public) | networksim-local (private) |
-| **Purpose** | Synthetic provider/network generation | Real provider data lookup |
-| **Data Source** | Claude generates on-demand | NPPES/CMS registry data |
-| **NPIs** | Valid format, but synthetic | Actual registered NPIs |
-| **Use Case** | Demos, tutorials, testing | Research, validation, enrichment |
-| **Integration** | Full HealthSim ecosystem | Loosely coupled utility |
+| Mode | Skill Trigger | Data Source | Use Case |
+|------|---------------|-------------|----------|
+| **Generated** | NetworkSim-Gen | Synthetic on-demand | Quick demos, tutorials, testing |
+| **Database** | NetworkSim-DB | Real NPPES via DuckDB | Research, validation, analytics |
+
+Users choose their mode based on whether they download the optional NPPES database.
 
 ---
 
-## Why Two Versions?
+## NetworkSim-Gen (Default)
 
-### NetworkSim (Public)
+The default mode uses Claude to generate synthetic provider entities on-demand. No additional downloads required.
 
-The public version serves the core HealthSim mission: **generate realistic synthetic healthcare data through conversation**. It:
+### Characteristics
 
-- Generates synthetic providers with realistic attributes
-- Creates network patterns (HMO, PPO, tiered networks)
-- Produces valid-format NPIs that aren't real
-- Integrates seamlessly with PatientSim, MemberSim, TrialSim
-- Appears in hello-healthsim, demos, and tutorials
-- Contains no large data files (purely generative)
+- **Synthetic NPIs**: Valid format, but not real registrations
+- **On-demand generation**: Claude creates entities during conversation
+- **Lightweight**: No large data files needed
+- **Consistent with tutorials**: All hello-healthsim examples use this mode
+- **Fully integrated**: Works seamlessly with PatientSim, MemberSim, TrialSim
 
-**Location**: `/skills/networksim/` in healthsim-workspace
+### Example
 
-### NetworkSim-Local (Private)
+```
+User: Generate a cardiologist in San Francisco
 
-The private version provides access to **real provider data** for scenarios where synthetic isn't sufficient:
+Claude: [Uses NetworkSim-Gen]
 
-- Queries actual NPPES registry (~9M providers)
-- Returns real NPIs for validation or enrichment
-- Provides geographic distribution analysis
-- Enables "real-world" research scenarios
-- Data files too large for GitHub (~9GB raw, ~1.7GB database)
-- Kept separate to avoid accidental public exposure
-
-**Location**: `/Users/markoswald/Developer/projects/networksim-local/`
-
----
-
-## Data Comparison
-
-### NetworkSim (Public) Generates:
-
-```json
 {
   "npi": "1234567890",          // Valid format, synthetic
   "entity_type": "individual",
@@ -63,7 +45,7 @@ The private version provides access to **real provider data** for scenarios wher
     "credential": "MD"
   },
   "specialty": "Internal Medicine",
-  "taxonomy_code": "207R00000X",
+  "taxonomy_code": "207RC0000X",
   "address": {
     "city": "San Francisco",
     "state": "CA",
@@ -72,228 +54,210 @@ The private version provides access to **real provider data** for scenarios wher
 }
 ```
 
-### NetworkSim-Local Returns:
+---
 
-```json
-{
-  "npi": "1679576722",          // Real registered NPI
-  "entity_type": 1,
-  "provider_last_name": "SMITH",
-  "provider_first_name": "JOHN",
-  "provider_credential_text": "MD",
-  "healthcare_provider_taxonomy_code_1": "207R00000X",
-  "provider_business_practice_location_address_city_name": "SAN FRANCISCO",
-  "provider_business_practice_location_address_state_name": "CA",
-  "provider_business_practice_location_address_postal_code": "941021234"
-}
+## NetworkSim-DB (Optional)
+
+For users who need real provider data, NetworkSim-DB queries the NPPES registry stored in DuckDB.
+
+### Characteristics
+
+- **Real NPIs**: Actual registered provider identifiers
+- **9M+ providers**: Complete US provider registry
+- **Geographic analysis**: Real provider distribution by specialty and location
+- **SQL queryable**: Complex filtering and aggregation
+- **Larger footprint**: ~1.7GB DuckDB database
+
+### Setup Required
+
+To use NetworkSim-DB, users must download and build the NPPES database:
+
+```bash
+# Clone the NetworkSim-DB repository (public)
+git clone https://github.com/mark64oswald/networksim-db.git
+
+# Run setup (downloads NPPES, builds DuckDB)
+cd networksim-db
+python setup/setup-all.py
+```
+
+The database is stored at `~/.healthsim/networksim.duckdb` and is separate from the main HealthSim database.
+
+### Example
+
+```
+User: Find real cardiologists in San Francisco
+
+Claude: [Uses NetworkSim-DB, queries DuckDB]
+
+Found 342 cardiologists in San Francisco County:
+
+| NPI | Name | Specialty | Address |
+|-----|------|-----------|---------|
+| 1679576722 | John Smith, MD | Cardiovascular Disease | 450 Sutter St |
+| 1234567893 | Maria Garcia, MD | Interventional Cardiology | 2100 Webster St |
+| ... | ... | ... | ... |
 ```
 
 ---
 
-## When to Use Each
+## When to Use Each Mode
 
-### Use NetworkSim (Public) When:
+### Use NetworkSim-Gen (Default) When:
 
-- Generating demo data for presentations
-- Creating test scenarios for development
-- Building tutorials and documentation
-- Any public-facing content
-- Integration with other HealthSim products
-- You need consistent, reproducible synthetic data
+- Running demos or tutorials
+- Generating test data for development
+- Creating reproducible synthetic scenarios
+- Building public-facing content
+- Quick prototyping without setup
 
-### Use NetworkSim-Local (Private) When:
+### Use NetworkSim-DB When:
 
 - Validating against real provider distributions
 - Research requiring actual NPI lookups
 - Geographic analysis of real provider networks
 - Enriching synthetic data with real attributes
-- Verifying specialty codes and taxonomy mappings
-- Building features that will eventually use real data
+- Building features that will use real data in production
 
 ---
 
-## Integration Patterns
+## Automatic Mode Selection
 
-### Pattern 1: Pure Synthetic (Public Only)
+Claude selects the appropriate mode based on:
 
-For demos, tutorials, and testing:
+1. **Explicit request**: "Find real cardiologists" → NetworkSim-DB
+2. **Database availability**: If DuckDB database exists → NetworkSim-DB available
+3. **Generation request**: "Generate a cardiologist" → NetworkSim-Gen
+4. **Fallback**: If database not available but real data requested → Inform user
 
-```
-User Request: "Generate a cardiologist in California"
-     ↓
-NetworkSim (Public): Generates synthetic provider
-     ↓
-PatientSim: Uses provider in encounter
-     ↓
-MemberSim: Creates claim with provider NPI
-```
-
-### Pattern 2: Real Data Enrichment (Private + Public)
-
-For research or validation:
+### Example Routing
 
 ```
-Step 1: Query NetworkSim-Local
-     ↓
-     "Find 5 real cardiologists in San Francisco"
-     ↓
-     Returns actual NPIs: [1679576722, 1234567893, ...]
+"Generate a provider in Texas"
+→ NetworkSim-Gen (generation request)
 
-Step 2: Use real NPI in synthetic scenario
-     ↓
-     PatientSim encounter uses real NPI
-     ↓
-     MemberSim claim references real provider
-```
+"Find real pediatricians in Austin"  
+→ NetworkSim-DB (real data request)
 
-### Pattern 3: Distribution Analysis (Private Only)
+"How many cardiologists are in California?"
+→ NetworkSim-DB (analysis request)
 
-For geographic/specialty research:
-
-```sql
--- NetworkSim-Local query
-SELECT 
-    practice_state,
-    COUNT(*) as provider_count,
-    COUNT(*) FILTER (taxonomy_code LIKE '207R%') as internists
-FROM providers
-WHERE entity_type = 1
-GROUP BY practice_state
-ORDER BY provider_count DESC;
+"Create a specialty pharmacy network"
+→ NetworkSim-Gen (generation request)
 ```
 
 ---
 
-## File Organization
+## Implementation Status
 
-### NetworkSim (Public) - healthsim-workspace
+| Component | Status | Location |
+|-----------|--------|----------|
+| NetworkSim-Gen skills | ✅ Complete | `skills/networksim/synthetic/` |
+| NetworkSim-Gen integration | ✅ Complete | `skills/networksim/integration/` |
+| NetworkSim-DB repository | 🔮 Planned | `github.com/mark64oswald/networksim-db` |
+| NetworkSim-DB skills | 🔮 Planned | `skills/networksim/database/` |
+| Automatic mode selection | 🔮 Planned | Future enhancement |
+
+**Current State**: NetworkSim-Gen is fully functional. NetworkSim-DB is planned for a future release.
+
+**Action Required**: The existing `networksim-local` repository should be:
+1. Made public on GitHub
+2. Renamed to `networksim-db`
+
+This will be completed in a future session.
+
+---
+
+## Data Comparison
+
+### NetworkSim-Gen Output
+
+```json
+{
+  "npi": "1234567890",          // Valid format, synthetic
+  "entity_type": "individual",
+  "provider": {
+    "last_name": "Chen",
+    "first_name": "Sarah",
+    "credential": "MD, FACC"
+  },
+  "taxonomy_code": "207RC0000X",
+  "practice_location": {
+    "city": "San Francisco",
+    "state": "CA"
+  }
+}
+```
+
+### NetworkSim-DB Output
+
+```json
+{
+  "npi": "1679576722",          // Real registered NPI
+  "entity_type_code": "1",
+  "provider_last_name_legal_name": "SMITH",
+  "provider_first_name": "JOHN",
+  "provider_credential_text": "MD",
+  "healthcare_provider_taxonomy_code_1": "207RC0000X",
+  "provider_business_practice_location_address_city_name": "SAN FRANCISCO",
+  "provider_business_practice_location_address_state_name": "CA"
+}
+```
+
+---
+
+## Repository Structure (Future)
+
+### NetworkSim-DB Repository
 
 ```
-skills/networksim/
-├── README.md                  # Product overview
-├── SKILL.md                   # Skill reference
-├── developer-guide.md         # Implementation details
-│
-├── reference/                 # Domain knowledge
-│   ├── network-types.md
-│   ├── plan-structures.md
-│   └── ...
-│
-├── synthetic/                 # Generation skills
-│   ├── synthetic-provider.md
-│   ├── synthetic-network.md
-│   └── ...
-│
-├── patterns/                  # Network patterns
-│   ├── hmo-network-pattern.md
-│   └── ...
-│
-└── integration/               # Cross-product skills
-    ├── provider-for-encounter.md
-    └── ...
-```
-
-### NetworkSim-Local (Private) - separate repo
-
-```
-networksim-local/
+networksim-db/
 ├── README.md                  # Overview and setup
-├── SKILL.md                   # Skill reference
-├── developer-guide.md         # Technical details
-├── networksim-local.code-workspace
+├── SKILL.md                   # Skill reference  
+├── networksim-db.code-workspace
 │
-├── data/                      # LOCAL ONLY - gitignored
-│   ├── README.md              # Data documentation (committed)
-│   ├── nppes/                 # Raw NPPES files
-│   ├── taxonomy/              # Taxonomy reference
-│   └── networksim-local.duckdb
+├── setup/                     # Setup scripts
+│   ├── setup-all.py          # Full setup workflow
+│   ├── download-nppes.py     # Download NPPES data
+│   ├── build-database.py     # Build DuckDB
+│   └── validate-db.py        # Validation checks
 │
-├── setup/                     # Setup scripts (committed)
-│   ├── setup-all.py
-│   ├── download-nppes.py
-│   ├── build-database.py
-│   └── validate-db.py
+├── skills/                    # Query skills
+│   ├── provider-lookup.md    # Find providers by NPI
+│   ├── geographic-search.md  # Search by location
+│   ├── specialty-analysis.md # Specialty distribution
+│   └── network-builder.md    # Build real networks
 │
-├── skills/                    # Query skills (committed)
-│   ├── provider-lookup.md
-│   ├── geographic-search.md
-│   └── ...
-│
-└── queries/                   # SQL templates (committed)
-    └── provider-queries.sql
+└── data/                      # LOCAL ONLY - gitignored
+    ├── README.md              # Data documentation
+    ├── nppes/                 # Raw NPPES CSVs
+    └── networksim.duckdb      # Built database
 ```
 
 ---
 
-## Repository Separation
+## Reference Data Philosophy
 
-### Why Separate Repositories?
+NetworkSim-DB follows the same data architecture principles as PopulationSim:
 
-1. **Size**: Raw NPPES data is ~9GB, far exceeding GitHub limits
-2. **Privacy**: Private repo prevents accidental public exposure
-3. **Independence**: Can update data without affecting main workspace
-4. **Flexibility**: Different update cadences (NPPES monthly vs code as-needed)
+| Aspect | Skills Files | DuckDB |
+|--------|--------------|--------|
+| **Source** | HealthSim-created | External (CMS/NPPES) |
+| **Size** | < 1MB | > 1GB |
+| **Updates** | Version controlled | Monthly NPPES refresh |
+| **Access** | Read during generation | SQL queries |
+| **Required** | Yes (core function) | Optional (enhanced function) |
 
-### What's Committed vs Local-Only
-
-| Component | In Git | Local Only |
-|-----------|--------|------------|
-| README.md, SKILL.md | ✅ | |
-| Setup scripts | ✅ | |
-| Skill definitions | ✅ | |
-| Query templates | ✅ | |
-| .gitignore | ✅ | |
-| data/README.md | ✅ | |
-| Raw CSV files | | ✅ |
-| DuckDB database | | ✅ |
-| Download archives | | ✅ |
+See [Data Architecture](./data-architecture.md) for the full reference data philosophy.
 
 ---
 
-## Future Roadmap
+## Related Documentation
 
-### Near-Term
-
-1. Both versions operational and documented
-2. Clear guidance on when to use each
-3. Minimal coupling between public/private
-
-### Medium-Term
-
-1. **Download Scripts Distribution**: Provide setup scripts to interested users
-2. **Pre-Built Database Option**: Host processed DuckDB on CDN for faster setup
-3. **API Layer**: Optional REST API for NetworkSim-Local queries
-
-### Long-Term (SaaS Consideration)
-
-1. **Hosted Real Data**: Cloud-hosted NPPES database
-2. **Subscription Tiers**: Filter by state, specialty, or full access
-3. **Automatic Updates**: Monthly refresh without user intervention
-4. **Integration API**: Direct integration with HealthSim products
+- [NetworkSim SKILL.md](../skills/networksim/SKILL.md) - Current skill reference
+- [Data Architecture](./data-architecture.md) - Reference data philosophy
+- [PopulationSim](../skills/populationsim/SKILL.md) - Similar DuckDB pattern
 
 ---
 
-## Quick Reference
-
-### NetworkSim (Public) - Synthetic Generation
-
-```
-Location:   healthsim-workspace/skills/networksim/
-Repo:       https://github.com/mark64oswald/healthsim-workspace
-Workspace:  healthsim.code-workspace
-Purpose:    Generate synthetic providers and networks
-```
-
-### NetworkSim-Local (Private) - Real Data
-
-```
-Location:   /Users/markoswald/Developer/projects/networksim-local/
-Repo:       https://github.com/mark64oswald/networksim-local (private)
-Workspace:  networksim-local.code-workspace
-Purpose:    Query real NPPES provider registry
-Data Size:  ~1.7GB (DuckDB), ~9GB (raw)
-```
-
----
-
-*Last Updated: December 2025*
+*Last Updated: December 2024*

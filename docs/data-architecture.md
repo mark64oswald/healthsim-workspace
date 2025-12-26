@@ -64,6 +64,50 @@ Read-only datasets loaded from PopulationSim for generation support.
 
 ---
 
+## Reference Data Philosophy
+
+HealthSim uses two different approaches for reference data, each chosen deliberately based on the data's nature and use case:
+
+### Text Files (Skills-Based Reference Data)
+
+**Location**: `references/` and `formats/` directories
+
+**Examples**: Code systems (ICD-10, CPT, LOINC), format specifications (FHIR, X12, NCPDP), validation rules, clinical guidelines
+
+**Why text files?**
+- **Version controlled**: Changes are tracked in git, enabling history and collaboration
+- **Human-readable**: Developers and domain experts can read and edit directly
+- **Part of the conversation**: Claude reads these during generation to apply correct codes and rules
+- **Small and focused**: Each file covers a specific domain (diabetes codes, heart failure meds)
+- **No query overhead**: Direct file access during generation
+
+### DuckDB (External Packaged Reference Data)
+
+**Location**: `~/.healthsim/healthsim.duckdb` (ref_* tables)
+
+**Examples**: CDC PLACES health indicators, Social Vulnerability Index, Area Deprivation Index, NPPES provider registry
+
+**Why DuckDB?**
+- **Large datasets**: Millions of records (85K census tracts, 9M providers) impossible to embed in skills
+- **Real statistical data**: Actual prevalence rates, demographics, and geographic distributions
+- **SQL queryable**: Complex aggregations, joins, and filtering for analytics
+- **Compressed storage**: 5-7x smaller than source CSVs
+- **Optional download**: Users can choose to download these datasets or skip them
+
+### Decision Guide
+
+| Characteristic | Use Text Files | Use DuckDB |
+|----------------|----------------|------------|
+| Size | < 1MB | > 1MB |
+| Update frequency | Rarely (version controlled) | Periodically (external source) |
+| Access pattern | Read during generation | Query for analysis |
+| Source | Created/curated by HealthSim | External agency (CDC, CMS) |
+| Required? | Yes (core functionality) | Optional (enhanced functionality) |
+
+This hybrid approach keeps HealthSim's core lightweight and conversational while enabling powerful analytics when external data sources are available.
+
+---
+
 ## Provenance Tracking
 
 All canonical tables include provenance columns for traceability:

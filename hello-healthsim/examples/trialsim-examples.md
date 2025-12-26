@@ -842,20 +842,20 @@ and site performance metrics. Load to DuckDB.
   - Screen failure rates
   - Visit compliance percentages
 
-### Example 4: Databricks Enterprise Loading
+### Example 4: Local DuckDB Analytics
 
 ```
-Generate Phase II CNS trial with 80 subjects and full dimensional model.
-Load to Databricks catalog 'dev_catalog', schema 'analytics'
+Generate Phase II CNS trial with 80 subjects and full dimensional model for DuckDB
 ```
 
-**Claude workflow:**
-1. Confirms Databricks CLI authentication
-2. Generates canonical trial data
-3. Transforms to dimensional model
-4. Creates tables via SQL Statements API
-5. Loads data with INSERT statements
-6. Reports success with row counts
+**What you get:**
+1. Canonical trial data (JSON)
+2. Dimensional model transformation
+3. DuckDB CREATE TABLE statements
+4. INSERT statements with all data
+5. Sample analytics queries
+
+**Enterprise Platforms (Future):** Direct loading to Databricks, Snowflake, and MotherDuck is planned for Phase 3. For now, export from DuckDB to your enterprise platform using standard ETL tools.
 
 ### Example 5: Cross-Product Analytics Setup
 

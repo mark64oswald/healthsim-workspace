@@ -788,7 +788,7 @@ ORDER BY orr_pct DESC;
 - **dim_subject.patient_mrn** joins to **dim_patient.mrn**
 - Enables analysis of trial outcomes by EMR-sourced baseline characteristics
 - Star schema optimized for BI tools (Tableau, Power BI, Looker)
-- Works in both DuckDB (local) and Databricks (enterprise)
+- Uses DuckDB for local analytics (enterprise exports planned for Phase 3)
 
 ---
 

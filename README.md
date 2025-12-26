@@ -176,6 +176,32 @@ healthsim-workspace/
 
 ## Setup
 
+### Prerequisites
+
+| Requirement | Version | Notes |
+|-------------|---------|-------|
+| Git | 2.0+ | Clone repository |
+| Python | 3.10+ | For healthsim-core package |
+| Claude Desktop or Claude Code | Latest | AI conversation interface |
+
+### Python Environment
+
+```bash
+# Clone and setup
+git clone https://github.com/mark64oswald/healthsim-workspace.git
+cd healthsim-workspace
+
+# Create virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install healthsim-core (includes DuckDB)
+cd packages/core
+pip install -e .
+```
+
+DuckDB is bundled with healthsim-core - no separate installation required. The database is created automatically at `~/.healthsim/healthsim.duckdb` on first use.
+
 ### Claude Desktop (Recommended)
 
 Add to a Claude Project or configure as MCP server:

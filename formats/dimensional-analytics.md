@@ -9,7 +9,6 @@
 - fact table
 - dimension table
 - DuckDB
-- Databricks
 - BI export
 - reporting database
 
@@ -27,72 +26,50 @@ Use dimensional output when:
 - Running SQL-based population health analytics
 - Computing quality measures and KPIs
 - Creating data warehouses for reporting
-- Loading to analytics databases (DuckDB, Databricks, Snowflake)
+- Loading to analytics databases
+
+## Target Databases
+
+### DuckDB (Primary - Local Analytics)
+
+**Status**: ✅ Fully Supported  
+**Use case**: Local development, testing, demos, personal analytics
+
+DuckDB is the default target for dimensional analytics. It's bundled with healthsim-core - no additional setup required.
+
+**Example conversation:**
+```
+Generate 10 diabetic patients in star schema format for DuckDB
+```
+
+### Enterprise Cloud Platforms (Future)
+
+**Status**: 🔮 Planned for Phase 3
+
+Support for enterprise analytics platforms is planned for a future release:
+
+| Platform | Status | Notes |
+|----------|--------|-------|
+| Databricks | Planned | Unity Catalog integration, Delta tables |
+| Snowflake | Planned | Snowpark integration |
+| MotherDuck | Planned | Cloud-hosted DuckDB |
+
+When implemented, these will enable:
+- Team collaboration on shared datasets
+- Large-scale data generation (millions of records)
+- Integration with enterprise BI tools
+- Data governance and access control
+
+For now, you can export dimensional data from DuckDB and load it to your enterprise platform using standard ETL tools.
 
 ## Conversation-First Approach
 
 Generate dimensional data through natural conversation. Claude generates SQL directly - no scripts, no code generation.
 
-### Quick Start Examples
+### Quick Start Example
 
-**Local Analytics (DuckDB):**
 ```
 Generate 10 diabetic patients in star schema format for DuckDB
-```
-
-**Enterprise Analytics (Databricks):**
-```
-Generate 10 patients in dimensional format and load to Databricks
-```
-
-## Target Databases
-
-### DuckDB (Local Development)
-
-- **Use case**: Local development, testing, demos
-- **Schema**: `analytics`
-- **Connection**: In-memory or file-based (no auth needed)
-
-**Example conversation:**
-```
-User: Generate 5 patients with encounters as star schema for DuckDB
-
-Claude: I'll generate the dimensional model. Here are the CREATE TABLE
-and INSERT statements for DuckDB...
-
-[Generates SQL DDL + INSERT statements]
-```
-
-### Databricks (Enterprise)
-
-- **Use case**: Production analytics, team collaboration, large-scale testing
-- **Catalog**: User-specified (e.g., `healthsim`, `dev_catalog`)
-- **Schema**: User-specified (e.g., `gold`, `analytics`)
-
-**Prerequisites**: You must be authenticated via Databricks CLI:
-```bash
-# Check your authentication
-databricks auth profiles
-
-# Expected output showing valid auth:
-# Name     Host                                     Valid
-# DEFAULT  https://your-workspace.cloud.databricks.com  YES
-
-# Find your warehouse ID
-databricks warehouses list
-```
-
-**Example conversation:**
-```
-User: Generate 10 patients in dimensional format for Databricks.
-      Use catalog 'dev_catalog' and schema 'gold'
-
-Claude: I see you're authenticated to Databricks. Let me:
-1. Generate the dimensional data
-2. Create the tables (if needed)
-3. Load the data via SQL Statements API
-
-[Generates SQL and executes via databricks api post]
 ```
 
 ## Products and Their Star Schemas
@@ -315,31 +292,6 @@ INSERT INTO analytics.dim_patient VALUES
 (1, 'MRN100001', 'John', 'Smith', '1960-03-15', 65, '65-74', 'M', 'Male', 'Springfield', 'IL'),
 (2, 'MRN100002', 'Maria', 'Garcia', '1955-08-22', 69, '65-74', 'F', 'Female', 'Chicago', 'IL'),
 -- ... more rows
-```
-
-### Databricks Enterprise Workflow
-
-**User request:**
-```
-Load 10 patients to Databricks. Use catalog 'dev_catalog', schema 'gold'.
-Start the warehouse if needed.
-```
-
-**Claude workflow:**
-1. Confirms Databricks CLI authentication
-2. Checks/starts the SQL warehouse
-3. Generates CREATE TABLE and INSERT statements
-4. Executes via `databricks api post /api/2.0/sql/statements`
-5. Reports success with table counts
-
-**Example execution:**
-```bash
-# Claude uses Databricks SQL Statements API
-databricks api post /api/2.0/sql/statements --json '{
-  "warehouse_id": "YOUR_WAREHOUSE_ID",
-  "statement": "CREATE SCHEMA IF NOT EXISTS dev_catalog.gold",
-  "wait_timeout": "30s"
-}'
 ```
 
 ## Reproducibility
@@ -776,18 +728,14 @@ ORDER BY response_rate_pct DESC;
 
 ### TrialSim Platform Notes
 
-**DuckDB (Local):**
+**DuckDB (Primary):**
 ```sql
 CREATE SCHEMA IF NOT EXISTS trialsim;
 -- Use trialsim.dim_study, trialsim.fact_enrollment, etc.
 ```
 
-**Databricks (Enterprise):**
-```sql
-CREATE CATALOG IF NOT EXISTS healthsim;
-CREATE SCHEMA IF NOT EXISTS healthsim.gold;
--- Use healthsim.gold.trialsim_dim_study, healthsim.gold.trialsim_fact_enrollment, etc.
-```
+**Enterprise Platforms (Future):**
+Enterprise export to Databricks, Snowflake, and MotherDuck is planned for Phase 3. See "Enterprise Cloud Platforms" section above.
 
 ---
 

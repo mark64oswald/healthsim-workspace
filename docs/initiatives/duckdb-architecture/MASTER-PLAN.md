@@ -38,6 +38,7 @@ This initiative consolidates HealthSim's storage architecture into a unified Duc
 | [SESSION-04](SESSION-04-json-compatibility.md) | JSON export/import for sharing | ✅ Complete | 4cf28ce |
 | [SESSION-05](SESSION-05-migration-tool.md) | Migrate existing JSON scenarios | ✅ Complete | 8a184e0 |
 | [SESSION-06](SESSION-06-documentation.md) | Update all docs, skills, tutorials | ✅ Complete | aeb3314 |
+| SESSION-06.5 | Doc cleanup: prerequisites, reference data philosophy, enterprise exports | ✅ Complete | - |
 | [SESSION-07](SESSION-07-testing-polish.md) | Integration testing, cleanup | ⬜ Not Started | - |
 
 ### Phase 1 Success Criteria

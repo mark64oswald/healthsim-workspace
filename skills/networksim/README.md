@@ -88,18 +88,20 @@ Provide entities to other HealthSim products:
 | **RxMemberSim** | Dispensing pharmacy | CVS with NCPDP ID for Rx claim |
 | **TrialSim** | Site, investigator | PI credentials for trial site |
 
-## Dual-Version Architecture
+## Data Architecture
 
-NetworkSim exists in two versions:
+NetworkSim supports two data modes:
 
-| Version | Repository | Data Source | Use Case |
-|---------|------------|-------------|----------|
-| **NetworkSim (Public)** | healthsim-workspace | Synthetic generation | Demos, tutorials, testing |
-| **NetworkSim-Local (Private)** | networksim-local | Real NPPES data | Research, validation |
+| Mode | Skill Prefix | Data Source | Use Case |
+|------|--------------|-------------|----------|
+| **NetworkSim-Gen** (Default) | Synthetic generation | On-demand by Claude | Demos, tutorials, testing |
+| **NetworkSim-DB** (Optional) | DuckDB queries | Real NPPES registry | Research, validation, analytics |
 
-The public version generates synthetic providers with valid NPI format. The private version (separate repo) provides access to real NPPES registry data for research requiring actual provider information.
+**NetworkSim-Gen** is the default mode, requiring no additional setup. Claude generates synthetic providers with valid NPI format during conversation.
 
-See [docs/networksim-dual-version.md](../../docs/networksim-dual-version.md) for architecture details.
+**NetworkSim-DB** is an optional mode for users who need real provider data. It requires downloading the NPPES database (~1.7GB). When available, Claude can query actual registered providers.
+
+See [Data Architecture](../../docs/networksim-dual-version.md) for full details on the dual-mode approach.
 
 ## Skills Reference
 
@@ -117,4 +119,4 @@ For complete generation parameters, examples, and validation rules, see:
 
 ---
 
-*NetworkSim generates synthetic provider data only. For real NPPES data, see networksim-local.*
+*NetworkSim-Gen generates synthetic provider data. For real NPPES data, enable NetworkSim-DB mode.*
