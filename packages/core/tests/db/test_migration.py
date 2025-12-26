@@ -330,23 +330,28 @@ class TestVerification:
         for json_path in sample_json_scenarios.glob("*.json"):
             migrate_scenario(json_path, state_manager)
         
-        # Verify directly via state_manager (not verify_migration which uses default db)
-        scenarios = state_manager.list_scenarios()
-        found_names = [s['name'] for s in scenarios]
+        # Verify using the same manager (proper dependency injection)
+        verification = verify_migration(
+            expected_count=3,
+            expected_names=['test-scenario-1', 'test-scenario-2', 'legacy-format'],
+            manager=state_manager
+        )
         
-        assert len(scenarios) == 3
-        assert 'test-scenario-1' in found_names
-        assert 'test-scenario-2' in found_names
-        assert 'legacy-format' in found_names
+        assert verification['success']
+        assert verification['count_match']
+        assert len(verification['missing']) == 0
     
     def test_verify_missing_scenarios(self, sample_json_scenarios, state_manager):
         """Verification reports missing scenarios."""
         # Only migrate one
         migrate_scenario(sample_json_scenarios / "test-scenario-1.json", state_manager)
         
-        # Check what was migrated
-        scenarios = state_manager.list_scenarios()
-        found_names = [s['name'] for s in scenarios]
+        verification = verify_migration(
+            expected_count=3,
+            expected_names=['test-scenario-1', 'test-scenario-2', 'missing'],
+            manager=state_manager
+        )
         
-        assert 'test-scenario-1' in found_names
-        assert 'test-scenario-2' not in found_names
+        assert not verification['success']
+        assert 'test-scenario-2' in verification['missing']
+        assert 'missing' in verification['missing']

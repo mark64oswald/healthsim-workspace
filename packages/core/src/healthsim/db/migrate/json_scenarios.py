@@ -224,7 +224,8 @@ def backup_json_scenarios(
 
 def verify_migration(
     expected_count: int,
-    expected_names: Optional[List[str]] = None
+    expected_names: Optional[List[str]] = None,
+    manager: Optional['StateManager'] = None,
 ) -> Dict:
     """
     Verify that migration was successful.
@@ -232,13 +233,15 @@ def verify_migration(
     Args:
         expected_count: Number of scenarios that should exist
         expected_names: Optional list of expected scenario names
+        manager: Optional StateManager instance (for testing)
         
     Returns:
         Verification report dict
     """
-    from ...state.manager import StateManager
+    if manager is None:
+        from ...state.manager import StateManager
+        manager = StateManager()
     
-    manager = StateManager()
     scenarios = manager.list_scenarios()
     
     found_names = [s['name'] for s in scenarios]
@@ -260,16 +263,20 @@ def verify_migration(
     return report
 
 
-def get_migration_status() -> Dict:
+def get_migration_status(manager: Optional['StateManager'] = None) -> Dict:
     """
     Get current migration status.
+    
+    Args:
+        manager: Optional StateManager instance (for testing)
     
     Returns:
         Dict with legacy_exists, backup_exists, scenario_count
     """
-    from ...state.manager import StateManager
+    if manager is None:
+        from ...state.manager import StateManager
+        manager = StateManager()
     
-    manager = StateManager()
     scenarios = manager.list_scenarios()
     
     return {
