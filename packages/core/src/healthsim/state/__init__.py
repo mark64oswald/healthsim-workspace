@@ -47,6 +47,8 @@ from .manager import (
     list_scenarios,
     delete_scenario,
     scenario_exists,
+    export_scenario_to_json,
+    import_scenario_from_json,
 )
 from .legacy import (
     export_to_json,
@@ -79,6 +81,8 @@ __all__ = [
     "list_scenarios",
     "delete_scenario",
     "scenario_exists",
+    "export_scenario_to_json",
+    "import_scenario_from_json",
     # Legacy JSON support
     "export_to_json",
     "import_from_json",

@@ -8,6 +8,7 @@ as the storage backend instead of JSON files.
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 from datetime import datetime
+from pathlib import Path
 import json
 
 import duckdb
@@ -496,6 +497,110 @@ class StateManager:
             "DELETE FROM scenario_entities WHERE scenario_id = ?",
             [scenario_id]
         )
+    
+    # =========================================================================
+    # JSON Export/Import Methods
+    # =========================================================================
+    
+    def export_to_json(
+        self,
+        name_or_id: str,
+        output_path: Optional[Path] = None,
+    ) -> Path:
+        """
+        Export a scenario to JSON file for sharing.
+        
+        Args:
+            name_or_id: Scenario name or UUID
+            output_path: Where to save (default: ~/Downloads/{name}.json)
+            
+        Returns:
+            Path to exported file
+        """
+        from .legacy import export_to_json as _export, export_scenario_for_sharing
+        
+        scenario = self.load_scenario(name_or_id)
+        
+        # Use default path if not specified
+        if output_path is None:
+            downloads = Path.home() / "Downloads"
+            downloads.mkdir(exist_ok=True)
+            # Clean name for filename
+            safe_name = scenario['name'].replace(' ', '_').replace('/', '-')
+            output_path = downloads / f"{safe_name}.json"
+        
+        # Prepare for export (remove internal fields)
+        export_data = export_scenario_for_sharing(scenario)
+        
+        return _export(export_data, Path(output_path))
+    
+    def import_from_json(
+        self,
+        json_path: Path,
+        name: Optional[str] = None,
+        overwrite: bool = False,
+    ) -> str:
+        """
+        Import a scenario from JSON file.
+        
+        Args:
+            json_path: Path to JSON file
+            name: Override scenario name (default: use filename or embedded name)
+            overwrite: Replace existing scenario with same name
+            
+        Returns:
+            Scenario ID
+        """
+        from .legacy import import_from_json as _import
+        
+        data = _import(Path(json_path))
+        
+        # Determine name (priority: argument > embedded > filename)
+        scenario_name = name or data.get('name') or Path(json_path).stem
+        
+        # Get description and tags
+        description = data.get('description')
+        tags = data.get('tags', [])
+        
+        # Extract entities
+        entities = data.get('entities', {})
+        
+        # Handle legacy format where entities are at top level
+        if not entities:
+            legacy_types = [
+                'patients', 'patient',
+                'encounters', 'encounter', 
+                'diagnoses', 'diagnosis',
+                'medications', 'medication',
+                'members', 'member',
+                'claims', 'claim',
+                'prescriptions', 'prescription',
+                'subjects', 'subject',
+            ]
+            for key in legacy_types:
+                if key in data and isinstance(data[key], list):
+                    # Normalize to plural form
+                    normalized_key = key if key.endswith('s') else key + 's'
+                    entities[normalized_key] = data[key]
+        
+        # Handle EntityWithProvenance wrapper format
+        for entity_type in list(entities.keys()):
+            entity_list = entities[entity_type]
+            if entity_list and isinstance(entity_list[0], dict):
+                if 'data' in entity_list[0] and 'provenance' in entity_list[0]:
+                    # Unwrap EntityWithProvenance
+                    entities[entity_type] = [
+                        {**e['data'], '_provenance': e.get('provenance', {})}
+                        for e in entity_list
+                    ]
+        
+        return self.save_scenario(
+            name=scenario_name,
+            entities=entities,
+            description=description,
+            tags=tags,
+            overwrite=overwrite,
+        )
 
 
 # =============================================================================
@@ -542,3 +647,13 @@ def delete_scenario(name_or_id: str) -> bool:
 def scenario_exists(name_or_id: str) -> bool:
     """Convenience function for scenario_exists."""
     return get_manager().scenario_exists(name_or_id)
+
+
+def export_scenario_to_json(name_or_id: str, output_path: Optional[Path] = None) -> Path:
+    """Convenience function for export_to_json."""
+    return get_manager().export_to_json(name_or_id, output_path)
+
+
+def import_scenario_from_json(json_path: Path, name: Optional[str] = None, overwrite: bool = False) -> str:
+    """Convenience function for import_from_json."""
+    return get_manager().import_from_json(json_path, name, overwrite)
