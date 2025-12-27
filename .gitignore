@@ -53,3 +53,7 @@ Thumbs.db
 
 # Saved scenarios (may contain synthetic patient data)
 scenarios/
+
+# DuckDB database files
+*.duckdb
+*.duckdb.wal
