@@ -9,6 +9,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **[MCP Server]** HealthSim MCP Server - Single DuckDB Connection Holder (2024-12-27)
+  - New `packages/mcp-server/` directory with Python MCP server
+  - Solves DuckDB file locking issue by being the single connection holder
+  - Tools exposed:
+    - `healthsim_list_scenarios` - List all saved scenarios
+    - `healthsim_load_scenario` - Load a scenario by name/ID
+    - `healthsim_save_scenario` - Save entities as a scenario
+    - `healthsim_delete_scenario` - Delete a scenario (requires confirm=True)
+    - `healthsim_get_summary` - Get token-efficient scenario summary
+    - `healthsim_query` - Execute read-only SQL queries
+    - `healthsim_query_reference` - Query PopulationSim reference data
+    - `healthsim_tables` - List all database tables
+  - Replaces `healthsim-duckdb` (mcp-server-motherduck) in Claude Desktop config
+  - Uses FastMCP framework with Pydantic input validation
+  - Lifespan management for database connection
+  - README with installation and usage instructions
+
 - **[Auto-Persist]** Phase 5 - Integration & Performance Testing Complete (2024-12-27)
   - **Integration Test Suite** (`test_auto_persist_integration.py` - 8 tests):
     - `TestParquetExport` - Validates Parquet export with pyarrow verification
