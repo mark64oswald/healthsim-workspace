@@ -46,7 +46,7 @@ from healthsim.state import StateManager
 # =============================================================================
 
 @asynccontextmanager
-async def app_lifespan():
+async def app_lifespan(app):
     """Manage the single DuckDB connection for the server's lifetime."""
     # Initialize connection and state manager
     conn = get_connection()
