@@ -9,7 +9,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **[Auto-Persist]** Token-Efficient Scenario Management (2024-12-27)
+- **[Auto-Persist]** Phase 2 Enhancements - Tag Management, Cloning, Merging, Export (2024-12-27)
+  - **Tag Management** (6 new methods):
+    - `add_tag()` - Add tag to scenario (case-insensitive, stored lowercase)
+    - `remove_tag()` - Remove tag from scenario
+    - `get_tags()` - Get sorted list of scenario tags
+    - `list_all_tags()` - List all tags with usage counts
+    - `scenarios_by_tag()` - Filter scenarios by tag
+  - **Scenario Cloning**:
+    - `clone_scenario()` - Create exact copy with new IDs
+    - Auto-generates name as "{source}-copy" if not provided
+    - Optional entity type filtering
+    - Returns CloneResult with entities_cloned counts
+  - **Scenario Merging**:
+    - `merge_scenarios()` - Combine multiple scenarios into one
+    - Conflict strategies: "skip", "overwrite", "rename"
+    - Requires minimum 2 source scenarios
+    - Returns MergeResult with merged counts and conflicts resolved
+  - **Export Utilities** (4 formats):
+    - `export_scenario()` - Export to JSON, CSV, or Parquet
+    - `export_to_json()`, `export_to_csv()`, `export_to_parquet()` convenience methods
+    - JSON: Single file with nested structure and metadata
+    - CSV/Parquet: Directory with separate file per entity type
+    - Optional provenance column filtering
+    - Returns ExportResult with file path and size
+  - **Infrastructure**:
+    - CANONICAL_TABLES constant: 41 tables across 6 products
+    - `_table_exists()` helper for safe table operations
+    - Enhanced `delete_scenario()` to clean all canonical tables
+  - **New Dataclasses**: CloneResult, MergeResult, ExportResult (all with to_dict())
+  - 40 new Phase 2 unit tests (103 total auto-persist tests)
+  - 3 integration tests: clone→tag, merge→export, clone→modify→merge
+
+- **[Auto-Persist]** Phase 1 - Token-Efficient Scenario Management (2024-12-27)
   - New auto-persist pattern for large batch operations (50+ entities)
   - Returns summary (~500 tokens) instead of echoing all data back to context
   - Service modules in `packages/core/src/healthsim/state/`:

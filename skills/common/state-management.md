@@ -1,6 +1,6 @@
 ---
 name: state-management
-description: "Save, load, and manage workspace scenarios to preserve synthetic data across sessions. Auto-persist for token-efficient batch operations. Query saved data with SQL. Triggers: save, load, scenario, persist, resume, continue, list scenarios, delete scenario, export scenario, import scenario, share scenario, query scenario, get summary"
+description: "Save, load, and manage workspace scenarios to preserve synthetic data across sessions. Auto-persist for token-efficient batch operations. Query saved data with SQL. Tag, clone, merge, and export scenarios. Triggers: save, load, scenario, persist, resume, continue, list scenarios, delete scenario, export scenario, import scenario, share scenario, query scenario, get summary, tag scenario, clone scenario, merge scenarios, export to CSV, export to JSON, export to Parquet"
 ---
 
 # State Management
@@ -68,8 +68,27 @@ A scenario captures:
 - "Rename scenario..."
 - "Export [scenario] as JSON"
 - "Import scenario from [path]"
+
+### Tag Management
 - "Tag this scenario with..."
+- "Add tag 'validated' to..."
+- "Remove tag 'draft' from..."
 - "Find scenarios tagged..."
+- "What tags do I have?"
+- "Show all my tags"
+
+### Cloning & Merging
+- "Clone this scenario"
+- "Make a copy of [scenario]"
+- "Duplicate [scenario] for testing"
+- "Merge scenarios A and B"
+- "Combine my two cohorts"
+
+### Export
+- "Export to CSV"
+- "Export as Parquet"
+- "Export [scenario] to JSON"
+- "Download [scenario] for analysis"
 
 ## Domain Knowledge
 
@@ -151,6 +170,90 @@ Scenarios are stored in a DuckDB database at `~/.healthsim/healthsim.duckdb`. Th
 - Scenario-scoped queries via `scenario_id` column
 
 For sharing scenarios between users, export to JSON format.
+
+### Tag Management
+
+Tags help organize scenarios for easy filtering:
+
+```python
+# Add tags
+tags = add_tag(scenario_id, 'validated')  # Case-insensitive, stored lowercase
+tags = add_tag(scenario_id, 'training-data')
+
+# Remove tags
+tags = remove_tag(scenario_id, 'draft')
+
+# Get scenario tags
+tags = get_tags(scenario_id)  # ['training-data', 'validated']
+
+# List all tags with usage counts
+all_tags = list_all_tags()  # [{'tag': 'training-data', 'count': 5}, ...]
+
+# Find scenarios by tag
+scenarios = scenarios_by_tag('validated')  # List of matching scenarios
+```
+
+### Scenario Cloning
+
+Create copies of scenarios for A/B testing or variations:
+
+```python
+clone = clone_scenario(
+    source_scenario_id,
+    new_name='my-variant',        # Optional - defaults to "{source}-copy"
+    description='Testing new cohort definition',
+    tags=['variant-a', 'testing']
+)
+# clone.target_scenario_id: New scenario UUID
+# clone.entities_cloned: {'patients': 100, 'encounters': 250}
+# clone.total_entities: 350
+```
+
+### Scenario Merging
+
+Combine multiple scenarios into one:
+
+```python
+merged = merge_scenarios(
+    source_scenario_ids=[id1, id2, id3],
+    target_name='combined-cohort',
+    description='Merged training data',
+    conflict_strategy='skip'  # 'skip', 'overwrite', or 'rename'
+)
+# merged.entities_merged: {'patients': 300, 'encounters': 800}
+# merged.conflicts_resolved: 0
+```
+
+Conflict strategies:
+- **skip** (default): Keep first occurrence of duplicate IDs
+- **overwrite**: Later scenarios overwrite earlier ones
+- **rename**: Generate new IDs for duplicates
+
+### Multi-Format Export
+
+Export scenarios in various formats:
+
+```python
+# JSON - Single file with all data
+export = export_to_json(scenario_id)  # ~/Downloads/{name}.json
+
+# CSV - Directory with one file per entity type  
+export = export_to_csv(scenario_id)   # ~/Downloads/{name}/patients.csv, etc.
+
+# Parquet - Efficient columnar format
+export = export_to_parquet(scenario_id)
+
+# With options
+export = export_scenario(
+    scenario_id,
+    format='csv',
+    output_path='/custom/path',
+    include_provenance=False  # Exclude source tracking columns
+)
+# export.file_path: Path to exported file/directory
+# export.file_size_bytes: Size in bytes
+# export.entities_exported: {'patients': 100, 'encounters': 250}
+```
 
 ## Generation Guidelines
 
@@ -393,6 +496,101 @@ What would you like to do?
 - Export for analysis
 ```
 
+### Example 5: Tag Management Workflow
+
+```
+User: Tag my diabetes scenario as "validated" and "training-data"
+
+Claude: [Adds tags]
+
+Tagged "diabetes-cohort-20241227" with:
+- validated
+- training-data
+
+Now has 3 tags: [production, training-data, validated]
+```
+
+```
+User: What scenarios are validated?
+
+Claude: [Queries by tag]
+
+Found 3 validated scenarios:
+- diabetes-cohort-20241227 (200 patients)
+- heart-failure-cohort-20241215 (150 patients)  
+- copd-training-20241210 (75 patients)
+```
+
+### Example 6: Clone for A/B Testing
+
+```
+User: Clone my diabetes scenario for testing a new cohort definition
+
+Claude: [Clones scenario]
+
+Cloned "diabetes-cohort-20241227" → "diabetes-cohort-20241227-copy":
+- 200 patients copied
+- 500 encounters copied
+- 1,200 labs copied
+- All entities have new unique IDs
+
+The clone is independent - changes won't affect the original.
+```
+
+### Example 7: Merge Multiple Cohorts
+
+```
+User: Merge my diabetes and heart-failure scenarios into a combined training set
+
+Claude: [Merges scenarios]
+
+Created "combined-training-20241227" from 2 sources:
+- From diabetes-cohort: 200 patients, 500 encounters
+- From heart-failure-cohort: 150 patients, 400 encounters
+- Total: 350 patients, 900 encounters
+- Conflicts resolved: 0 (no duplicate IDs)
+
+Both source scenarios preserved unchanged.
+```
+
+### Example 8: Export for External Analysis
+
+```
+User: Export my cohort to CSV for analysis in Python
+
+Claude: [Exports to CSV]
+
+Exported "diabetes-cohort-20241227" to CSV:
+- Location: ~/Downloads/diabetes-cohort-20241227/
+- Files:
+  - patients.csv (200 rows, 245 KB)
+  - encounters.csv (500 rows, 312 KB)
+  - lab_results.csv (1,200 rows, 890 KB)
+- Total: 1.4 MB
+
+Load in Python with:
+```python
+import pandas as pd
+patients = pd.read_csv('~/Downloads/diabetes-cohort-20241227/patients.csv')
+```
+```
+
+```
+User: Export as Parquet for Databricks
+
+Claude: [Exports to Parquet]
+
+Exported to Parquet:
+- Location: ~/Downloads/diabetes-cohort-20241227-parquet/
+- Files: patients.parquet, encounters.parquet, lab_results.parquet
+- Total: 420 KB (70% smaller than CSV)
+
+Load in Databricks with:
+```python
+df = spark.read.parquet('dbfs:/FileStore/diabetes-cohort-20241227-parquet/')
+```
+```
+
 ## Parameters
 
 ### persist()
@@ -427,6 +625,39 @@ What would you like to do?
 | tags | Organization keywords | string[] | (optional) |
 | overwrite | Replace existing | boolean | false |
 
+### add_tag() / remove_tag()
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| scenario_id | Scenario UUID | string | (required) |
+| tag | Tag to add/remove | string | (required) |
+
+### clone_scenario()
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| source_scenario_id | Source scenario UUID | string | (required) |
+| new_name | Name for clone | string | "{source}-copy" |
+| description | Clone description | string | (optional) |
+| tags | Tags for clone | string[] | (copy source) |
+| include_entity_types | Limit to specific types | string[] | (all) |
+
+### merge_scenarios()
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| source_scenario_ids | List of source UUIDs | string[] | (required, min 2) |
+| target_name | Name for merged scenario | string | (auto-generated) |
+| description | Merged scenario description | string | (optional) |
+| tags | Tags for merged | string[] | (union of sources) |
+| conflict_strategy | How to handle duplicates | string | "skip" |
+
+### export_scenario()
+| Parameter | Description | Type | Default |
+|-----------|-------------|------|---------|
+| scenario_id | Scenario UUID | string | (required) |
+| format | Output format | "json"/"csv"/"parquet" | (required) |
+| output_path | Destination path | string | ~/Downloads |
+| include_provenance | Include source columns | boolean | true |
+| include_entity_types | Limit to specific types | string[] | (all) |
+
 ## Related Skills
 
 - [PatientSim](../patientsim/SKILL.md) - Generate patient data
@@ -438,9 +669,9 @@ What would you like to do?
 ## Metadata
 
 - **Type**: domain-knowledge
-- **Version**: 3.0
+- **Version**: 4.0
 - **Format**: Claude-Optimized (v2.0)
 - **Author**: HealthSim Team
-- **Tags**: state-management, persistence, scenarios, export, import, auto-persist, query
+- **Tags**: state-management, persistence, scenarios, export, import, auto-persist, query, tags, clone, merge
 - **Created**: 2025-01-26
 - **Updated**: 2025-12-27

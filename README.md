@@ -95,23 +95,60 @@ See [formats/](formats/) for transformation specifications.
 
 ## State Management
 
-HealthSim includes a state management system for persisting and restoring workspaces:
+HealthSim includes a comprehensive state management system with two persistence patterns:
+
+### Traditional Pattern (Full Data)
+
+Best for small scenarios (under 50 entities) where you want all data in context:
+
+| Tool | Description |
+|------|-------------|
+| `save_scenario` | Save workspace to named scenario |
+| `load_scenario` | Restore workspace from scenario |
+| `list_scenarios` | List saved scenarios with filtering |
+| `export_scenario_to_json` | Export for sharing |
+| `import_scenario_from_json` | Import shared scenarios |
+
+### Auto-Persist Pattern (Token-Efficient) ✨ NEW
+
+Best for large batches (50+ entities) where context efficiency matters:
+
+| Tool | Description | Token Cost |
+|------|-------------|------------|
+| `persist()` | Save entities, return summary only | ~500 tokens |
+| `get_summary()` | Load scenario metadata + samples | ~500-3500 tokens |
+| `query_scenario()` | SQL queries with pagination | ~200/page |
+| `get_samples()` | Get representative samples | ~200/type |
+
+**Auto-Persist Benefits:**
+- **Intelligent Naming**: Auto-generates names like `diabetes-cohort-20241227`
+- **Token Efficient**: Returns ~500 token summary instead of 50,000+ tokens of data
+- **SQL Querying**: Filter and retrieve specific entities as needed
+- **Batch Operations**: Generate hundreds of entities without context overflow
+
+**Example:**
+```
+User: "Generate 200 diabetic patients in Texas"
+Claude: Persists patients → Returns summary:
+  - Scenario: diabetes-texas-20241227
+  - Patients: 200 (ages 35-85, 52% female)
+  - [3 representative samples shown]
+
+User: "Show me patients over 65 with A1C > 9"
+Claude: Queries → Returns 23 matching patients (page 1 of 2)
+```
+
+### Advanced Features
 
 | Feature | Description |
 |---------|-------------|
-| **Scenario Storage** | Named snapshots saved to DuckDB database |
+| **Tag Management** | Organize scenarios with tags (add, remove, filter by tag) |
+| **Scenario Cloning** | Create copies for A/B testing or variations |
+| **Scenario Merging** | Combine multiple scenarios into one |
+| **Multi-Format Export** | Export to JSON, CSV, or Parquet |
 | **Provenance Tracking** | Records how each entity was created |
-| **JSON Export/Import** | Share scenarios as portable JSON files |
-| **SQL Queries** | Advanced users can query scenarios directly |
 
-**Tools:**
-- `save_scenario` - Save workspace to named scenario
-- `load_scenario` - Restore workspace from scenario
-- `list_scenarios` - List saved scenarios with optional filtering
-- `export_scenario_to_json` - Export for sharing
-- `import_scenario_from_json` - Import shared scenarios
-
-See [State Management Guide](docs/state-management/) | [Data Architecture](docs/data-architecture.md)
+See [State Management Skill](skills/common/state-management.md) | [Auto-Persist Examples](hello-healthsim/examples/auto-persist-examples.md) | [Architecture](docs/healthsim-auto-persist-architecture.html)
 
 ---
 

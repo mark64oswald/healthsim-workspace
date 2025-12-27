@@ -13,9 +13,11 @@ coordinating between auto-naming, summary generation, and database operations.
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union
 from uuid import uuid4
+from pathlib import Path
 import re
+import json
 
 from ..db import get_connection
 from .serializers import get_serializer, get_table_info, ENTITY_TABLE_MAP
@@ -105,6 +107,79 @@ class ScenarioBrief:
         }
 
 
+@dataclass
+class CloneResult:
+    """Result of a clone operation."""
+    
+    source_scenario_id: str
+    source_scenario_name: str
+    new_scenario_id: str
+    new_scenario_name: str
+    entities_cloned: Dict[str, int]
+    total_entities: int
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'source_scenario_id': self.source_scenario_id,
+            'source_scenario_name': self.source_scenario_name,
+            'new_scenario_id': self.new_scenario_id,
+            'new_scenario_name': self.new_scenario_name,
+            'entities_cloned': self.entities_cloned,
+            'total_entities': self.total_entities,
+        }
+
+
+@dataclass
+class MergeResult:
+    """Result of a merge operation."""
+    
+    source_scenario_ids: List[str]
+    source_scenario_names: List[str]
+    target_scenario_id: str
+    target_scenario_name: str
+    entities_merged: Dict[str, int]
+    total_entities: int
+    conflicts_resolved: int
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'source_scenario_ids': self.source_scenario_ids,
+            'source_scenario_names': self.source_scenario_names,
+            'target_scenario_id': self.target_scenario_id,
+            'target_scenario_name': self.target_scenario_name,
+            'entities_merged': self.entities_merged,
+            'total_entities': self.total_entities,
+            'conflicts_resolved': self.conflicts_resolved,
+        }
+
+
+@dataclass
+class ExportResult:
+    """Result of an export operation."""
+    
+    scenario_id: str
+    scenario_name: str
+    format: str
+    file_path: str
+    entities_exported: Dict[str, int]
+    total_entities: int
+    file_size_bytes: int
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert to dictionary."""
+        return {
+            'scenario_id': self.scenario_id,
+            'scenario_name': self.scenario_name,
+            'format': self.format,
+            'file_path': self.file_path,
+            'entities_exported': self.entities_exported,
+            'total_entities': self.total_entities,
+            'file_size_bytes': self.file_size_bytes,
+        }
+
+
 # SQL patterns that are NOT allowed in queries
 DISALLOWED_SQL_PATTERNS = [
     r'\bINSERT\b',
@@ -120,6 +195,55 @@ DISALLOWED_SQL_PATTERNS = [
     r'\bEXECUTE\b',
     r'--',  # SQL comments
     r';.*\S',  # Multiple statements
+]
+
+# Tables that contain entity data (for cloning/merging/export)
+CANONICAL_TABLES = [
+    # Core
+    ('persons', 'person_id'),
+    ('providers', 'provider_id'),
+    ('facilities', 'facility_id'),
+    # PatientSim
+    ('patients', 'id'),
+    ('encounters', 'encounter_id'),
+    ('diagnoses', 'id'),
+    ('procedures', 'id'),
+    ('lab_results', 'id'),
+    ('medications', 'id'),
+    ('allergies', 'id'),
+    ('vitals', 'id'),
+    # MemberSim
+    ('members', 'member_id'),
+    ('accumulators', 'id'),
+    ('claims', 'claim_id'),
+    ('claim_lines', 'id'),
+    ('authorizations', 'id'),
+    # RxMemberSim
+    ('rx_members', 'rx_member_id'),
+    ('prescriptions', 'prescription_id'),
+    ('pharmacy_claims', 'pharmacy_claim_id'),
+    ('dur_alerts', 'id'),
+    ('pharmacies', 'pharmacy_id'),
+    # TrialSim
+    ('studies', 'study_id'),
+    ('sites', 'site_id'),
+    ('treatment_arms', 'arm_id'),
+    ('subjects', 'subject_id'),
+    ('adverse_events', 'ae_id'),
+    ('visit_schedule', 'scheduled_visit_id'),
+    ('actual_visits', 'actual_visit_id'),
+    ('disposition_events', 'disposition_id'),
+    # PopulationSim
+    ('geographic_entities', 'geo_id'),
+    ('population_profiles', 'profile_id'),
+    ('health_indicators', 'indicator_id'),
+    ('sdoh_indices', 'sdoh_id'),
+    ('cohort_specifications', 'cohort_id'),
+    # NetworkSim
+    ('networks', 'network_id'),
+    ('network_providers', 'network_provider_id'),
+    ('network_facilities', 'network_facility_id'),
+    ('provider_specialties', 'specialty_id'),
 ]
 
 
@@ -159,6 +283,12 @@ class AutoPersistService:
     2. Return summary (not full data) to context
     3. Provide paginated queries for data retrieval
     
+    Also provides:
+    - Tag management for scenario organization
+    - Scenario cloning for creating variations
+    - Scenario merging for combining datasets
+    - Export utilities for data portability
+    
     Usage:
         service = get_auto_persist_service()
         
@@ -174,6 +304,16 @@ class AutoPersistService:
             scenario_id=result.scenario_id,
             query="SELECT * FROM patients WHERE gender = 'F'"
         )
+        
+        # Tag management
+        service.add_tag(scenario_id, 'training')
+        service.remove_tag(scenario_id, 'draft')
+        
+        # Clone scenario
+        clone = service.clone_scenario(scenario_id, 'new-name')
+        
+        # Export
+        export = service.export_scenario(scenario_id, format='json')
     """
     
     def __init__(self, connection=None):
@@ -191,6 +331,10 @@ class AutoPersistService:
         if self._conn is None:
             self._conn = get_connection()
         return self._conn
+    
+    # ========================================================================
+    # Core Scenario Management
+    # ========================================================================
     
     def _create_scenario(
         self,
@@ -232,6 +376,35 @@ class AutoPersistService:
         self.conn.execute("""
             UPDATE scenarios SET updated_at = ? WHERE scenario_id = ?
         """, [datetime.utcnow(), scenario_id])
+    
+    def _get_scenario_info(self, scenario_id: str) -> Optional[Dict[str, Any]]:
+        """Get scenario metadata."""
+        result = self.conn.execute("""
+            SELECT scenario_id, name, description, created_at, updated_at
+            FROM scenarios WHERE scenario_id = ?
+        """, [scenario_id]).fetchone()
+        
+        if not result:
+            return None
+        
+        return {
+            'scenario_id': result[0],
+            'name': result[1],
+            'description': result[2],
+            'created_at': result[3],
+            'updated_at': result[4],
+        }
+    
+    def _table_exists(self, table_name: str) -> bool:
+        """Check if a table exists in the database."""
+        try:
+            result = self.conn.execute("""
+                SELECT COUNT(*) FROM information_schema.tables
+                WHERE table_name = ?
+            """, [table_name]).fetchone()
+            return result[0] > 0
+        except Exception:
+            return False
     
     def persist_entities(
         self,
@@ -676,25 +849,25 @@ class AutoPersistService:
         
         # Count entities before deletion
         entity_count = 0
-        for table in ENTITY_TABLE_MAP.values():
-            table_name = table[0] if isinstance(table, tuple) else table
-            try:
-                cnt = self.conn.execute(f"""
-                    SELECT COUNT(*) FROM {table_name} WHERE scenario_id = ?
-                """, [scenario_id]).fetchone()
-                entity_count += cnt[0] if cnt else 0
-            except Exception:
-                pass
+        for table_name, _ in CANONICAL_TABLES:
+            if self._table_exists(table_name):
+                try:
+                    cnt = self.conn.execute(f"""
+                        SELECT COUNT(*) FROM {table_name} WHERE scenario_id = ?
+                    """, [scenario_id]).fetchone()
+                    entity_count += cnt[0] if cnt else 0
+                except Exception:
+                    pass
         
         # Delete entities from all tables
-        for table in ENTITY_TABLE_MAP.values():
-            table_name = table[0] if isinstance(table, tuple) else table
-            try:
-                self.conn.execute(f"""
-                    DELETE FROM {table_name} WHERE scenario_id = ?
-                """, [scenario_id])
-            except Exception:
-                pass
+        for table_name, _ in CANONICAL_TABLES:
+            if self._table_exists(table_name):
+                try:
+                    self.conn.execute(f"""
+                        DELETE FROM {table_name} WHERE scenario_id = ?
+                    """, [scenario_id])
+                except Exception:
+                    pass
         
         # Delete tags
         self.conn.execute("""
@@ -794,6 +967,602 @@ class AutoPersistService:
             samples.append(sample)
         
         return samples
+    
+    # ========================================================================
+    # Tag Management (Phase 2)
+    # ========================================================================
+    
+    def add_tag(self, scenario_id: str, tag: str) -> List[str]:
+        """
+        Add a tag to a scenario.
+        
+        Args:
+            scenario_id: Scenario to tag
+            tag: Tag to add (case-insensitive, stored lowercase)
+            
+        Returns:
+            List of all tags on the scenario
+            
+        Raises:
+            ValueError: If scenario not found
+        """
+        # Verify scenario exists
+        if not self._get_scenario_info(scenario_id):
+            raise ValueError(f"Scenario not found: {scenario_id}")
+        
+        tag = tag.lower().strip()
+        if not tag:
+            raise ValueError("Tag cannot be empty")
+        
+        # Check if tag already exists
+        existing = self.conn.execute("""
+            SELECT COUNT(*) FROM scenario_tags
+            WHERE scenario_id = ? AND tag = ?
+        """, [scenario_id, tag]).fetchone()[0]
+        
+        if existing == 0:
+            self.conn.execute("""
+                INSERT INTO scenario_tags (scenario_id, tag)
+                VALUES (?, ?)
+            """, [scenario_id, tag])
+            self._update_scenario_timestamp(scenario_id)
+        
+        return self.get_tags(scenario_id)
+    
+    def remove_tag(self, scenario_id: str, tag: str) -> List[str]:
+        """
+        Remove a tag from a scenario.
+        
+        Args:
+            scenario_id: Scenario to modify
+            tag: Tag to remove (case-insensitive)
+            
+        Returns:
+            List of remaining tags on the scenario
+            
+        Raises:
+            ValueError: If scenario not found
+        """
+        # Verify scenario exists
+        if not self._get_scenario_info(scenario_id):
+            raise ValueError(f"Scenario not found: {scenario_id}")
+        
+        tag = tag.lower().strip()
+        
+        self.conn.execute("""
+            DELETE FROM scenario_tags
+            WHERE scenario_id = ? AND tag = ?
+        """, [scenario_id, tag])
+        
+        self._update_scenario_timestamp(scenario_id)
+        
+        return self.get_tags(scenario_id)
+    
+    def get_tags(self, scenario_id: str) -> List[str]:
+        """
+        Get all tags for a scenario.
+        
+        Args:
+            scenario_id: Scenario to get tags for
+            
+        Returns:
+            List of tags (sorted alphabetically)
+        """
+        result = self.conn.execute("""
+            SELECT tag FROM scenario_tags
+            WHERE scenario_id = ?
+            ORDER BY tag
+        """, [scenario_id]).fetchall()
+        
+        return [row[0] for row in result]
+    
+    def list_all_tags(self) -> List[Dict[str, Any]]:
+        """
+        List all tags in use with counts.
+        
+        Returns:
+            List of dicts with 'tag' and 'count' keys, sorted by count desc
+        """
+        result = self.conn.execute("""
+            SELECT tag, COUNT(*) as count
+            FROM scenario_tags
+            GROUP BY tag
+            ORDER BY count DESC, tag ASC
+        """).fetchall()
+        
+        return [{'tag': row[0], 'count': row[1]} for row in result]
+    
+    def scenarios_by_tag(self, tag: str) -> List[ScenarioBrief]:
+        """
+        Get all scenarios with a specific tag.
+        
+        Args:
+            tag: Tag to filter by (case-insensitive)
+            
+        Returns:
+            List of ScenarioBrief objects
+        """
+        return self.list_scenarios(tag=tag, limit=100)
+    
+    # ========================================================================
+    # Scenario Cloning (Phase 2)
+    # ========================================================================
+    
+    def clone_scenario(
+        self,
+        source_scenario_id: str,
+        new_name: Optional[str] = None,
+        description: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        include_entity_types: Optional[List[str]] = None,
+    ) -> CloneResult:
+        """
+        Clone a scenario with all its entities.
+        
+        Creates an exact copy of the scenario with a new ID and name.
+        All entity IDs are regenerated to ensure uniqueness.
+        
+        Args:
+            source_scenario_id: Scenario to clone
+            new_name: Name for the new scenario (auto-generated if not provided)
+            description: Description for new scenario (copied from source if not provided)
+            tags: Tags for new scenario (copied from source if not provided)
+            include_entity_types: Optional list of entity types to include
+                                  (all types if not specified)
+            
+        Returns:
+            CloneResult with clone details
+            
+        Raises:
+            ValueError: If source scenario not found
+        """
+        # Get source scenario info
+        source_info = self._get_scenario_info(source_scenario_id)
+        if not source_info:
+            raise ValueError(f"Source scenario not found: {source_scenario_id}")
+        
+        source_name = source_info['name']
+        
+        # Generate new name if not provided
+        if not new_name:
+            new_name = f"{source_name}-copy"
+        new_name = ensure_unique_name(sanitize_name(new_name), self.conn)
+        
+        # Use source description if not provided
+        if description is None:
+            description = source_info.get('description') or f"Clone of {source_name}"
+        
+        # Get source tags if not provided
+        if tags is None:
+            tags = self.get_tags(source_scenario_id)
+        
+        # Create new scenario
+        new_scenario_id = self._create_scenario(
+            name=new_name,
+            description=description,
+            tags=tags,
+        )
+        
+        # Clone entities from each table
+        entities_cloned = {}
+        total_entities = 0
+        
+        for table_name, id_column in CANONICAL_TABLES:
+            if not self._table_exists(table_name):
+                continue
+            
+            # Check if we should include this entity type
+            entity_type = table_name.rstrip('s')
+            if include_entity_types and entity_type not in include_entity_types and table_name not in include_entity_types:
+                continue
+            
+            try:
+                # Get all columns
+                sample = self.conn.execute(f"SELECT * FROM {table_name} LIMIT 1")
+                columns = [desc[0] for desc in sample.description]
+                
+                # Get source entities
+                source_entities = self.conn.execute(f"""
+                    SELECT * FROM {table_name}
+                    WHERE scenario_id = ?
+                """, [source_scenario_id]).fetchall()
+                
+                if not source_entities:
+                    continue
+                
+                # Clone each entity with new IDs
+                cloned_count = 0
+                for row in source_entities:
+                    row_dict = dict(zip(columns, row))
+                    
+                    # Generate new IDs
+                    row_dict['scenario_id'] = new_scenario_id
+                    row_dict[id_column] = str(uuid4())
+                    
+                    # Reset timestamps
+                    if 'created_at' in row_dict:
+                        row_dict['created_at'] = datetime.utcnow()
+                    
+                    # Insert cloned entity
+                    cols = list(row_dict.keys())
+                    placeholders = ', '.join(['?' for _ in cols])
+                    col_str = ', '.join(cols)
+                    
+                    self.conn.execute(f"""
+                        INSERT INTO {table_name} ({col_str})
+                        VALUES ({placeholders})
+                    """, list(row_dict.values()))
+                    
+                    cloned_count += 1
+                
+                if cloned_count > 0:
+                    entities_cloned[table_name] = cloned_count
+                    total_entities += cloned_count
+                    
+            except Exception as e:
+                # Log but continue with other tables
+                continue
+        
+        self._update_scenario_timestamp(new_scenario_id)
+        
+        return CloneResult(
+            source_scenario_id=source_scenario_id,
+            source_scenario_name=source_name,
+            new_scenario_id=new_scenario_id,
+            new_scenario_name=new_name,
+            entities_cloned=entities_cloned,
+            total_entities=total_entities,
+        )
+    
+    # ========================================================================
+    # Scenario Merging (Phase 2)
+    # ========================================================================
+    
+    def merge_scenarios(
+        self,
+        source_scenario_ids: List[str],
+        target_name: Optional[str] = None,
+        description: Optional[str] = None,
+        tags: Optional[List[str]] = None,
+        conflict_strategy: str = "skip",
+    ) -> MergeResult:
+        """
+        Merge multiple scenarios into a new scenario.
+        
+        Creates a new scenario containing entities from all source scenarios.
+        Entity IDs are regenerated to avoid conflicts.
+        
+        Args:
+            source_scenario_ids: List of scenario IDs to merge
+            target_name: Name for the merged scenario (auto-generated if not provided)
+            description: Description for merged scenario
+            tags: Tags for merged scenario (union of source tags if not provided)
+            conflict_strategy: How to handle duplicate entities
+                - "skip": Skip duplicates (default)
+                - "overwrite": Later sources overwrite earlier
+                - "rename": Rename conflicting entities
+                
+        Returns:
+            MergeResult with merge details
+            
+        Raises:
+            ValueError: If any source scenario not found or less than 2 sources
+        """
+        if len(source_scenario_ids) < 2:
+            raise ValueError("At least 2 source scenarios required for merge")
+        
+        # Validate all source scenarios exist
+        source_names = []
+        all_tags = set()
+        
+        for sid in source_scenario_ids:
+            info = self._get_scenario_info(sid)
+            if not info:
+                raise ValueError(f"Source scenario not found: {sid}")
+            source_names.append(info['name'])
+            all_tags.update(self.get_tags(sid))
+        
+        # Generate target name if not provided
+        if not target_name:
+            target_name = f"merged-{datetime.utcnow().strftime('%Y%m%d')}"
+        target_name = ensure_unique_name(sanitize_name(target_name), self.conn)
+        
+        # Use union of tags if not provided
+        if tags is None:
+            tags = list(all_tags)
+        
+        # Set description
+        if description is None:
+            description = f"Merged from: {', '.join(source_names)}"
+        
+        # Create target scenario
+        target_scenario_id = self._create_scenario(
+            name=target_name,
+            description=description,
+            tags=tags,
+        )
+        
+        # Merge entities from each source
+        entities_merged = {}
+        total_entities = 0
+        conflicts_resolved = 0
+        seen_ids = {}  # Track seen IDs per table for conflict detection
+        
+        for source_id in source_scenario_ids:
+            for table_name, id_column in CANONICAL_TABLES:
+                if not self._table_exists(table_name):
+                    continue
+                
+                try:
+                    # Get all columns
+                    sample = self.conn.execute(f"SELECT * FROM {table_name} LIMIT 1")
+                    columns = [desc[0] for desc in sample.description]
+                    
+                    # Get source entities
+                    source_entities = self.conn.execute(f"""
+                        SELECT * FROM {table_name}
+                        WHERE scenario_id = ?
+                    """, [source_id]).fetchall()
+                    
+                    if not source_entities:
+                        continue
+                    
+                    if table_name not in seen_ids:
+                        seen_ids[table_name] = set()
+                    
+                    for row in source_entities:
+                        row_dict = dict(zip(columns, row))
+                        original_id = row_dict[id_column]
+                        
+                        # Check for conflicts based on business key
+                        # For simplicity, we use the original ID as the conflict key
+                        if original_id in seen_ids[table_name]:
+                            conflicts_resolved += 1
+                            if conflict_strategy == "skip":
+                                continue
+                            # For "overwrite" and "rename", we proceed with new ID
+                        
+                        seen_ids[table_name].add(original_id)
+                        
+                        # Generate new IDs
+                        row_dict['scenario_id'] = target_scenario_id
+                        row_dict[id_column] = str(uuid4())
+                        
+                        # Reset timestamps
+                        if 'created_at' in row_dict:
+                            row_dict['created_at'] = datetime.utcnow()
+                        
+                        # Insert merged entity
+                        cols = list(row_dict.keys())
+                        placeholders = ', '.join(['?' for _ in cols])
+                        col_str = ', '.join(cols)
+                        
+                        self.conn.execute(f"""
+                            INSERT INTO {table_name} ({col_str})
+                            VALUES ({placeholders})
+                        """, list(row_dict.values()))
+                        
+                        if table_name not in entities_merged:
+                            entities_merged[table_name] = 0
+                        entities_merged[table_name] += 1
+                        total_entities += 1
+                        
+                except Exception:
+                    continue
+        
+        self._update_scenario_timestamp(target_scenario_id)
+        
+        return MergeResult(
+            source_scenario_ids=source_scenario_ids,
+            source_scenario_names=source_names,
+            target_scenario_id=target_scenario_id,
+            target_scenario_name=target_name,
+            entities_merged=entities_merged,
+            total_entities=total_entities,
+            conflicts_resolved=conflicts_resolved,
+        )
+    
+    # ========================================================================
+    # Export Utilities (Phase 2)
+    # ========================================================================
+    
+    def export_scenario(
+        self,
+        scenario_id: str,
+        format: str = "json",
+        output_path: Optional[str] = None,
+        include_entity_types: Optional[List[str]] = None,
+        include_provenance: bool = True,
+    ) -> ExportResult:
+        """
+        Export a scenario to a file.
+        
+        Args:
+            scenario_id: Scenario to export
+            format: Export format ("json", "csv", "parquet")
+            output_path: Path to save the export (defaults to ~/Downloads)
+            include_entity_types: Optional list of entity types to include
+            include_provenance: Whether to include provenance columns
+            
+        Returns:
+            ExportResult with export details
+            
+        Raises:
+            ValueError: If scenario not found or unsupported format
+        """
+        # Validate format
+        format = format.lower()
+        if format not in ('json', 'csv', 'parquet'):
+            raise ValueError(f"Unsupported export format: {format}")
+        
+        # Get scenario info
+        info = self._get_scenario_info(scenario_id)
+        if not info:
+            raise ValueError(f"Scenario not found: {scenario_id}")
+        
+        scenario_name = info['name']
+        
+        # Set output path
+        if not output_path:
+            downloads_dir = Path.home() / "Downloads"
+            downloads_dir.mkdir(exist_ok=True)
+            output_path = str(downloads_dir / f"{scenario_name}.{format}")
+        
+        # Columns to exclude if not including provenance
+        provenance_columns = {
+            'source_type', 'source_system', 'skill_used',
+            'generation_seed', 'scenario_id'
+        }
+        
+        # Collect all entity data
+        entities_exported = {}
+        all_data = {}
+        total_entities = 0
+        
+        for table_name, id_column in CANONICAL_TABLES:
+            if not self._table_exists(table_name):
+                continue
+            
+            # Check if we should include this entity type
+            entity_type = table_name.rstrip('s')
+            if include_entity_types and entity_type not in include_entity_types and table_name not in include_entity_types:
+                continue
+            
+            try:
+                result = self.conn.execute(f"""
+                    SELECT * FROM {table_name}
+                    WHERE scenario_id = ?
+                """, [scenario_id])
+                
+                columns = [desc[0] for desc in result.description]
+                rows = result.fetchall()
+                
+                if not rows:
+                    continue
+                
+                # Filter columns if not including provenance
+                if not include_provenance:
+                    filtered_indices = [
+                        i for i, col in enumerate(columns)
+                        if col not in provenance_columns
+                    ]
+                    columns = [columns[i] for i in filtered_indices]
+                    rows = [[row[i] for i in filtered_indices] for row in rows]
+                
+                # Convert rows to dicts
+                data = []
+                for row in rows:
+                    row_dict = {}
+                    for i, col in enumerate(columns):
+                        value = row[i]
+                        if isinstance(value, datetime):
+                            value = value.isoformat()
+                        row_dict[col] = value
+                    data.append(row_dict)
+                
+                all_data[table_name] = data
+                entities_exported[table_name] = len(data)
+                total_entities += len(data)
+                
+            except Exception:
+                continue
+        
+        # Write to file based on format
+        if format == 'json':
+            export_obj = {
+                'scenario_id': scenario_id,
+                'scenario_name': scenario_name,
+                'description': info.get('description'),
+                'tags': self.get_tags(scenario_id),
+                'exported_at': datetime.utcnow().isoformat(),
+                'entities': all_data,
+            }
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                json.dump(export_obj, f, indent=2, default=str)
+        
+        elif format == 'csv':
+            import csv
+            
+            # For CSV, create a directory with separate files per entity type
+            output_dir = Path(output_path).with_suffix('')
+            output_dir.mkdir(parents=True, exist_ok=True)
+            
+            for table_name, data in all_data.items():
+                if not data:
+                    continue
+                
+                csv_path = output_dir / f"{table_name}.csv"
+                with open(csv_path, 'w', newline='', encoding='utf-8') as f:
+                    writer = csv.DictWriter(f, fieldnames=data[0].keys())
+                    writer.writeheader()
+                    writer.writerows(data)
+            
+            # Update output_path to directory
+            output_path = str(output_dir)
+        
+        elif format == 'parquet':
+            try:
+                import pyarrow as pa
+                import pyarrow.parquet as pq
+                
+                # Create a directory with separate files per entity type
+                output_dir = Path(output_path).with_suffix('')
+                output_dir.mkdir(parents=True, exist_ok=True)
+                
+                for table_name, data in all_data.items():
+                    if not data:
+                        continue
+                    
+                    parquet_path = output_dir / f"{table_name}.parquet"
+                    table = pa.Table.from_pylist(data)
+                    pq.write_table(table, str(parquet_path))
+                
+                output_path = str(output_dir)
+                
+            except ImportError:
+                raise ValueError("Parquet export requires pyarrow: pip install pyarrow")
+        
+        # Calculate file size
+        output_path_obj = Path(output_path)
+        if output_path_obj.is_dir():
+            file_size = sum(f.stat().st_size for f in output_path_obj.rglob('*') if f.is_file())
+        else:
+            file_size = output_path_obj.stat().st_size
+        
+        return ExportResult(
+            scenario_id=scenario_id,
+            scenario_name=scenario_name,
+            format=format,
+            file_path=output_path,
+            entities_exported=entities_exported,
+            total_entities=total_entities,
+            file_size_bytes=file_size,
+        )
+    
+    def export_to_csv(
+        self,
+        scenario_id: str,
+        output_path: Optional[str] = None,
+    ) -> ExportResult:
+        """Convenience method for CSV export."""
+        return self.export_scenario(scenario_id, format='csv', output_path=output_path)
+    
+    def export_to_json(
+        self,
+        scenario_id: str,
+        output_path: Optional[str] = None,
+    ) -> ExportResult:
+        """Convenience method for JSON export."""
+        return self.export_scenario(scenario_id, format='json', output_path=output_path)
+    
+    def export_to_parquet(
+        self,
+        scenario_id: str,
+        output_path: Optional[str] = None,
+    ) -> ExportResult:
+        """Convenience method for Parquet export."""
+        return self.export_scenario(scenario_id, format='parquet', output_path=output_path)
 
 
 # Module-level singleton

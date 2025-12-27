@@ -334,6 +334,183 @@ All queries are validated to ensure they are SELECT-only:
 
 ---
 
+## Example 8: Tag Management
+
+### User Prompt
+```
+What tags do I have across my scenarios?
+```
+
+### Claude Response
+```
+[Listing all tags...]
+
+**Your scenario tags**:
+
+| Tag | Usage Count |
+|-----|-------------|
+| training | 5 scenarios |
+| production | 3 scenarios |
+| california | 3 scenarios |
+| diabetes | 2 scenarios |
+| validated | 2 scenarios |
+| testing | 1 scenario |
+
+To find scenarios with a specific tag: "show scenarios tagged production"
+To add a tag: "tag my-scenario with validated"
+```
+
+---
+
+## Example 9: Clone Scenario for A/B Testing
+
+### User Prompt
+```
+Clone my diabetes-cohort scenario so I can test a different cohort definition
+```
+
+### Claude Response
+```
+[Cloning scenario...]
+
+**Cloned "diabetes-cohort-20241227" → "diabetes-cohort-20241227-copy"**
+
+| Entity Type | Copied |
+|-------------|--------|
+| Patients | 150 |
+| Encounters | 425 |
+| Lab Results | 890 |
+| Medications | 320 |
+| **Total** | **1,785 entities** |
+
+All entities have new unique IDs. The clone is completely independent - 
+changes to either scenario won't affect the other.
+
+Would you like to rename the clone to something more descriptive?
+```
+
+---
+
+## Example 10: Merge Multiple Cohorts
+
+### User Prompt
+```
+Merge my diabetes, heart-failure, and copd scenarios into a combined 
+training dataset
+```
+
+### Claude Response
+```
+[Merging 3 scenarios...]
+
+**Created "merged-training-20241227"** from 3 sources:
+
+| Source | Patients | Encounters | Labs |
+|--------|----------|------------|------|
+| diabetes-cohort | 150 | 425 | 890 |
+| heart-failure-cohort | 120 | 380 | 720 |
+| copd-training | 75 | 210 | 450 |
+| **Total** | **345** | **1,015** | **2,060** |
+
+- Conflicts resolved: 0 (no duplicate IDs)
+- Tags inherited: training, chronic-disease, validated
+
+All source scenarios remain unchanged. Would you like to:
+- View samples from the merged set
+- Query specific patient subsets
+- Export for external analysis
+```
+
+---
+
+## Example 11: Export to CSV for Analysis
+
+### User Prompt
+```
+Export my merged training dataset to CSV for analysis in Python
+```
+
+### Claude Response
+```
+[Exporting to CSV...]
+
+**Exported "merged-training-20241227" to CSV**
+
+| File | Rows | Size |
+|------|------|------|
+| patients.csv | 345 | 312 KB |
+| encounters.csv | 1,015 | 548 KB |
+| lab_results.csv | 2,060 | 1.2 MB |
+| diagnoses.csv | 892 | 124 KB |
+| medications.csv | 1,240 | 186 KB |
+
+**Location**: `~/Downloads/merged-training-20241227/`
+**Total Size**: 2.3 MB
+
+Load in Python:
+```python
+import pandas as pd
+
+patients = pd.read_csv('~/Downloads/merged-training-20241227/patients.csv')
+encounters = pd.read_csv('~/Downloads/merged-training-20241227/encounters.csv')
+labs = pd.read_csv('~/Downloads/merged-training-20241227/lab_results.csv')
+
+print(f"Loaded {len(patients)} patients with {len(encounters)} encounters")
+```
+```
+
+---
+
+## Example 12: Export to Parquet for Big Data
+
+### User Prompt
+```
+Export as Parquet for loading into Databricks
+```
+
+### Claude Response
+```
+[Exporting to Parquet...]
+
+**Exported "merged-training-20241227" to Parquet**
+
+| File | Rows | Size |
+|------|------|------|
+| patients.parquet | 345 | 89 KB |
+| encounters.parquet | 1,015 | 142 KB |
+| lab_results.parquet | 2,060 | 285 KB |
+| diagnoses.parquet | 892 | 38 KB |
+| medications.parquet | 1,240 | 52 KB |
+
+**Location**: `~/Downloads/merged-training-20241227-parquet/`
+**Total Size**: 606 KB (74% smaller than CSV!)
+
+Load in Databricks:
+```python
+# Upload to DBFS first
+dbutils.fs.cp(
+    'file:///Users/.../merged-training-20241227-parquet/',
+    'dbfs:/FileStore/healthsim-training/',
+    recurse=True
+)
+
+# Read with Spark
+patients = spark.read.parquet('dbfs:/FileStore/healthsim-training/patients.parquet')
+patients.display()
+```
+
+Or query directly:
+```sql
+CREATE TABLE healthsim.patients
+USING PARQUET
+LOCATION 'dbfs:/FileStore/healthsim-training/patients.parquet';
+
+SELECT * FROM healthsim.patients WHERE gender = 'F';
+```
+```
+
+---
+
 ## Related Examples
 
 - [PatientSim Examples](patientsim-examples.md)
@@ -343,4 +520,4 @@ All queries are validated to ensure they are SELECT-only:
 
 ---
 
-*Version: 1.0 | December 27, 2024*
+*Version: 2.0 | December 27, 2024 | Phase 2 Enhancements: Tags, Cloning, Merging, Export*
