@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthSim Auto-Persist Architecture</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            padding: 3rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 0.75rem;
+        }
+        
+        .subtitle { font-size: 1.1rem; color: var(--gray-600); margin-bottom: 0.5rem; }
+        
+        .meta {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 0.75rem 1rem;
+            background: var(--gray-100);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .meta span { color: var(--gray-600); }
+        .meta strong { color: var(--gray-800); }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: #fef3c7;
+            color: #92400e;
+            margin-left: 1rem;
+        }
+        
+        h2 {
+            font-size: 1.4rem;
+            color: var(--primary-dark);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        
+        h3 { font-size: 1.15rem; color: var(--gray-800); margin: 1.5rem 0 0.75rem; }
+        h4 { font-size: 1rem; color: var(--gray-700); margin: 1rem 0 0.5rem; }
+        
+        p { margin-bottom: 1rem; }
+        
+        ul, ol { margin: 1rem 0 1rem 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        th { background: var(--gray-100); font-weight: 600; }
+        tr:hover { background: var(--gray-50); }
+        
+        code {
+            background: var(--gray-100);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.85em;
+        }
+        
+        pre {
+            background: var(--gray-900);
+            color: #e5e7eb;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-size: 0.8rem;
+            line-height: 1.5;
+        }
+        
+        pre code { background: none; padding: 0; color: inherit; }
+        
+        .diagram {
+            background: var(--gray-100);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.75rem;
+            white-space: pre;
+            overflow-x: auto;
+            line-height: 1.4;
+        }
+        
+        .callout {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        
+        .callout-info {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .callout-success {
+            background: #f0fdf4;
+            border-left: 4px solid var(--success);
+        }
+        
+        .callout-warning {
+            background: #fffbeb;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .callout-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin: 1rem 0;
+        }
+        
+        .card {
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .card h4 {
+            margin-top: 0;
+            color: var(--primary);
+            border-bottom: 1px solid var(--gray-200);
+            padding-bottom: 0.5rem;
+        }
+        
+        .card ul { margin-left: 1rem; font-size: 0.9rem; }
+        
+        .principle-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .principle-box h3 {
+            margin-top: 0;
+            color: var(--primary-dark);
+        }
+        
+        .tool-table td:first-child { font-family: monospace; font-weight: 600; }
+        
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-200);
+            margin: 2rem 0;
+        }
+        
+        .toc {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        
+        .toc h3 { margin-top: 0; font-size: 1rem; }
+        .toc ol { margin-bottom: 0; }
+        .toc a { color: var(--primary); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+        
+        .decision-box {
+            background: #fefce8;
+            border: 2px solid var(--warning);
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .decision-box h4 { color: var(--warning); margin-top: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HealthSim Auto-Persist Architecture <span class="status-badge">PROPOSED</span></h1>
+        <p class="subtitle">Summary-in-Context, Data-in-DuckDB Pattern for Scalable Entity Management</p>
+        
+        <div class="meta">
+            <span>Version: <strong>1.0 DRAFT</strong></span>
+            <span>Date: <strong>December 26, 2024</strong></span>
+            <span>Status: <strong>Design Review</strong></span>
+        </div>
+        
+        <nav class="toc">
+            <h3>📑 Table of Contents</h3>
+            <ol>
+                <li><a href="#problem">Problem Statement</a></li>
+                <li><a href="#pattern">The Pattern: Structured RAG for Healthcare Data</a></li>
+                <li><a href="#architecture">Architecture Overview</a></li>
+                <li><a href="#context">Context Management Strategy</a></li>
+                <li><a href="#tools">MCP Tools Specification</a></li>
+                <li><a href="#workflows">Workflow Examples</a></li>
+                <li><a href="#implementation">Implementation Plan</a></li>
+                <li><a href="#decisions">Open Decisions</a></li>
+            </ol>
+        </nav>
+        
+        <!-- SECTION 1: Problem Statement -->
+        <h2 id="problem">1. Problem Statement</h2>
+        
+        <h3>Current State</h3>
+        <p>Today, HealthSim generates entities as JSON in conversation. For persistence, users must explicitly save scenarios. This creates two problems:</p>
+        
+        <div class="two-col">
+            <div class="card">
+                <h4>🚫 Scale Problem</h4>
+                <ul>
+                    <li>Generating 1,000+ entities creates massive JSON blobs</li>
+                    <li>JSON stays in context, consuming tokens</li>
+                    <li>Risk of context overflow or degraded quality</li>
+                    <li>No streaming/batching capability</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h4>🚫 Load Problem</h4>
+                <ul>
+                    <li>"Load scenario X" with 100K entities = impossible</li>
+                    <li>Can't fit large datasets in context window</li>
+                    <li>Same problem whether JSON or DuckDB source</li>
+                    <li>Storage location doesn't solve context limits</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="callout callout-warning">
+            <div class="callout-title">💡 Key Insight</div>
+            <p style="margin-bottom:0">Moving data to DuckDB doesn't solve context overflow—it only changes <em>where</em> data lives. 
+            The real question is: <strong>what goes in context vs. what stays in the database?</strong></p>
+        </div>
+        
+        <!-- SECTION 2: The Pattern -->
+        <h2 id="pattern">2. The Pattern: Structured RAG for Healthcare Data</h2>
+        
+        <div class="principle-box">
+            <h3>🎯 Core Principle: Summary-in-Context, Data-in-DuckDB</h3>
+            <p>Never attempt to load full datasets into context. Instead:</p>
+            <ul>
+                <li><strong>Summaries</strong> - Statistical overviews always in context (~500 tokens)</li>
+                <li><strong>Samples</strong> - Representative examples for pattern consistency (~3,000 tokens)</li>
+                <li><strong>Queries</strong> - On-demand, paginated data retrieval (~2,000 tokens per request)</li>
+                <li><strong>Computation</strong> - Analytics run in DuckDB, only results return to context</li>
+            </ul>
+        </div>
+        
+        <h3>Industry Validation</h3>
+        <p>This pattern is an established practice in LLM/database integration, known as <strong>Structured RAG</strong> or <strong>SQL RAG</strong>:</p>
+        
+        <table>
+            <tr>
+                <th>Principle</th>
+                <th>Industry Practice</th>
+                <th>Our Implementation</th>
+            </tr>
+            <tr>
+                <td>Context Confusion</td>
+                <td>Too much data degrades response quality</td>
+                <td>Summary + samples only, never full datasets</td>
+            </tr>
+            <tr>
+                <td>Token Efficiency</td>
+                <td>Keep counts low for cost/latency</td>
+                <td>~5,500 token working context budget</td>
+            </tr>
+            <tr>
+                <td>Structured Data RAG</td>
+                <td>"Narrow with SQL, then retrieve"</td>
+                <td>SQL queries against DuckDB canonical tables</td>
+            </tr>
+            <tr>
+                <td>Pagination</td>
+                <td>Standard for large result sets</td>
+                <td>Limit/offset on all query results</td>
+            </tr>
+            <tr>
+                <td>Hybrid Retrieval</td>
+                <td>Combine retrieval strategies</td>
+                <td>Summary + on-demand queries + samples</td>
+            </tr>
+        </table>
+        
+        <!-- SECTION 3: Architecture Overview -->
+        <h2 id="architecture">3. Architecture Overview</h2>
+        
+        <div class="diagram">
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                              USER CONVERSATION                                       │
+│  "Generate 500 diabetic patients for Maricopa County"                               │
+│  "Show me claims over $10,000"                                                       │
+│  "What's the average cost per diabetic patient?"                                     │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+                                         │
+                                         ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           CLAUDE + SKILLS LAYER                                      │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐│
+│  │  CONTEXT WINDOW (~200K tokens available, ~5.5K working budget)                  ││
+│  │  ┌─────────────────────────────────────────────────────────────────────────────┐││
+│  │  │  📊 SCENARIO SUMMARY (always present, ~500 tokens)                          │││
+│  │  │  • Active: "maricopa-diabetics" (SCN-20241226-143052)                       │││
+│  │  │  • Entities: 500 patients | 2,100 encounters | 4,500 claims                 │││
+│  │  │  • Date range: 2024-01-01 to 2024-12-26                                     │││
+│  │  │  • Top diagnoses: E11.9 (100%), I10 (45%), E78.5 (38%)                     │││
+│  │  │  • Total billed: $12.3M | Paid: $10.1M | Patient: $2.2M                    │││
+│  │  ├─────────────────────────────────────────────────────────────────────────────┤││
+│  │  │  📝 SAMPLES (3-5 per entity type, ~3,000 tokens)                            │││
+│  │  │  • 3 sample patients (demographics, conditions, medications)                │││
+│  │  │  • 3 sample encounters (types, diagnoses, procedures)                       │││
+│  │  │  • 3 sample claims (amounts, line items, adjudication)                      │││
+│  │  ├─────────────────────────────────────────────────────────────────────────────┤││
+│  │  │  🔍 QUERY RESULTS (ephemeral, paginated, ~2,000 tokens)                     │││
+│  │  │  • Last query: "Claims > $10K" → 85 found, showing 1-20                     │││
+│  │  │  • [20 claim records with key fields]                                       │││
+│  │  └─────────────────────────────────────────────────────────────────────────────┘││
+│  └─────────────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────────────┘
+          │                              │                              │
+          │ persist_entities()           │ query_scenario()             │ get_scenario_summary()
+          ▼                              ▼                              ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           MCP TOOLS LAYER                                            │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────┐ │
+│  │ persist_entities │  │  query_scenario  │  │get_scenario_summ.│  │rename_scenario│ │
+│  │ Batch insert     │  │ SQL + pagination │  │ Stats + samples  │  │ Update name   │ │
+│  │ Returns IDs only │  │ Returns page     │  │ Returns summary  │  │ Returns OK    │ │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘  └──────────────┘ │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐                    │
+│  │  list_scenarios  │  │get_entity_samples│  │  delete_scenario │                    │
+│  │ Available scens  │  │ N random samples │  │ Remove scenario  │                    │
+│  └──────────────────┘  └──────────────────┘  └──────────────────┘                    │
+└─────────────────────────────────────────────────────────────────────────────────────┘
+                                         │
+                                         ▼
+┌─────────────────────────────────────────────────────────────────────────────────────┐
+│                           DUCKDB CANONICAL LAYER                                     │
+│  ┌─────────────────────────────────────────────────────────────────────────────────┐│
+│  │  41 Tables across 6 products (full data, never in context directly)            ││
+│  │  • Core: persons, providers, facilities                                         ││
+│  │  • PatientSim: patients, encounters, diagnoses, procedures, labs, meds...       ││
+│  │  • MemberSim: members, claims, claim_lines, authorizations...                   ││
+│  │  • RxMemberSim: rx_members, prescriptions, pharmacy_claims, dur_alerts...       ││
+│  │  • TrialSim: studies, subjects, adverse_events, visits...                       ││
+│  │  • PopulationSim: geographic_entities, population_profiles, health_indicators...││
+│  │  • NetworkSim: networks, network_providers, network_facilities...               ││
+│  │  • State: scenarios, scenario_entities, scenario_tags                           ││
+│  └─────────────────────────────────────────────────────────────────────────────────┘│
+└─────────────────────────────────────────────────────────────────────────────────────┘
+        </div>
+        
+        <!-- SECTION 4: Context Management -->
+        <h2 id="context">4. Context Management Strategy</h2>
+        
+        <h3>4.1 Context Budget</h3>
+        <p>The working context for scenario data is intentionally constrained to ensure quality:</p>
+        
+        <table>
+            <tr>
+                <th>Component</th>
+                <th>Est. Tokens</th>
+                <th>Purpose</th>
+            </tr>
+            <tr>
+                <td>Scenario Summary</td>
+                <td>~500</td>
+                <td>Counts, statistics, date ranges, top categories</td>
+            </tr>
+            <tr>
+                <td>Sample Entities</td>
+                <td>~3,000</td>
+                <td>3-5 per major type for pattern consistency</td>
+            </tr>
+            <tr>
+                <td>Query Results</td>
+                <td>~2,000</td>
+                <td>Current page of results (ephemeral)</td>
+            </tr>
+            <tr>
+                <td><strong>Total Working</strong></td>
+                <td><strong>~5,500</strong></td>
+                <td>Leaves room for conversation, instructions</td>
+            </tr>
+        </table>
+        
+        <div class="callout callout-success">
+            <div class="callout-title">✅ Scale Independence</div>
+            <p style="margin-bottom:0">This budget is <strong>constant</strong> regardless of underlying data size. 
+            Whether 100 entities or 1,000,000—same context footprint.</p>
+        </div>
+        
+        <h3>4.2 What Goes Where</h3>
+        
+        <table>
+            <tr>
+                <th>Data Type</th>
+                <th>Location</th>
+                <th>Rationale</th>
+            </tr>
+            <tr>
+                <td>Entity counts, date ranges</td>
+                <td>Context (Summary)</td>
+                <td>Always needed for generation guidance</td>
+            </tr>
+            <tr>
+                <td>Statistical distributions</td>
+                <td>Context (Summary)</td>
+                <td>Informs realistic generation patterns</td>
+            </tr>
+            <tr>
+                <td>Sample entities (3-5 per type)</td>
+                <td>Context (Samples)</td>
+                <td>Templates for consistent generation</td>
+            </tr>
+            <tr>
+                <td>Full entity data</td>
+                <td>DuckDB only</td>
+                <td>Too large for context</td>
+            </tr>
+            <tr>
+                <td>Query results</td>
+                <td>Context (ephemeral)</td>
+                <td>Paginated, replaced on next query</td>
+            </tr>
+            <tr>
+                <td>Aggregations/analytics</td>
+                <td>Computed in DuckDB</td>
+                <td>Only results come to context</td>
+            </tr>
+        </table>
+        
+        <h3>4.3 Scenario Summary Structure</h3>
+        
+        <pre><code>{
+  "scenario_id": "SCN-20241226-143052",
+  "name": "maricopa-diabetics",
+  "created_at": "2024-12-26T14:30:52Z",
+  "description": "Auto-generated: diabetic patients Maricopa County",
+  
+  "entity_counts": {
+    "persons": 500,
+    "patients": 500,
+    "encounters": 2100,
+    "diagnoses": 4200,
+    "claims": 4500,
+    "claim_lines": 12000
+  },
+  
+  "statistics": {
+    "date_range": ["2024-01-01", "2024-12-26"],
+    "total_billed": 12300000,
+    "total_paid": 10100000,
+    "age_range": [35, 82],
+    "age_median": 58,
+    "gender_distribution": {"M": 0.48, "F": 0.52},
+    "top_diagnoses": [
+      {"code": "E11.9", "description": "Type 2 diabetes", "pct": 1.0},
+      {"code": "I10", "description": "Essential hypertension", "pct": 0.45},
+      {"code": "E78.5", "description": "Hyperlipidemia", "pct": 0.38}
+    ],
+    "encounter_types": {"outpatient": 0.72, "inpatient": 0.15, "emergency": 0.13}
+  },
+  
+  "tags": ["diabetes", "maricopa", "arizona", "medicare"]
+}</code></pre>
+        
+        <!-- SECTION 5: MCP Tools -->
+        <h2 id="tools">5. MCP Tools Specification</h2>
+        
+        <h3>5.1 Tool Summary</h3>
+        
+        <table class="tool-table">
+            <tr>
+                <th>Tool</th>
+                <th>Purpose</th>
+                <th>Input</th>
+                <th>Output</th>
+            </tr>
+            <tr>
+                <td>persist_entities</td>
+                <td>Save generated entities to DuckDB</td>
+                <td>entities[], entity_type, scenario_id?</td>
+                <td>IDs, count, updated summary</td>
+            </tr>
+            <tr>
+                <td>get_scenario_summary</td>
+                <td>Load scenario metadata + stats</td>
+                <td>scenario_id or name</td>
+                <td>Summary object (~500 tokens)</td>
+            </tr>
+            <tr>
+                <td>query_scenario</td>
+                <td>Run SQL, get paginated results</td>
+                <td>scenario_id, SQL, limit, offset</td>
+                <td>Results page + total count</td>
+            </tr>
+            <tr>
+                <td>get_entity_samples</td>
+                <td>Get N sample entities of a type</td>
+                <td>scenario_id, entity_type, count</td>
+                <td>Sample entities</td>
+            </tr>
+            <tr>
+                <td>list_scenarios</td>
+                <td>Show available scenarios</td>
+                <td>filter?, limit?</td>
+                <td>List with brief summaries</td>
+            </tr>
+            <tr>
+                <td>rename_scenario</td>
+                <td>Rename a scenario</td>
+                <td>scenario_id, new_name</td>
+                <td>Success confirmation</td>
+            </tr>
+            <tr>
+                <td>delete_scenario</td>
+                <td>Remove scenario and entities</td>
+                <td>scenario_id</td>
+                <td>Success confirmation</td>
+            </tr>
+        </table>
+        
+        <h3>5.2 Tool Details</h3>
+        
+        <h4>persist_entities</h4>
+        <pre><code>persist_entities(
+    entities: List[Dict],       # JSON entities to persist
+    entity_type: str,           # "patient", "claim", "encounter", etc.
+    scenario_id: str = None,    # Auto-generate if not provided
+    scenario_name: str = None   # Human-readable name (auto-gen if null)
+) -> {
+    "success": true,
+    "scenario_id": "SCN-20241226-143052",
+    "scenario_name": "diabetic-patients-20241226",
+    "entity_type": "patient",
+    "count": 50,
+    "ids": ["PAT-001", "PAT-002", ...],
+    "updated_summary": { ... }   # Refreshed stats after insert
+}</code></pre>
+        
+        <h4>get_scenario_summary</h4>
+        <pre><code>get_scenario_summary(
+    scenario_id: str = None,    # Lookup by ID
+    scenario_name: str = None,  # Or lookup by name
+    include_samples: bool = true,
+    samples_per_type: int = 3
+) -> {
+    "scenario_id": "SCN-20241226-143052",
+    "name": "maricopa-diabetics",
+    "entity_counts": { ... },
+    "statistics": { ... },
+    "samples": {
+        "patients": [ /* 3 sample patients */ ],
+        "encounters": [ /* 3 sample encounters */ ],
+        "claims": [ /* 3 sample claims */ ]
+    }
+}</code></pre>
+        
+        <h4>query_scenario</h4>
+        <pre><code>query_scenario(
+    scenario_id: str,
+    query: str,         # SQL query (SELECT only)
+    limit: int = 20,    # Max results per page
+    offset: int = 0     # Pagination offset
+) -> {
+    "total_matching": 3500,
+    "returned": 20,
+    "offset": 0,
+    "has_more": true,
+    "results": [ /* 20 matching records */ ]
+}</code></pre>
+        
+        <h4>rename_scenario</h4>
+        <pre><code>rename_scenario(
+    scenario_id: str,
+    new_name: str
+) -> {
+    "success": true,
+    "scenario_id": "SCN-20241226-143052",
+    "old_name": "session-20241226-143052",
+    "new_name": "maricopa-diabetes-cohort"
+}</code></pre>
+        
+        <!-- SECTION 6: Workflows -->
+        <h2 id="workflows">6. Workflow Examples</h2>
+        
+        <h3>6.1 Generate with Auto-Persist (Small)</h3>
+        
+        <div class="diagram">
+User: "Generate a diabetic patient named John Smith"
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Claude:                                                          │
+│ 1. Check for active scenario in context                         │
+│    → None found                                                  │
+│                                                                  │
+│ 2. Generate scenario ID                                          │
+│    → scenario_id = "SCN-20241226-143052"                        │
+│    → auto_name = "diabetic-patient-20241226"                    │
+│                                                                  │
+│ 3. Generate patient JSON (in working memory)                    │
+│    → {patient_id: "PAT-001", given_name: "John", ...}           │
+│                                                                  │
+│ 4. Call MCP: persist_entities([patient], "patient", scenario_id)│
+│    → Returns: {success: true, count: 1, ids: ["PAT-001"]}       │
+│                                                                  │
+│ 5. Set active scenario in context                                │
+│                                                                  │
+│ 6. Respond with summary (not full JSON unless requested)        │
+└─────────────────────────────────────────────────────────────────┘
+
+Response: "Created patient John Smith (PAT-001) in scenario 
+'diabetic-patient-20241226'. He's a 58-year-old male with Type 2 
+diabetes diagnosed in 2019. Want to add encounters or claims?"
+        </div>
+        
+        <h3>6.2 Generate with Auto-Persist (Large/Batch)</h3>
+        
+        <div class="diagram">
+User: "Generate 500 Medicare members for rural Georgia counties"
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Claude:                                                          │
+│ 1. Create scenario                                               │
+│    → scenario_id = "SCN-20241226-150000"                        │
+│    → auto_name = "medicare-rural-georgia-20241226"              │
+│                                                                  │
+│ 2. BATCH LOOP (50 per batch × 10 batches):                      │
+│                                                                  │
+│    Batch 1:                                                      │
+│    • Generate 50 members (JSON)                                  │
+│    • persist_entities(batch, "member", scenario_id)             │
+│    • Report: "Batch 1/10 complete (50 members)"                 │
+│                                                                  │
+│    Batch 2:                                                      │
+│    • Generate 50 members (consistent with samples from Batch 1) │
+│    • persist_entities(batch, "member", scenario_id)             │
+│    • Report: "Batch 2/10 complete (100 members)"                │
+│                                                                  │
+│    ... (batches 3-10) ...                                        │
+│                                                                  │
+│ 3. Final: get_scenario_summary(scenario_id)                     │
+│    → Get updated stats and samples                               │
+└─────────────────────────────────────────────────────────────────┘
+
+Response: "Generated 500 Medicare members in scenario 
+'medicare-rural-georgia-20241226'.
+
+Summary:
+• Age range: 65-89, median 74
+• Counties: 12 rural Georgia counties  
+• Conditions: Hypertension (78%), Diabetes (42%), CHF (23%)
+• Plan types: Traditional Medicare (60%), MA-HMO (25%), MA-PPO (15%)
+
+To rename: 'Rename this scenario to Georgia Rural Study'
+To query: 'Show me members over age 80'"
+        </div>
+        
+        <h3>6.3 Load Existing Scenario</h3>
+        
+        <div class="diagram">
+User: "Load the scenario called Todays Claims"
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Claude:                                                          │
+│ 1. Call MCP: get_scenario_summary(name="Todays Claims")         │
+│    → Returns summary + samples (~3,500 tokens)                  │
+│                                                                  │
+│ 2. Set as active scenario in context                            │
+│    → Summary available for reference                             │
+│    → Samples available for generation consistency               │
+│                                                                  │
+│ 3. DO NOT load full entity data (stays in DuckDB)              │
+└─────────────────────────────────────────────────────────────────┘
+
+Response: "Loaded scenario 'Todays Claims':
+• 100,000 claims across 45,000 members
+• Date range: Jan 1 - Dec 26, 2024
+• Total billed: $45.2M | Paid: $38.1M
+• Top diagnoses: E11.9 (12%), I10 (10%), J06.9 (8%)
+
+What would you like to explore? You can:
+• Query: 'Show claims over $10,000'
+• Analyze: 'What's the average cost by diagnosis?'
+• Generate: 'Add 100 more claims for diabetes patients'"
+        </div>
+        
+        <h3>6.4 Query and Analyze</h3>
+        
+        <div class="diagram">
+User: "Show me claims over $10,000"
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Claude:                                                          │
+│ 1. Build SQL from natural language                               │
+│    → "SELECT * FROM claims WHERE total_billed > 10000"          │
+│                                                                  │
+│ 2. Call MCP: query_scenario(                                    │
+│        scenario_id="SCN-...",                                   │
+│        query="SELECT * FROM claims WHERE total_billed > 10000", │
+│        limit=20, offset=0                                       │
+│    )                                                             │
+│    → Returns: {total: 3500, returned: 20, results: [...]}       │
+│                                                                  │
+│ 3. Display results (replaces previous query results in context) │
+└─────────────────────────────────────────────────────────────────┘
+
+Response: "Found 3,500 claims over $10,000. Here are the first 20:
+
+| Claim ID   | Member      | Type          | Billed    | Paid     |
+|------------|-------------|---------------|-----------|----------|
+| CLM-45231  | MEM-12345   | Institutional | $45,230   | $38,450  |
+| CLM-45232  | MEM-23456   | Institutional | $32,100   | $28,900  |
+...
+
+Say 'show more' or 'show page 3' to continue.
+Say 'download all' to export full results to CSV."
+        </div>
+        
+        <h3>6.5 Rename Scenario</h3>
+        
+        <div class="diagram">
+User: "Rename this scenario to Q4 Diabetes Cohort"
+
+┌─────────────────────────────────────────────────────────────────┐
+│ Claude:                                                          │
+│ 1. Call MCP: rename_scenario(                                   │
+│        scenario_id="SCN-20241226-143052",                       │
+│        new_name="Q4 Diabetes Cohort"                            │
+│    )                                                             │
+│    → Returns: {success: true, old_name: "...", new_name: "..."}│
+│                                                                  │
+│ 2. Update active scenario name in context                       │
+└─────────────────────────────────────────────────────────────────┘
+
+Response: "Renamed scenario from 'diabetic-patients-20241226' to 
+'Q4 Diabetes Cohort'. The scenario ID remains SCN-20241226-143052."
+        </div>
+        
+        <!-- SECTION 7: Implementation -->
+        <h2 id="implementation">7. Implementation Plan</h2>
+        
+        <h3>7.1 Phase Breakdown</h3>
+        
+        <table>
+            <tr>
+                <th>Phase</th>
+                <th>Deliverables</th>
+                <th>Effort</th>
+            </tr>
+            <tr>
+                <td><strong>Phase 1: Core MCP Tools</strong></td>
+                <td>
+                    <ul style="margin:0">
+                        <li>persist_entities tool</li>
+                        <li>get_scenario_summary tool</li>
+                        <li>query_scenario tool</li>
+                        <li>list_scenarios tool</li>
+                    </ul>
+                </td>
+                <td>4-5 hours</td>
+            </tr>
+            <tr>
+                <td><strong>Phase 2: Scenario Management</strong></td>
+                <td>
+                    <ul style="margin:0">
+                        <li>rename_scenario tool</li>
+                        <li>delete_scenario tool</li>
+                        <li>get_entity_samples tool</li>
+                        <li>Auto-naming logic</li>
+                    </ul>
+                </td>
+                <td>2-3 hours</td>
+            </tr>
+            <tr>
+                <td><strong>Phase 3: Skill Updates</strong></td>
+                <td>
+                    <ul style="margin:0">
+                        <li>Update generation skills with auto-persist pattern</li>
+                        <li>Add batch generation guidance</li>
+                        <li>Update state-management skill</li>
+                    </ul>
+                </td>
+                <td>3-4 hours</td>
+            </tr>
+            <tr>
+                <td><strong>Phase 4: Testing & Docs</strong></td>
+                <td>
+                    <ul style="margin:0">
+                        <li>Integration tests</li>
+                        <li>Update documentation</li>
+                        <li>Hello-HealthSim examples</li>
+                    </ul>
+                </td>
+                <td>2-3 hours</td>
+            </tr>
+            <tr>
+                <td><strong>Total</strong></td>
+                <td></td>
+                <td><strong>11-15 hours</strong></td>
+            </tr>
+        </table>
+        
+        <h3>7.2 File Changes</h3>
+        
+        <table>
+            <tr>
+                <th>File</th>
+                <th>Change Type</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><code>packages/duckdb-mcp/</code></td>
+                <td>New/Modify</td>
+                <td>Add new MCP tools to healthsim-duckdb server</td>
+            </tr>
+            <tr>
+                <td><code>skills/common/state-management.md</code></td>
+                <td>Modify</td>
+                <td>Update with auto-persist behavior</td>
+            </tr>
+            <tr>
+                <td><code>skills/common/duckdb-skill.md</code></td>
+                <td>Modify</td>
+                <td>Add new tool documentation</td>
+            </tr>
+            <tr>
+                <td><code>skills/patientsim/*.md</code></td>
+                <td>Modify</td>
+                <td>Add auto-persist pattern to generation skills</td>
+            </tr>
+            <tr>
+                <td><code>skills/membersim/*.md</code></td>
+                <td>Modify</td>
+                <td>Add auto-persist pattern to generation skills</td>
+            </tr>
+            <tr>
+                <td><code>docs/healthsim-auto-persist-architecture.html</code></td>
+                <td>New</td>
+                <td>This document</td>
+            </tr>
+        </table>
+        
+        <!-- SECTION 8: Decisions -->
+        <h2 id="decisions">8. Open Decisions</h2>
+        
+        <div class="decision-box">
+            <h4>Decision 1: Batch Size</h4>
+            <p><strong>Proposal:</strong> 50 entities per batch</p>
+            <p><strong>Rationale:</strong> Large enough for efficiency, small enough for reliable generation. Can be adjusted per entity type if needed.</p>
+            <p><strong>Status:</strong> Proposed - awaiting confirmation</p>
+        </div>
+        
+        <div class="decision-box">
+            <h4>Decision 2: Auto-Naming Format</h4>
+            <p><strong>Proposal:</strong> Descriptive format: <code>{keywords}-{YYYYMMDD}</code></p>
+            <p><strong>Examples:</strong></p>
+            <ul>
+                <li>"Generate diabetic patients" → <code>diabetic-patients-20241226</code></li>
+                <li>"Create Medicare claims" → <code>medicare-claims-20241226</code></li>
+            </ul>
+            <p><strong>Status:</strong> Proposed - awaiting confirmation</p>
+        </div>
+        
+        <div class="decision-box">
+            <h4>Decision 3: Sample Count per Entity Type</h4>
+            <p><strong>Proposal:</strong> 3 samples per major entity type (configurable)</p>
+            <p><strong>Rationale:</strong> Enough for pattern consistency, low enough for token budget</p>
+            <p><strong>Status:</strong> Proposed - awaiting confirmation</p>
+        </div>
+        
+        <div class="decision-box">
+            <h4>Decision 4: Default Query Page Size</h4>
+            <p><strong>Proposal:</strong> 20 results per page</p>
+            <p><strong>Rationale:</strong> Fits comfortably in ~2,000 token budget for query results</p>
+            <p><strong>Status:</strong> Proposed - awaiting confirmation</p>
+        </div>
+        
+        <hr>
+        
+        <h2>9. Next Steps</h2>
+        
+        <ol>
+            <li><strong>Review this document</strong> - Confirm architecture approach</li>
+            <li><strong>Resolve open decisions</strong> - Batch size, naming, samples</li>
+            <li><strong>Approve implementation plan</strong> - Phase breakdown and effort</li>
+            <li><strong>Begin Phase 1</strong> - Core MCP tools</li>
+        </ol>
+        
+        <hr style="margin: 3rem 0;">
+        
+        <p style="color: var(--gray-600); font-size: 0.9rem;">
+            <em>HealthSim Auto-Persist Architecture v1.0 DRAFT</em><br>
+            <em>December 26, 2024</em>
+        </p>
+    </div>
+</body>
+</html>
