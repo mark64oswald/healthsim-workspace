@@ -2,7 +2,7 @@
 
 **Status**: 🟡 IN PROGRESS  
 **Started**: December 26, 2024  
-**Last Updated**: December 26, 2024  
+**Last Updated**: December 27, 2024  
 **Architecture Doc**: [healthsim-auto-persist-architecture.html](./healthsim-auto-persist-architecture.html)
 
 ---
@@ -12,7 +12,7 @@
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 0: Preparation | ✅ Complete | 4/4 |
-| Phase 1: Core MCP Tools | ⚪ Not Started | 0/8 |
+| Phase 1: Core Service Modules | 🟡 In Progress | 8/12 |
 | Phase 2: Scenario Management | ⚪ Not Started | 0/6 |
 | Phase 3: Skill Updates | ⚪ Not Started | 0/12 |
 | Phase 4: Documentation | ⚪ Not Started | 0/10 |
@@ -38,7 +38,7 @@
 
 | Metric | Value |
 |--------|-------|
-| Core Package Tests | 605 passing ✅ |
+| Core Package Tests | 668 passing ✅ |
 | DuckDB Schema Tables | 41 |
 | Entity Types Supported | 38 |
 | Skills Files | ~30 |
@@ -70,121 +70,57 @@
 - `skills/common/duckdb-skill.md` - Current DuckDB skill (needs tool additions)
 
 **Integration Strategy**:
-- Build new tools as extensions to existing `healthsim.db` module
+- Build new services as extensions to existing `healthsim.state` module
 - Leverage existing `StateManager` class infrastructure
-- Add new tools to `packages/core/src/healthsim/db/tools/` directory
+- Add new modules to `packages/core/src/healthsim/state/` directory
 - Update existing skills rather than create new ones
 
 ---
 
-## Phase 1: Core MCP Tools (4-5 hours)
+## Phase 1: Core Service Modules (4-5 hours) 🟡 IN PROGRESS
 
-### Super-Prompt Location
-`docs/super-prompts/phase1-core-mcp-tools.md`
+### 1.1 Service Modules ✅ COMPLETE
 
-### 1.1 persist_entities Tool
-**File**: `packages/core/src/healthsim/db/tools/persist_entities.py`
+**Files Created**:
+- `packages/core/src/healthsim/state/auto_naming.py` - Intelligent scenario naming
+- `packages/core/src/healthsim/state/summary.py` - Token-efficient scenario summaries  
+- `packages/core/src/healthsim/state/auto_persist.py` - Main AutoPersistService class
 
-- [ ] Create tool file with proper structure
-- [ ] Implement entity type to table mapping (all 38 types)
-- [ ] Implement auto-scenario creation logic
-- [ ] Implement auto-naming logic (extract keywords from context)
-- [ ] Implement batch insert with transaction
-- [ ] Implement ID extraction and return
-- [ ] Implement summary refresh after insert
-- [ ] Add to module `__init__.py`
-- [ ] Write unit tests
-- [ ] Test with sample entities
+**Unit Tests Created** (63 tests, all passing):
+- `packages/core/tests/state/test_auto_naming.py` - 25 tests
+- `packages/core/tests/state/test_summary.py` - 13 tests
+- `packages/core/tests/state/test_auto_persist.py` - 25 tests
 
-**Signature**:
-```python
-def persist_entities(
-    entities: List[Dict],
-    entity_type: str,
-    scenario_id: Optional[str] = None,
-    scenario_name: Optional[str] = None,
-    scenario_description: Optional[str] = None,
-    tags: Optional[List[str]] = None
-) -> PersistResult
-```
+**Schema Updates**:
+- Added `scenario_id` column to all 18 canonical tables
+- Added migration 1.2 for existing databases
+- Updated schema version to 1.2
+- Added indexes for scenario filtering
 
-### 1.2 get_scenario_summary Tool
-**File**: `packages/core/src/healthsim/db/tools/get_scenario_summary.py`
+**Module Exports** (in `__init__.py`):
+- Auto-naming: `generate_scenario_name`, `extract_keywords`, `ensure_unique_name`, `sanitize_name`, `parse_scenario_name`
+- Summary: `ScenarioSummary`, `generate_summary`, `get_scenario_by_name`
+- Auto-persist: `AutoPersistService`, `PersistResult`, `QueryResult`, `ScenarioBrief`, `get_auto_persist_service`, `reset_service`
 
-- [ ] Create tool file
-- [ ] Implement scenario lookup (by ID or name)
-- [ ] Implement entity count aggregation
-- [ ] Implement statistics calculation:
-  - [ ] Date ranges
-  - [ ] Financial totals (billed, paid, patient responsibility)
-  - [ ] Age statistics (range, median)
-  - [ ] Gender distribution
-  - [ ] Top diagnoses/conditions
-  - [ ] Encounter type distribution
-- [ ] Implement sample entity retrieval
-- [ ] Add to module `__init__.py`
-- [ ] Write unit tests
-- [ ] Test with existing scenario
+### 1.2 Integration with StateManager ⚪ NOT STARTED
 
-**Signature**:
-```python
-def get_scenario_summary(
-    scenario_id: Optional[str] = None,
-    scenario_name: Optional[str] = None,
-    include_samples: bool = True,
-    samples_per_type: int = 3
-) -> ScenarioSummary
-```
+- [ ] Update `StateManager.save()` to use `AutoPersistService.persist_entities()`
+- [ ] Update `StateManager.load()` to use `AutoPersistService.get_scenario_summary()`
+- [ ] Add convenience methods to StateManager for query_scenario, list_scenarios
+- [ ] Ensure backward compatibility with existing save/load behavior
+- [ ] Write integration tests
 
-### 1.3 query_scenario Tool
-**File**: `packages/core/src/healthsim/db/tools/query_scenario.py`
+### 1.3 Serializer Updates ⚪ NOT STARTED
 
-- [ ] Create tool file
-- [ ] Implement SQL validation (SELECT only)
-- [ ] Implement scenario scoping (filter by scenario_id)
-- [ ] Implement pagination (limit/offset)
-- [ ] Implement total count query
-- [ ] Implement result serialization
-- [ ] Add to module `__init__.py`
-- [ ] Write unit tests
-- [ ] Test with various SQL queries
+- [ ] Update all serializers to include scenario_id in output
+- [ ] Update deserializers to handle scenario_id
+- [ ] Test roundtrip serialization with scenario_id
 
-**Signature**:
-```python
-def query_scenario(
-    scenario_id: str,
-    query: str,
-    limit: int = 20,
-    offset: int = 0
-) -> QueryResult
-```
+### 1.4 Phase 1 Final Integration ⚪ NOT STARTED
 
-### 1.4 list_scenarios Tool
-**File**: `packages/core/src/healthsim/db/tools/list_scenarios.py`
-
-- [ ] Create tool file (extend existing queries.list_scenarios)
-- [ ] Implement scenario listing with brief stats
-- [ ] Implement filtering (by name pattern, date range, tags)
-- [ ] Implement sorting (by date, name, entity count)
-- [ ] Add to module `__init__.py`
-- [ ] Write unit tests
-- [ ] Test listing
-
-**Signature**:
-```python
-def list_scenarios(
-    filter_pattern: Optional[str] = None,
-    tag: Optional[str] = None,
-    limit: int = 20,
-    sort_by: str = "updated_at"
-) -> List[ScenarioBrief]
-```
-
-### 1.5 Phase 1 Integration
-- [ ] Create `packages/core/src/healthsim/db/tools/__init__.py`
-- [ ] Update `packages/core/src/healthsim/db/__init__.py` to export tools
-- [ ] Run full test suite (maintain 605+ passing)
-- [ ] Manual integration test
+- [ ] Update `packages/core/src/healthsim/state/__init__.py` exports (if needed)
+- [ ] Run full test suite (maintain 668+ passing)
+- [ ] Manual integration test with sample generation
 
 ---
 
@@ -193,43 +129,26 @@ def list_scenarios(
 ### Super-Prompt Location
 `docs/super-prompts/phase2-scenario-management.md`
 
-### 2.1 rename_scenario Tool
-**File**: `packages/core/src/healthsim/db/tools/rename_scenario.py`
+### 2.1 Additional Service Methods ⚪ NOT STARTED
 
-- [ ] Create tool file
-- [ ] Implement rename with validation
-- [ ] Handle duplicate name prevention
-- [ ] Add to module exports
-- [ ] Write unit tests
+AutoPersistService already has these methods implemented:
+- ✅ `rename_scenario()` - Implemented with validation and duplicate check
+- ✅ `delete_scenario()` - Implemented with cascade delete and confirmation
+- ✅ `get_entity_samples()` - Implemented with diverse/random/recent strategies
 
-### 2.2 delete_scenario Tool  
-**File**: `packages/core/src/healthsim/db/tools/delete_scenario.py`
+Need to verify and enhance:
+- [ ] Add tag management methods (add_tag, remove_tag)
+- [ ] Add scenario cloning capability
+- [ ] Add scenario merging capability
 
-- [ ] Create tool file
-- [ ] Implement cascade delete (scenario + all linked entities)
-- [ ] Add confirmation requirement
-- [ ] Add to module exports
-- [ ] Write unit tests
+### 2.2 Export Utilities ⚪ NOT STARTED
 
-### 2.3 get_entity_samples Tool
-**File**: `packages/core/src/healthsim/db/tools/get_entity_samples.py`
+- [ ] Add `export_scenario()` method to AutoPersistService
+- [ ] Support JSON, CSV, and Parquet export formats
+- [ ] Implement selective entity type export
 
-- [ ] Create tool file
-- [ ] Implement random sampling with diversity
-- [ ] Support all entity types
-- [ ] Add to module exports
-- [ ] Write unit tests
+### 2.3 Phase 2 Integration ⚪ NOT STARTED
 
-### 2.4 Auto-Naming Service
-**File**: `packages/core/src/healthsim/db/services/auto_naming.py`
-
-- [ ] Create service file
-- [ ] Implement keyword extraction from generation request
-- [ ] Implement date formatting
-- [ ] Implement uniqueness check (append counter if needed)
-- [ ] Write unit tests
-
-### 2.5 Phase 2 Integration
 - [ ] Update module exports
 - [ ] Run full test suite
 - [ ] Manual integration test
@@ -256,7 +175,7 @@ def list_scenarios(
 ### 3.2 DuckDB Skill
 **File**: `skills/common/duckdb-skill.md`
 
-- [ ] Add all 7 new MCP tools documentation
+- [ ] Add all new MCP tools documentation
 - [ ] Add trigger phrases for each tool
 - [ ] Add examples for each tool
 - [ ] Update the query patterns section
@@ -282,7 +201,7 @@ def list_scenarios(
 - [ ] NetworkSim skills update
 
 ### 3.6 Master SKILL.md Updates
-**File**: `skills/healthsim-master-SKILL.md` (if exists)
+**File**: `skills/healthsim-master-SKILL.md`
 
 - [ ] Add auto-persist section
 - [ ] Update routing to include persist-related triggers
@@ -324,38 +243,41 @@ def list_scenarios(
 ### Super-Prompt Location
 `docs/super-prompts/phase5-testing.md`
 
-### 5.1 Unit Tests
-**Directory**: `packages/core/tests/db/tools/`
+### 5.1 Unit Tests ✅ LARGELY COMPLETE
 
-- [ ] `test_persist_entities.py`
-- [ ] `test_get_scenario_summary.py`
-- [ ] `test_query_scenario.py`
-- [ ] `test_list_scenarios.py`
-- [ ] `test_rename_scenario.py`
-- [ ] `test_delete_scenario.py`
-- [ ] `test_get_entity_samples.py`
-- [ ] `test_auto_naming.py`
+Tests created in Phase 1.1:
+- [x] `test_auto_naming.py` - 25 tests
+- [x] `test_summary.py` - 13 tests  
+- [x] `test_auto_persist.py` - 25 tests
 
-### 5.2 Integration Tests
+Additional tests needed:
+- [ ] Integration tests with StateManager
+- [ ] Serializer tests with scenario_id
+
+### 5.2 Integration Tests ⚪ NOT STARTED
+
 - [ ] Test full generation → persist → query workflow
 - [ ] Test batch generation with 100+ entities
 - [ ] Test scenario load → generate more → query
 - [ ] Test cross-product scenarios (Patient + Member + Claim)
 
-### 5.3 Regression Tests
-- [ ] Verify all 605+ existing tests still pass
+### 5.3 Regression Tests ⚪ NOT STARTED
+
+- [x] Verify all existing tests still pass (668 passing)
 - [ ] Verify loader/saver utilities still work
 - [ ] Verify existing scenarios can still be loaded
 
-### 5.4 Manual Testing Scenarios
+### 5.4 Manual Testing Scenarios ⚪ NOT STARTED
+
 - [ ] "Generate a diabetic patient" → verify persist
 - [ ] "Generate 100 Medicare members" → verify batch persist
 - [ ] "Load scenario X" → verify summary only loaded
 - [ ] "Show claims over $10,000" → verify paginated query
 - [ ] "Rename this scenario" → verify rename works
 
-### 5.5 Final Validation
-- [ ] Full test suite passes (605+ tests)
+### 5.5 Final Validation ⚪ NOT STARTED
+
+- [ ] Full test suite passes (668+ tests)
 - [ ] No regressions in existing functionality
 - [ ] Documentation is complete and consistent
 - [ ] Git commit with comprehensive message
@@ -364,46 +286,48 @@ def list_scenarios(
 
 ## Complete File Inventory
 
-### Files to CREATE
+### Files CREATED (Phase 1.1)
+
+| File | Status | Notes |
+|------|--------|-------|
+| `packages/core/src/healthsim/state/auto_naming.py` | ✅ | Keyword extraction, name generation |
+| `packages/core/src/healthsim/state/summary.py` | ✅ | ScenarioSummary, statistics |
+| `packages/core/src/healthsim/state/auto_persist.py` | ✅ | AutoPersistService class |
+| `packages/core/tests/state/test_auto_naming.py` | ✅ | 25 unit tests |
+| `packages/core/tests/state/test_summary.py` | ✅ | 13 unit tests |
+| `packages/core/tests/state/test_auto_persist.py` | ✅ | 25 unit tests |
+
+### Files MODIFIED (Phase 1.1)
+
+| File | Status | Changes |
+|------|--------|---------|
+| `packages/core/src/healthsim/state/__init__.py` | ✅ | Added exports for new modules |
+| `packages/core/src/healthsim/db/schema.py` | ✅ | Added scenario_id, version 1.2 |
+| `packages/core/src/healthsim/db/migrations.py` | ✅ | Added migration 1.2 |
+
+### Files Still to CREATE
 
 | File | Phase | Priority |
 |------|-------|----------|
-| `packages/core/src/healthsim/db/tools/__init__.py` | 1 | High |
-| `packages/core/src/healthsim/db/tools/persist_entities.py` | 1 | High |
-| `packages/core/src/healthsim/db/tools/get_scenario_summary.py` | 1 | High |
-| `packages/core/src/healthsim/db/tools/query_scenario.py` | 1 | High |
-| `packages/core/src/healthsim/db/tools/list_scenarios.py` | 1 | High |
-| `packages/core/src/healthsim/db/tools/rename_scenario.py` | 2 | Medium |
-| `packages/core/src/healthsim/db/tools/delete_scenario.py` | 2 | Medium |
-| `packages/core/src/healthsim/db/tools/get_entity_samples.py` | 2 | Medium |
-| `packages/core/src/healthsim/db/services/__init__.py` | 2 | Medium |
-| `packages/core/src/healthsim/db/services/auto_naming.py` | 2 | Medium |
-| `packages/core/tests/db/tools/__init__.py` | 5 | Medium |
-| `packages/core/tests/db/tools/test_persist_entities.py` | 5 | Medium |
-| `packages/core/tests/db/tools/test_scenario_tools.py` | 5 | Medium |
 | `hello-healthsim/examples/auto-persist-examples.md` | 4 | Medium |
-| `docs/super-prompts/phase1-core-mcp-tools.md` | 0 | High |
-| `docs/super-prompts/phase2-scenario-management.md` | 0 | Medium |
-| `docs/super-prompts/phase3-skill-updates.md` | 0 | Medium |
-| `docs/super-prompts/phase4-documentation.md` | 0 | Medium |
-| `docs/super-prompts/phase5-testing.md` | 0 | Medium |
+| `docs/super-prompts/phase2-scenario-management.md` | 2 | Medium |
+| `docs/super-prompts/phase3-skill-updates.md` | 3 | Medium |
+| `docs/super-prompts/phase4-documentation.md` | 4 | Medium |
+| `docs/super-prompts/phase5-testing.md` | 5 | Medium |
 
-### Files to MODIFY
+### Files Still to MODIFY
 
 | File | Phase | Changes |
 |------|-------|---------|
-| `packages/core/src/healthsim/db/__init__.py` | 1 | Export new tools |
+| `packages/core/src/healthsim/state/manager.py` | 1.2 | Integrate AutoPersistService |
+| `packages/core/src/healthsim/db/serializers.py` | 1.3 | Add scenario_id handling |
 | `skills/common/state-management.md` | 3 | Major update for auto-persist |
-| `skills/common/duckdb-skill.md` | 3 | Add 7 new tools |
+| `skills/common/duckdb-skill.md` | 3 | Add new tools |
 | `skills/patientsim/*.md` | 3 | Add persist patterns |
 | `skills/membersim/*.md` | 3 | Add persist patterns |
-| `skills/rxmembersim/*.md` | 3 | Add persist patterns |
-| `skills/trialsim/*.md` | 3 | Add persist patterns |
 | `docs/healthsim-duckdb-architecture.html` | 4 | Add auto-persist section |
 | `docs/healthsim-auto-persist-architecture.html` | 4 | Change status to Active |
 | `hello-healthsim/examples/patientsim-examples.md` | 4 | Add persist examples |
-| `hello-healthsim/examples/membersim-examples.md` | 4 | Add persist examples |
-| `hello-healthsim/examples/cross-domain-examples.md` | 4 | Add query examples |
 | `README.md` | 4 | Add auto-persist section |
 | `CHANGELOG.md` | 4 | Add feature entry |
 
@@ -425,15 +349,31 @@ def list_scenarios(
 - [x] Documented existing infrastructure
 - [x] Created complete file inventory
 
-#### Key Findings
-- Existing `StateManager` class provides good foundation
-- `packages/core/src/healthsim/db/` has connection, schema, queries
-- Can extend existing infrastructure rather than create new
-- 605 tests passing in core package as baseline
+### Session 2: December 26-27, 2024
+**Focus**: Phase 1.1 (Service Modules)
+**Duration**: ~2 hours
+**Status**: ✅ Complete
+
+#### Completed
+- [x] Created `auto_naming.py` with keyword extraction, name generation
+- [x] Created `summary.py` with ScenarioSummary dataclass, statistics
+- [x] Created `auto_persist.py` with AutoPersistService class (7 methods)
+- [x] Created 63 unit tests across 3 test files
+- [x] Updated schema to add scenario_id to all canonical tables
+- [x] Added migration 1.2 for existing databases
+- [x] Updated module exports in `__init__.py`
+- [x] All 668 tests passing
+
+#### Key Accomplishments
+- Complete AutoPersistService with persist/query/list/delete/rename operations
+- SQL safety validation (SELECT-only queries, dangerous pattern blocking)
+- Token-efficient summaries with configurable samples
+- Healthcare-aware keyword extraction for auto-naming
+- Fuzzy scenario lookup by name
 
 #### Next Session Focus
-- Create Phase 1 super-prompt
-- Begin implementation of persist_entities tool
+- Phase 1.2: Integration with existing StateManager
+- Phase 1.3: Serializer updates for scenario_id
 
 ---
 
@@ -453,10 +393,13 @@ If context is lost or session crashes:
 ## Git Commit Strategy
 
 - Commit after each phase completion
-- Use format: `[AutoPersist] Phase X: Brief description`
+- Use format: `[Auto-Persist] Phase X.Y: Brief description`
 - Push at end of each session
 - Tag major milestones: `auto-persist-phase-1`, etc.
 
+### Commits Made
+- `[Auto-Persist] Phase 1.1 complete - Service modules and unit tests` (Dec 27, 2024)
+
 ---
 
-*Last updated by Claude - December 26, 2024*
+*Last updated by Claude - December 27, 2024*
