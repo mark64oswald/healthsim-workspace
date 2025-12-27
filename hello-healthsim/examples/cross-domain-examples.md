@@ -859,7 +859,185 @@ With v2.0 data integration, cross-product generation is **grounded in real popul
 
 ---
 
+## Example: Cross-Product Auto-Persist Workflow
+
+This example demonstrates using auto-persist to build a complete clinical trial dataset across multiple HealthSim products, then clone it for A/B testing.
+
+### Scenario: Phase 3 Diabetes Trial Dataset
+
+#### Step 1: Generate Base Population (PopulationSim)
+
+**User Prompt:**
+```
+Generate 200 diabetes patients in Arizona using real population data.
+Focus on Phoenix metro area with high diabetes prevalence.
+Persist this as my trial-candidate-pool.
+```
+
+**Claude Response:**
+```
+[Generating population using Arizona PLACES/SVI data...]
+[Auto-persisting to database...]
+
+**Saved "trial-candidate-pool"**
+
+| Metric | Value |
+|--------|-------|
+| Patients | 200 |
+| Counties | Maricopa (85%), Pima (15%) |
+| Age Range | 35-72 (mean: 54) |
+| Gender | 48% male, 52% female |
+| Diabetes Prevalence | Based on Maricopa 11.8% baseline |
+| Comorbidities | HTN (68%), Obesity (45%), CKD (12%) |
+
+Data sourced from CDC PLACES 2024 and SVI 2022.
+```
+
+#### Step 2: Add Clinical History (PatientSim)
+
+**User Prompt:**
+```
+For my trial-candidate-pool, add 2 years of clinical history including
+A1C labs, medication records, and encounters. Persist to the same scenario.
+```
+
+**Claude Response:**
+```
+[Adding clinical data to 200 patients...]
+[Auto-persisting encounters, labs, medications...]
+
+**Updated "trial-candidate-pool"**
+
+| Entity Type | Count |
+|-------------|-------|
+| Patients | 200 |
+| Encounters | 1,847 |
+| Lab Results | 4,212 |
+| Medications | 2,890 |
+| Diagnoses | 3,456 |
+
+Clinical patterns:
+- A1C range: 6.5-12.1% (mean: 8.2%)
+- 78% on metformin, 34% on GLP-1, 22% on insulin
+- Average 9 encounters/patient over 2 years
+```
+
+#### Step 3: Enroll Qualified Subjects (TrialSim)
+
+**User Prompt:**
+```
+Query my trial-candidate-pool for patients with A1C between 7.5-10%,
+on stable metformin, no CKD stage 4+. Enroll them in a Phase 3 
+SGLT2 trial with 2:1 randomization. Save as sglt2-phase3-trial.
+```
+
+**Claude Response:**
+```
+[Querying candidate pool with eligibility criteria...]
+[Found 142 eligible patients (71% of pool)]
+[Creating trial with 2:1 randomization...]
+[Auto-persisting...]
+
+**Saved "sglt2-phase3-trial"**
+
+| Entity Type | Count |
+|-------------|-------|
+| Subjects | 142 |
+| Treatment Arm | 95 (SGLT2 + Metformin) |
+| Control Arm | 47 (Placebo + Metformin) |
+
+Linked from trial-candidate-pool:
+- Full clinical history preserved
+- Baseline A1C: 7.5-9.8% (mean: 8.4%)
+- All subjects on stable metformin ≥3 months
+```
+
+#### Step 4: Clone for Analysis Scenarios
+
+**User Prompt:**
+```
+Clone sglt2-phase3-trial twice:
+1. "best-case-scenario" - for optimistic projections
+2. "conservative-scenario" - for safety analysis
+Tag both with "analysis" and "q1-planning"
+```
+
+**Claude Response:**
+```
+[Cloning scenario with new IDs...]
+[Cloning scenario with new IDs...]
+[Adding tags...]
+
+**Created 2 clones from "sglt2-phase3-trial"**
+
+| Clone | Subjects | Tags |
+|-------|----------|------|
+| best-case-scenario | 142 | analysis, q1-planning |
+| conservative-scenario | 142 | analysis, q1-planning |
+
+All entity IDs regenerated. Clones are independent - 
+modify one without affecting the others.
+
+Next steps:
+- Adjust efficacy assumptions in each clone
+- Generate different adverse event profiles
+- Compare outcomes across scenarios
+```
+
+#### Step 5: Export for External Analysis
+
+**User Prompt:**
+```
+Export conservative-scenario to Parquet for our Databricks analysis.
+```
+
+**Claude Response:**
+```
+[Exporting to Parquet format...]
+
+**Exported "conservative-scenario" to Parquet**
+
+| Entity Type | Rows | File |
+|-------------|------|------|
+| subjects | 142 | subjects.parquet |
+| patients | 142 | patients.parquet |
+| encounters | 1,312 | encounters.parquet |
+| lab_results | 2,986 | lab_results.parquet |
+| medications | 2,044 | medications.parquet |
+
+**Location**: `~/Downloads/conservative-scenario-parquet/`
+**Total Size**: 1.2 MB
+
+Load in Databricks:
+```python
+df = spark.read.parquet(
+    'file:///path/to/conservative-scenario-parquet/'
+)
+```
+
+### Key Points
+
+This workflow demonstrates:
+
+1. **Cross-Product Data Flow**: PopulationSim → PatientSim → TrialSim
+2. **Token Efficiency**: 200 patients + 12,000+ related entities without context overflow
+3. **Scenario Branching**: Clone for parallel analysis paths
+4. **Export Flexibility**: Parquet for big data platforms
+
+The `scenario_id` column links all entities across products, enabling queries like:
+```sql
+-- Find all clinical data for trial subjects
+SELECT p.*, e.*, l.*
+FROM patients p
+JOIN encounters e ON p.id = e.patient_id
+JOIN lab_results l ON e.id = l.encounter_id
+WHERE p.scenario_id = 'conservative-scenario'
+```
+
+---
+
 See also:
 - [Format Examples](format-examples.md) - Transform cross-domain data to standards
 - [Oncology Examples](oncology-examples.md) - Detailed oncology patient scenarios
 - [TrialSim Examples](trialsim-examples.md) - Clinical trial specific scenarios
+- [Auto-Persist Examples](auto-persist-examples.md) - Detailed auto-persist workflows

@@ -513,10 +513,10 @@ SELECT * FROM healthsim.patients WHERE gender = 'F';
 
 ## Related Examples
 
+- [Cross-Domain Examples](cross-domain-examples.md) - **Cross-product auto-persist workflow** (PopulationSim → PatientSim → TrialSim)
 - [PatientSim Examples](patientsim-examples.md)
 - [MemberSim Examples](membersim-examples.md)
 - [TrialSim Examples](trialsim-examples.md)
-- [Cross-Domain Examples](cross-domain-examples.md)
 
 ---
 
