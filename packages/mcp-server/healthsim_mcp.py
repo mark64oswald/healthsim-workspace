@@ -25,7 +25,6 @@ Configuration in claude_desktop_config.json:
 
 import json
 import sys
-from contextlib import asynccontextmanager
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -42,24 +41,33 @@ from healthsim.state import StateManager
 
 
 # =============================================================================
-# Lifespan Management - Single Database Connection
+# Global Connection - Single Database Connection Holder
 # =============================================================================
 
-@asynccontextmanager
-async def app_lifespan(app):
-    """Manage the single DuckDB connection for the server's lifetime."""
-    # Initialize connection and state manager
-    conn = get_connection()
-    manager = StateManager(connection=conn)
-    
-    yield {"conn": conn, "manager": manager}
-    
-    # Cleanup on shutdown
-    DatabaseConnection.reset()
+# Initialize connection and state manager at module load
+# This ensures only one connection exists for the entire server lifetime
+_conn = None
+_manager = None
 
 
-# Initialize the MCP server with lifespan
-mcp = FastMCP("healthsim_mcp", lifespan=app_lifespan)
+def _get_conn():
+    """Get or create the database connection."""
+    global _conn
+    if _conn is None:
+        _conn = get_connection()
+    return _conn
+
+
+def _get_manager():
+    """Get or create the state manager."""
+    global _manager
+    if _manager is None:
+        _manager = StateManager(connection=_get_conn())
+    return _manager
+
+
+# Initialize the MCP server
+mcp = FastMCP("healthsim_mcp")
 
 
 # =============================================================================
@@ -142,7 +150,7 @@ class QueryReferenceInput(BaseModel):
         "idempotentHint": True,
     }
 )
-async def list_scenarios(params: ListScenariosInput) -> str:
+def list_scenarios(params: ListScenariosInput) -> str:
     """List all saved scenarios in the HealthSim database.
     
     Returns scenario names, descriptions, entity counts, and tags.
@@ -152,9 +160,7 @@ async def list_scenarios(params: ListScenariosInput) -> str:
         JSON list of scenario summaries with: scenario_id, name, description,
         created_at, updated_at, entity_count, tags
     """
-    from mcp.server.fastmcp import Context
-    ctx = mcp.get_context()
-    manager = ctx.request_context.lifespan_state["manager"]
+    manager = _get_manager()
     
     scenarios = manager.list_scenarios(
         tag=params.tag,
@@ -187,7 +193,7 @@ async def list_scenarios(params: ListScenariosInput) -> str:
         "idempotentHint": True,
     }
 )
-async def load_scenario(params: LoadScenarioInput) -> str:
+def load_scenario(params: LoadScenarioInput) -> str:
     """Load a scenario by name or ID.
     
     Returns full scenario data including all entities. For large scenarios,
@@ -196,8 +202,7 @@ async def load_scenario(params: LoadScenarioInput) -> str:
     Returns:
         JSON with scenario metadata and entities dict
     """
-    ctx = mcp.get_context()
-    manager = ctx.request_context.lifespan_state["manager"]
+    manager = _get_manager()
     
     try:
         scenario = manager.load_scenario(params.name_or_id)
@@ -220,7 +225,7 @@ async def load_scenario(params: LoadScenarioInput) -> str:
         "idempotentHint": False,
     }
 )
-async def save_scenario(params: SaveScenarioInput) -> str:
+def save_scenario(params: SaveScenarioInput) -> str:
     """Save a scenario to the HealthSim database.
     
     Entities should be a dict mapping entity type to list of entities:
@@ -236,8 +241,7 @@ async def save_scenario(params: SaveScenarioInput) -> str:
     Returns:
         JSON with scenario_id and status
     """
-    ctx = mcp.get_context()
-    manager = ctx.request_context.lifespan_state["manager"]
+    manager = _get_manager()
     
     try:
         scenario_id = manager.save_scenario(
@@ -271,7 +275,7 @@ async def save_scenario(params: SaveScenarioInput) -> str:
         "idempotentHint": False,
     }
 )
-async def delete_scenario(params: DeleteScenarioInput) -> str:
+def delete_scenario(params: DeleteScenarioInput) -> str:
     """Delete a scenario from the database.
     
     CAUTION: This permanently removes the scenario and all linked entities.
@@ -280,8 +284,7 @@ async def delete_scenario(params: DeleteScenarioInput) -> str:
     Returns:
         JSON with deletion status
     """
-    ctx = mcp.get_context()
-    manager = ctx.request_context.lifespan_state["manager"]
+    manager = _get_manager()
     
     if not params.confirm:
         return json.dumps({
@@ -308,7 +311,7 @@ async def delete_scenario(params: DeleteScenarioInput) -> str:
         "idempotentHint": True,
     }
 )
-async def query(params: QueryInput) -> str:
+def query(params: QueryInput) -> str:
     """Execute a SQL query against the HealthSim database.
     
     Only SELECT queries are allowed. Use this for:
@@ -321,8 +324,7 @@ async def query(params: QueryInput) -> str:
     Returns:
         JSON with columns and rows
     """
-    ctx = mcp.get_context()
-    conn = ctx.request_context.lifespan_state["conn"]
+    conn = _get_conn()
     
     # Basic SQL injection protection
     sql_lower = params.sql.lower().strip()
@@ -372,7 +374,7 @@ async def query(params: QueryInput) -> str:
         "idempotentHint": True,
     }
 )
-async def get_summary(params: GetSummaryInput) -> str:
+def get_summary(params: GetSummaryInput) -> str:
     """Get a token-efficient summary of a scenario.
     
     Use this instead of load_scenario when you need context about a scenario
@@ -381,8 +383,7 @@ async def get_summary(params: GetSummaryInput) -> str:
     Returns:
         JSON with entity counts, statistics, and optional samples
     """
-    ctx = mcp.get_context()
-    manager = ctx.request_context.lifespan_state["manager"]
+    manager = _get_manager()
     
     try:
         summary = manager.get_summary(
@@ -406,7 +407,7 @@ async def get_summary(params: GetSummaryInput) -> str:
         "idempotentHint": True,
     }
 )
-async def query_reference(params: QueryReferenceInput) -> str:
+def query_reference(params: QueryReferenceInput) -> str:
     """Query PopulationSim reference data tables.
     
     Available tables:
@@ -419,8 +420,7 @@ async def query_reference(params: QueryReferenceInput) -> str:
     Returns:
         JSON with columns and filtered rows
     """
-    ctx = mcp.get_context()
-    conn = ctx.request_context.lifespan_state["conn"]
+    conn = _get_conn()
     
     # Map short names to full table names
     table_map = {
@@ -480,7 +480,7 @@ async def query_reference(params: QueryReferenceInput) -> str:
         "idempotentHint": True,
     }
 )
-async def list_tables() -> str:
+def list_tables() -> str:
     """List all tables in the HealthSim database.
     
     Returns table names grouped by category:
@@ -491,8 +491,7 @@ async def list_tables() -> str:
     Returns:
         JSON with categorized table names
     """
-    ctx = mcp.get_context()
-    conn = ctx.request_context.lifespan_state["conn"]
+    conn = _get_conn()
     
     result = conn.execute("SHOW TABLES").fetchall()
     tables = [row[0] for row in result]
