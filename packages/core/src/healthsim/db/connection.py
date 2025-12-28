@@ -12,8 +12,13 @@ from pathlib import Path
 from typing import Optional
 import duckdb
 
-# Default database location
-DEFAULT_DB_PATH = Path.home() / ".healthsim" / "healthsim.duckdb"
+# Default database location - uses merged database in workspace
+# This is the unified database with schema organization:
+#   - main schema: Entity tables (patients, members, etc.)
+#   - population schema: PopulationSim reference data
+#   - network schema: NetworkSim provider/facility data
+WORKSPACE_ROOT = Path(__file__).parent.parent.parent.parent.parent.parent
+DEFAULT_DB_PATH = WORKSPACE_ROOT / "healthsim_merged.duckdb"
 
 
 class DatabaseConnection:
