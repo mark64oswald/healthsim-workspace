@@ -857,10 +857,10 @@ def add_entities(params: AddEntitiesInput) -> str:
                             WHERE scenario_id = ? AND entity_type = ? AND entity_id = ?
                         """, [entity_json, datetime.utcnow(), scenario_id, entity_type_normalized, entity_id])
                     else:
-                        # Insert new
+                        # Insert new (use sequence for id like core manager does)
                         service.conn.execute("""
-                            INSERT INTO scenario_entities (scenario_id, entity_type, entity_id, entity_data, created_at)
-                            VALUES (?, ?, ?, ?, ?)
+                            INSERT INTO scenario_entities 
+                            VALUES (nextval('scenario_entities_seq'), ?, ?, ?, ?, ?)
                         """, [scenario_id, entity_type_normalized, entity_id, entity_json, datetime.utcnow()])
                     
                     added_ids.append(entity_id)
