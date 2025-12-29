@@ -51,6 +51,14 @@ Thumbs.db
 # Logs
 *.log
 
+# PopulationSim data files (large, already loaded into DuckDB)
+# These are CDC/Census source files used for initial data load
+skills/populationsim/data/**/*.csv
+
+# Keep documentation in PopulationSim data directories
+!skills/populationsim/data/**/*.md
+!skills/populationsim/data/**/.gitkeep
+
 # NetworkSim data files (large, re-downloadable)
 # Ignore all CSV/ZIP files in data directories
 scenarios/networksim/data/raw/**/*.csv
