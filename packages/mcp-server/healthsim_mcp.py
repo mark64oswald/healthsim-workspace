@@ -439,7 +439,7 @@ def query_reference(params: QueryReferenceInput) -> str:
         "places_tract": "stateabbr", 
         "svi_county": "st_abbr",
         "svi_tract": "st_abbr",
-        "adi_blockgroup": "gidbg",  # ADI uses FIPS in gidbg, no direct state column
+        "adi_blockgroup": "fips",  # ADI uses 12-digit FIPS in fips column
     }
     
     # Map table names to their county column
@@ -448,7 +448,7 @@ def query_reference(params: QueryReferenceInput) -> str:
         "places_tract": "countyname",
         "svi_county": "county",
         "svi_tract": "county",
-        "adi_blockgroup": "gidbg",  # ADI uses FIPS codes
+        "adi_blockgroup": "fips",  # ADI uses FIPS codes, no county name
     }
     
     table = table_map.get(params.table)
