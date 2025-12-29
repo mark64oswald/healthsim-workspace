@@ -1,8 +1,8 @@
 """
 Tests for entity type taxonomy validation.
 
-Ensures that reference data (providers, facilities, pharmacies) cannot be 
-accidentally stored in scenarios, while scenario data and relationships are allowed.
+Ensures that reference data (providers, facilities, pharmacies) triggers a suggestion
+to use real data, while allowing override when synthetic data is explicitly needed.
 """
 
 import pytest
@@ -93,61 +93,85 @@ class TestValidateEntityTypes:
         }
         assert validate_entity_types(entities) is None
     
-    # === Tests for REJECTED reference data types ===
+    # === Tests for reference data types (soft block by default) ===
     
-    def test_providers_rejected(self):
-        """Providers should be rejected (reference data)."""
+    def test_providers_suggests_real_data(self):
+        """Providers should suggest using real data by default."""
         entities = {"providers": [{"npi": "1234567890", "name": "Dr. Test"}]}
         error = validate_entity_types(entities)
         
         assert error is not None
-        assert "REJECTED" in error
-        assert "providers" in error.lower()
-        assert "reference data" in error.lower()
+        assert "REFERENCE DATA" in error or "reference" in error.lower()
+        assert "allow_reference_entities" in error  # Shows how to override
     
-    def test_facilities_rejected(self):
-        """Facilities should be rejected (reference data)."""
+    def test_facilities_suggests_real_data(self):
+        """Facilities should suggest using real data by default."""
         entities = {"facilities": [{"npi": "1234567890", "name": "Test Hospital"}]}
         error = validate_entity_types(entities)
         
         assert error is not None
-        assert "REJECTED" in error
+        assert "allow_reference_entities" in error
     
-    def test_pharmacies_rejected(self):
-        """Pharmacies should be rejected (reference data)."""
+    def test_pharmacies_suggests_real_data(self):
+        """Pharmacies should suggest using real data by default."""
         entities = {"pharmacies": [{"npi": "1234567890", "name": "Test Pharmacy"}]}
         error = validate_entity_types(entities)
         
         assert error is not None
-        assert "REJECTED" in error
+        assert "allow_reference_entities" in error
     
-    def test_hospitals_rejected(self):
-        """Hospitals should be rejected (reference data)."""
+    def test_hospitals_suggests_real_data(self):
+        """Hospitals should suggest using real data by default."""
         entities = {"hospitals": [{"npi": "1234567890", "name": "Test Hospital"}]}
         error = validate_entity_types(entities)
         
         assert error is not None
-        assert "REJECTED" in error
+        assert "allow_reference_entities" in error
     
-    def test_rejection_message_has_correct_approach(self):
-        """Rejection message should explain the correct approach."""
+    def test_suggestion_message_has_correct_approach(self):
+        """Suggestion message should explain the correct approach."""
         entities = {"providers": [{"npi": "123"}]}
         error = validate_entity_types(entities)
         
         assert "healthsim_search_providers" in error
-        assert "pcp_assignments" in error
-        assert "network_contracts" in error
+        assert "pcp_assignments" in error or "network_contracts" in error
     
-    def test_mixed_valid_and_reference_rejected(self):
-        """If ANY type is reference data, the whole request should be rejected."""
+    def test_mixed_valid_and_reference_suggests_override(self):
+        """If ANY type is reference data, should suggest override."""
         entities = {
             "patients": [{"patient_id": "P001"}],  # Valid
-            "providers": [{"npi": "123"}],          # Invalid - reference data
+            "providers": [{"npi": "123"}],          # Reference - suggests real data
         }
         error = validate_entity_types(entities)
         
         assert error is not None
         assert "providers" in error.lower()
+    
+    # === Tests for override behavior ===
+    
+    def test_providers_allowed_with_override(self):
+        """Providers should be allowed when override is True."""
+        entities = {"providers": [{"npi": "1234567890", "name": "Dr. Test"}]}
+        error = validate_entity_types(entities, allow_reference_override=True)
+        
+        assert error is None  # Should be allowed
+    
+    def test_facilities_allowed_with_override(self):
+        """Facilities should be allowed when override is True."""
+        entities = {"facilities": [{"npi": "1234567890", "name": "Test Hospital"}]}
+        error = validate_entity_types(entities, allow_reference_override=True)
+        
+        assert error is None
+    
+    def test_mixed_types_allowed_with_override(self):
+        """Mixed scenario + reference types should be allowed with override."""
+        entities = {
+            "patients": [{"patient_id": "P001"}],
+            "providers": [{"npi": "123", "name": "Dr. Test"}],
+        }
+        error = validate_entity_types(entities, allow_reference_override=True)
+        
+        assert error is None
     
     # === Tests for singular/plural normalization ===
     
@@ -156,12 +180,18 @@ class TestValidateEntityTypes:
         entities = {"patient": [{"patient_id": "P001"}]}
         assert validate_entity_types(entities) is None
     
-    def test_singular_provider_rejected(self):
-        """Singular 'provider' should be normalized and rejected."""
+    def test_singular_provider_suggests_real_data(self):
+        """Singular 'provider' should be normalized and suggest real data."""
         entities = {"provider": [{"npi": "123"}]}
         error = validate_entity_types(entities)
         assert error is not None
-        assert "REJECTED" in error
+        assert "allow_reference_entities" in error
+    
+    def test_singular_provider_allowed_with_override(self):
+        """Singular 'provider' with override should be allowed."""
+        entities = {"provider": [{"npi": "123"}]}
+        error = validate_entity_types(entities, allow_reference_override=True)
+        assert error is None
     
     # === Tests for unknown types ===
     
@@ -179,8 +209,8 @@ class TestValidateEntityTypes:
 class TestValidationInTools:
     """Tests that validation is actually called in the MCP tools."""
     
-    def test_add_entities_rejects_providers(self):
-        """add_entities should reject providers with helpful error."""
+    def test_add_entities_suggests_real_data_for_providers(self):
+        """add_entities should suggest real data for providers."""
         from healthsim_mcp import add_entities, AddEntitiesInput
         
         params = AddEntitiesInput(
@@ -191,25 +221,37 @@ class TestValidationInTools:
         result = json.loads(add_entities(params))
         
         assert "error" in result
-        assert "REJECTED" in result["error"]
-        assert "providers" in result["error"].lower()
+        assert "allow_reference_entities" in result["error"]
     
-    def test_add_entities_allows_patients(self):
-        """add_entities should allow patients (would need DB for full test)."""
+    def test_add_entities_allows_providers_with_override(self):
+        """add_entities should allow providers when override is set."""
         from healthsim_mcp import AddEntitiesInput
         
-        # Just test the input validation passes (full test would need DB)
+        # Just test the input accepts the parameter
+        params = AddEntitiesInput(
+            scenario_name="test-scenario",
+            entities={"providers": [{"npi": "1234567890", "name": "Dr. Test"}]},
+            allow_reference_entities=True
+        )
+        
+        # Validation should pass
+        error = validate_entity_types(params.entities, allow_reference_override=params.allow_reference_entities)
+        assert error is None
+    
+    def test_add_entities_allows_patients(self):
+        """add_entities should allow patients without override."""
+        from healthsim_mcp import AddEntitiesInput
+        
         params = AddEntitiesInput(
             scenario_name="test-scenario",
             entities={"patients": [{"patient_id": "P001", "name": "Test Patient"}]}
         )
         
-        # Validation should pass - the function may fail later due to DB
         error = validate_entity_types(params.entities)
         assert error is None
     
-    def test_save_scenario_rejects_facilities(self):
-        """save_scenario should reject facilities with helpful error."""
+    def test_save_scenario_suggests_real_data_for_facilities(self):
+        """save_scenario should suggest real data for facilities."""
         from healthsim_mcp import save_scenario, SaveScenarioInput
         
         params = SaveScenarioInput(
@@ -220,32 +262,43 @@ class TestValidationInTools:
         result = json.loads(save_scenario(params))
         
         assert "error" in result
-        assert "REJECTED" in result["error"]
-
-
-class TestRejectionMessageQuality:
-    """Tests that rejection messages are helpful and educational."""
+        assert "allow_reference_entities" in result["error"]
     
-    def test_message_explains_why(self):
-        """Rejection should explain WHY reference data shouldn't be stored."""
+    def test_save_scenario_accepts_override_parameter(self):
+        """save_scenario should accept allow_reference_entities parameter."""
+        from healthsim_mcp import SaveScenarioInput
+        
+        # Just test the input model accepts the parameter
+        params = SaveScenarioInput(
+            name="test-scenario",
+            entities={"providers": [{"npi": "123"}]},
+            allow_reference_entities=True
+        )
+        
+        assert params.allow_reference_entities is True
+
+
+class TestSuggestionMessageQuality:
+    """Tests that suggestion messages are helpful and educational."""
+    
+    def test_message_recommends_real_data(self):
+        """Suggestion should recommend using real data."""
         entities = {"providers": [{"npi": "123"}]}
         error = validate_entity_types(entities)
         
-        assert "8.9M" in error or "millions" in error.lower() or "shared tables" in error.lower()
-        assert "duplicates" in error.lower() or "copies" in error.lower()
+        assert "RECOMMENDED" in error or "recommend" in error.lower()
+        assert "real" in error.lower() or "network.providers" in error
     
-    def test_message_shows_correct_pattern(self):
-        """Rejection should show the correct relationship pattern."""
+    def test_message_shows_override_syntax(self):
+        """Suggestion should show how to override."""
         entities = {"providers": [{"npi": "123"}]}
         error = validate_entity_types(entities)
         
-        # Should show an example of how to do it correctly
-        assert "member_id" in error
-        assert "provider_npi" in error
+        assert "allow_reference_entities=True" in error
     
     def test_message_mentions_query_tools(self):
-        """Rejection should point to query tools for accessing reference data."""
+        """Suggestion should point to query tools for accessing reference data."""
         entities = {"providers": [{"npi": "123"}]}
         error = validate_entity_types(entities)
         
-        assert "healthsim_search_providers" in error or "healthsim_query" in error
+        assert "healthsim_search_providers" in error

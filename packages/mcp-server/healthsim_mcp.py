@@ -284,6 +284,11 @@ class SaveScenarioInput(BaseModel):
     description: Optional[str] = Field(default=None, description="Scenario description")
     tags: Optional[List[str]] = Field(default=None, description="Tags for filtering")
     overwrite: bool = Field(default=False, description="Overwrite if exists")
+    allow_reference_entities: bool = Field(
+        default=False, 
+        description="Set True to intentionally store reference-type entities (providers, facilities). "
+                    "Only use when synthetic data is explicitly needed for testing or demos."
+    )
 
 
 class AddEntitiesInput(BaseModel):
@@ -320,6 +325,13 @@ class AddEntitiesInput(BaseModel):
     # Batch tracking (optional, for progress reporting)
     batch_number: Optional[int] = Field(default=None, description="Current batch number (e.g., 1, 2, 3)")
     total_batches: Optional[int] = Field(default=None, description="Total number of batches expected")
+    
+    # Override for intentional reference data storage
+    allow_reference_entities: bool = Field(
+        default=False, 
+        description="Set True to intentionally store reference-type entities (providers, facilities). "
+                    "Only use when synthetic data is explicitly needed for testing or demos."
+    )
 
 
 class DeleteScenarioInput(BaseModel):
@@ -395,10 +407,17 @@ class SearchProvidersInput(BaseModel):
 # Validation Helpers
 # =============================================================================
 
-def validate_entity_types(entities: Dict[str, List[Dict[str, Any]]]) -> Optional[str]:
+def validate_entity_types(
+    entities: Dict[str, List[Dict[str, Any]]], 
+    allow_reference_override: bool = False
+) -> Optional[str]:
     """
     Validate that entity types are appropriate for scenario storage.
     
+    Args:
+        entities: Dict of entity_type -> list of entities
+        allow_reference_override: If True, allows reference types with a warning
+        
     Returns None if valid, or an error message string if invalid.
     """
     for entity_type in entities.keys():
@@ -407,30 +426,36 @@ def validate_entity_types(entities: Dict[str, List[Dict[str, Any]]]) -> Optional
         if not normalized.endswith('s'):
             normalized += 's'
         
-        # Check if it's reference data (should NOT be stored in scenarios)
+        # Check if it's reference data (should NOT be stored in scenarios by default)
         if normalized in REFERENCE_ENTITY_TYPES:
-            return (
-                f"❌ REJECTED: '{entity_type}' is REFERENCE DATA and should not be stored in scenarios.\n\n"
-                f"Reference data like providers, facilities, and pharmacies already exists in shared tables "
-                f"(8.9M+ records in network.providers). Copying it into scenarios creates duplicates and "
-                f"causes data inconsistencies.\n\n"
-                f"CORRECT APPROACH:\n"
-                f"  → To QUERY providers: use healthsim_search_providers or healthsim_query\n"
-                f"  → To LINK members to providers: add 'pcp_assignments' with provider NPIs\n"
-                f"  → To define a plan network: add 'network_contracts' with contracted NPIs\n"
-                f"  → For analytics: JOIN scenario members to network.providers directly\n\n"
-                f"Example pcp_assignment (stores relationship, not provider data):\n"
-                f"  {{'member_id': 'M001', 'provider_npi': '1234567890', 'effective_date': '2024-01-01'}}"
-            )
+            if allow_reference_override:
+                # User explicitly requested synthetic reference data - allow with info
+                return None  # Continue - will log info in the response
+            else:
+                # Default: suggest using real data instead
+                return (
+                    f"⚠️ '{entity_type}' is typically REFERENCE DATA that exists in shared tables.\n\n"
+                    f"RECOMMENDED: Use real data from network.providers (8.9M+ records):\n"
+                    f"  → healthsim_search_providers(state='CA', specialty='Family Medicine')\n"
+                    f"  → Then store relationships via 'pcp_assignments' or 'network_contracts'\n\n"
+                    f"TO OVERRIDE: If you intentionally need synthetic {entity_type} for testing/demos,\n"
+                    f"set allow_reference_entities=True in your request.\n\n"
+                    f"Example with override:\n"
+                    f"  healthsim_add_entities(\n"
+                    f"    scenario_id='...',\n"
+                    f"    entities={{'{entity_type}': [...]}},\n"
+                    f"    allow_reference_entities=True  # Explicit override\n"
+                    f"  )"
+                )
         
-        # Check if it's an allowed type
-        if normalized not in ALLOWED_ENTITY_TYPES:
-            allowed_list = sorted(ALLOWED_ENTITY_TYPES)
+        # Check if it's an allowed type (scenario data, relationships, or overridden reference)
+        if normalized not in ALLOWED_ENTITY_TYPES and normalized not in REFERENCE_ENTITY_TYPES:
             return (
                 f"⚠️ Unknown entity type: '{entity_type}'\n\n"
                 f"Allowed scenario entity types:\n"
                 f"  Scenario data: {sorted(SCENARIO_ENTITY_TYPES)}\n"
-                f"  Relationships: {sorted(RELATIONSHIP_ENTITY_TYPES)}\n\n"
+                f"  Relationships: {sorted(RELATIONSHIP_ENTITY_TYPES)}\n"
+                f"  Reference (with override): {sorted(REFERENCE_ENTITY_TYPES)}\n\n"
                 f"If this is a new valid entity type, add it to the taxonomy in healthsim_mcp.py"
             )
     
@@ -968,8 +993,11 @@ def save_scenario(params: SaveScenarioInput) -> str:
         JSON with scenario_id and status
     """
     try:
-        # Validate entity types - reject reference data
-        validation_error = validate_entity_types(params.entities)
+        # Validate entity types - suggest real data unless override is set
+        validation_error = validate_entity_types(
+            params.entities, 
+            allow_reference_override=params.allow_reference_entities
+        )
         if validation_error:
             return json.dumps({"error": validation_error})
         
@@ -1053,8 +1081,11 @@ def add_entities(params: AddEntitiesInput) -> str:
                 "error": "Must provide scenario_id (to add to existing) or scenario_name (to create new), plus entities"
             })
         
-        # Validate entity types - reject reference data
-        validation_error = validate_entity_types(params.entities)
+        # Validate entity types - suggest real data unless override is set
+        validation_error = validate_entity_types(
+            params.entities,
+            allow_reference_override=params.allow_reference_entities
+        )
         if validation_error:
             return json.dumps({"error": validation_error})
         

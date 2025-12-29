@@ -136,26 +136,35 @@ These exist in shared tables and should **NEVER** be added to scenarios:
 
 ### Validation Enforcement
 
-The `healthsim_add_entities` and `healthsim_save_scenario` tools will **reject** attempts to store reference data with a helpful error message:
+The `healthsim_add_entities` and `healthsim_save_scenario` tools will **suggest using real data** when you try to store reference types, but allow override when synthetic data is explicitly needed:
 
 ```
-❌ REJECTED: 'providers' is REFERENCE DATA and should not be stored in scenarios.
+⚠️ 'providers' is typically REFERENCE DATA that exists in shared tables.
 
-CORRECT APPROACH:
-  → To QUERY providers: use healthsim_search_providers or healthsim_query
-  → To LINK members to providers: add 'pcp_assignments' with provider NPIs
-  → For analytics: JOIN scenario members to network.providers directly
+RECOMMENDED: Use real data from network.providers (8.9M+ records):
+  → healthsim_search_providers(state='CA', specialty='Family Medicine')
+  → Then store relationships via 'pcp_assignments' or 'network_contracts'
+
+TO OVERRIDE: If you intentionally need synthetic providers for testing/demos,
+set allow_reference_entities=True in your request.
 ```
 
 ### Correct Pattern Example
 
 ```python
-# ❌ WRONG: Copying provider data into scenario
+# ⚠️ SUGGESTS REAL DATA (default behavior)
 healthsim_add_entities(entities={
-    "providers": [{"npi": "123", "name": "Dr. Smith", ...}]  # REJECTED
+    "providers": [{"npi": "123", "name": "Dr. Smith", ...}]
 })
+# → Returns suggestion to use healthsim_search_providers
 
-# ✅ CORRECT: Store relationship, query reference data
+# ✅ OVERRIDE: Intentionally use synthetic providers
+healthsim_add_entities(
+    entities={"providers": [{"npi": "123", "name": "Dr. Smith"}]},
+    allow_reference_entities=True  # Explicit override
+)
+
+# ✅ RECOMMENDED: Store relationship, query reference data
 healthsim_add_entities(entities={
     "pcp_assignments": [{"member_id": "M001", "provider_npi": "1234567890"}]
 })
