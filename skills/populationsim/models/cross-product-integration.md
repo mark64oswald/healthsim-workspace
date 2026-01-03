@@ -282,6 +282,7 @@ Person.ssn = "123-45-6789"
 
 ## Related Documentation
 
-- [PatientSim Canonical Model](../../patientsim/models/)
-- [MemberSim Canonical Model](../../membersim/models/)
-- [TrialSim Subject Model](../../trialsim/models/)
+- [PatientSim SKILL](../../patientsim/SKILL.md) - Patient canonical model and generation patterns
+- [MemberSim SKILL](../../membersim/SKILL.md) - Member canonical model and claim patterns
+- [TrialSim SKILL](../../trialsim/SKILL.md) - Subject model and trial patterns
+- [Data Models Reference](../../../references/data-models.md) - Complete canonical model definitions

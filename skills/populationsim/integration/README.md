@@ -93,4 +93,4 @@ Claude: [Analyzes catchment areas with PopulationSim]
 
 - [PopulationSim SKILL.md](../SKILL.md) - Main PopulationSim skill
 - [Model Schemas](../../../references/populationsim-models/) - Data model definitions
-- [Reference Data](../../references/) - Code systems and methodologies
+- [Reference Data](../../../references/) - Code systems and methodologies

@@ -641,7 +641,7 @@ WHERE hd.desert_severity = 'Critical';
 - **[coverage-analysis](../query/coverage-analysis.md)**: Foundational adequacy assessment
 - **[provider-density](../query/provider-density.md)**: Providers per 100K population
 - **[healthcare-deserts](healthcare-deserts.md)**: Underserved area identification
-- **[specialty-distribution](specialty-distribution.md)**: Specialty mix analysis
+- **[specialty-distribution-pattern](../patterns/specialty-distribution-pattern.md)**: Specialty mix analysis
 - **[hospital-quality-search](../query/hospital-quality-search.md)**: Quality-adjusted networks
 
 ---
