@@ -1,69 +1,73 @@
-# HealthSim Generative Framework Initiative
+# Generative Framework Initiative
 
-**Status**: Planning Complete, Ready for Implementation  
-**Started**: January 3, 2026  
-**Target Completion**: 16-20 sessions
-
-## Overview
-
-The Generative Framework enables conversation-driven generation of healthcare data at scale. It separates the creative process of specification building from the mechanical process of execution.
-
-## Key Concepts
-
-| Concept | Description |
-|---------|-------------|
-| **Profile** | Population characteristics (demographics, clinical, coverage) |
-| **Distribution** | Statistical tools for value selection |
-| **Journey** | Event sequences over time |
-| **Event** | Discrete occurrences (encounter, claim, prescription) |
-| **Timing** | Event scheduling (fixed, range, protocol window) |
-| **Trigger** | Cross-domain connections (encounter → claim) |
-
-## Documents
-
-| Document | Description |
-|----------|-------------|
-| [Implementation Plan](../GENERATIVE-FRAMEWORK-IMPLEMENTATION-PLAN.md) | Master plan with 16-20 sessions |
-| [Conceptual Model](./conceptual-model.html) | Architecture and visual diagrams (TBD) |
-| [Design Decisions](./design-decisions.md) | Key architectural decisions (TBD) |
-| [Profile Builder Spec](./profile-builder-spec.md) | 4-phase conversation flow (TBD) |
-
-## Phase Overview
-
-1. **Phase 0**: Foundation & Cleanup (2-3 sessions)
-2. **Phase 1**: Generation Skills Foundation (4-5 sessions)
-3. **Phase 2**: Template Library (3-4 sessions)
-4. **Phase 3**: Integration & Polish (4-5 sessions)
-5. **Phase 4**: Release (2 sessions)
-
-## Quick Start
-
-Once implemented, generation will work like this:
-
-```
-User: "200 Medicare diabetics with claims for demo"
-
-Claude: (Using Profile Builder) I'll help you create a specification for 200 Medicare 
-diabetic members. Let me ask a few questions:
-
-- Age distribution: Should I use typical Medicare (65-85) or younger disabled?
-- Geographic focus: Any specific state or region?
-- Severity mix: Controlled vs poorly controlled diabetes?
-
-[Conversation continues to build specification]
-[Executor generates 200 members + claims per specification]
-```
-
-## Related Documents in Claude Project
-
-The following design documents exist in the Claude Project and should be consulted:
-
-- `HEALTHSIM-GENERATIVE-FRAMEWORK-CONCEPTS.md` - Core concepts and patterns
-- `HEALTHSIM-GENERATIVE-FRAMEWORK-DECISIONS.md` - Design decision points
-- `HEALTHSIM-PROFILE-BUILDER-SPECIFICATION.md` - Profile builder details
-- `HEALTHSIM-GENERATIVE-TAXONOMY.md` - Mental model reference
-- `healthsim-conceptual-model.html` - Visual architecture document
+**Status:** Ready for Implementation  
+**Timeline:** 4-6 weeks (8-12 sessions)  
+**Version:** 1.0
 
 ---
 
-*This folder will be populated as implementation progresses.*
+## Overview
+
+The Generative Framework extends HealthSim with a two-phase architecture for data-driven generation of synthetic healthcare populations and their journeys over time.
+
+**Phase 1 - Specification Building (Creative):** Conversational tools (Profile Builder, Journey Builder) that gather requirements and construct specifications through natural language.
+
+**Phase 2 - Execution (Mechanical):** Deterministic executors that transform specifications into actual entities, coordinating across products.
+
+---
+
+## Documents
+
+| Document | Purpose |
+|----------|---------|
+| [GENERATIVE-FRAMEWORK-MASTER-PLAN.md](GENERATIVE-FRAMEWORK-MASTER-PLAN.md) | **START HERE** - Complete implementation plan with phases, deliverables, testing |
+| [CONCEPTS.md](CONCEPTS.md) | Core concepts: profiles, distributions, journeys, events, triggers |
+| [DECISIONS.md](DECISIONS.md) | Design decisions and rationale |
+| [PROFILE-BUILDER-SPEC.md](PROFILE-BUILDER-SPEC.md) | Profile Builder 4-phase conversation flow |
+| [TAXONOMY.md](TAXONOMY.md) | Mental model and terminology reference |
+| [ARCHITECTURE.html](ARCHITECTURE.html) | Visual architecture diagrams |
+
+---
+
+## Quick Reference
+
+### What Gets Built
+
+```
+skills/generation/
+├── builders/           # Profile & Journey specification tools
+├── executors/          # Specification execution
+├── distributions/      # Statistical distribution patterns
+├── journeys/           # Journey pattern templates
+└── templates/          # Pre-built profiles and journeys
+    ├── profiles/
+    └── journeys/
+```
+
+### Session Progress
+
+| Phase | Sessions | Status |
+|-------|----------|--------|
+| Phase 0: Foundation | 1 | ⬜ Not Started |
+| Phase 1: Profile Builder | 2-3 | ⬜ Not Started |
+| Phase 2: Journey Builder | 4-5 | ⬜ Not Started |
+| Phase 3: Executors | 6-7 | ⬜ Not Started |
+| Phase 4: Integration | 8-10 | ⬜ Not Started |
+
+### Session Logs
+
+Session logs will be stored in [sessions/](sessions/) as work progresses.
+
+---
+
+## Key Principles
+
+1. **Skills-First:** All knowledge in Skills, not Python code
+2. **Conversation-Driven:** Configuration via natural language
+3. **Consistent Architecture:** Uniform patterns across all products
+4. **Test-Driven:** Automated validation at every stage
+5. **Documentation Excellence:** Every file documented, linked, navigable
+
+---
+
+*Last Updated: January 3, 2026*
