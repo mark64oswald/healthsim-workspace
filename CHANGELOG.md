@@ -7,6 +7,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [2.0.0-generation] - 2026-01-04
+
+### Added
+
+- **[Generative Framework]** Complete specification-driven data generation system
+  - **Profile Builder** (`skills/generation/builders/profile-builder.md`) - 4-phase conversational flow for building population specifications
+  - **Journey Builder** (`skills/generation/builders/journey-builder.md`) - Temporal event sequence specification
+  - **Quick Generate** (`skills/generation/builders/quick-generate.md`) - Fast single-entity generation path
+  - **Distribution Types** (`skills/generation/distributions/distribution-types.md`) - Categorical, normal, log-normal, conditional distributions
+  - **Profile Executor** (`skills/generation/executors/profile-executor.md`) - Execute profile specifications deterministically
+  - **Journey Executor** (`skills/generation/executors/journey-executor.md`) - Execute journey timelines with event generation
+  - **Cross-Domain Sync** (`skills/generation/executors/cross-domain-sync.md`) - Multi-product coordination (Patient↔Member↔RxMember↔Subject)
+  - **Journey Patterns** (`skills/generation/journeys/journey-patterns.md`) - Linear, branching, cyclic, protocol, lifecycle patterns
+
+- **[Templates]** Pre-built profile and journey specifications
+  - Profile Templates: `medicare-diabetic`, `commercial-healthy`, `medicaid-pediatric`, `commercial-maternity`, `medicare-advantage-complex`
+  - Journey Templates: `diabetic-first-year`, `surgical-episode`, `new-member-onboarding`, `hf-exacerbation`, `oncology-treatment-cycle`
+
+- **[Schemas]** JSON validation schemas
+  - `schemas/profile-spec-v1.json` - Profile specification schema
+  - `schemas/journey-spec-v1.json` - Journey specification schema
+  - `schemas/distribution-types.json` - Distribution type schemas
+
+- **[Testing]** Generation framework tests
+  - `scripts/smoke_test_generation.py` - 38 smoke tests for generation skills
+  - `packages/core/tests/test_generation_integration.py` - 35 integration tests
+
+- **[Documentation]** Comprehensive generation documentation
+  - README files for all generation subdirectories
+  - `docs/initiatives/generative-framework/IMPLEMENTATION-SUMMARY.md`
+  - `hello-healthsim/examples/generation-examples.md` - 9 usage examples
+
+### Changed
+
+- **[SKILL.md]** Updated main SKILL.md with Generative Framework section
+- **[Product SKILLs]** Updated all product SKILL.md files with generation integration references
+
+---
+
+## [1.x] Previous Releases
+
 ### Changed
 
 - **[Core]** Schema v1.4 - Renamed `scenarios.scenario_id` to `scenarios.id` for consistency (2024-12-30)

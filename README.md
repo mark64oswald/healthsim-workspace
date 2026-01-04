@@ -39,6 +39,45 @@ The examples folder contains ready-to-use prompts organized by product:
 
 ---
 
+## Generative Framework
+
+For large-scale data generation, HealthSim provides a **specification-driven framework** that separates what you want from how it's generated:
+
+| Component | Purpose | Example |
+|-----------|---------|---------|
+| **Profile Builder** | Define population characteristics | "200 Medicare diabetics age 65-85 in Texas" |
+| **Journey Builder** | Define event sequences over time | "First year diabetes journey with quarterly visits" |
+| **Templates** | Pre-built common scenarios | Medicare Diabetic, Surgical Episode, New Member Onboarding |
+| **Executors** | Generate data from specifications | Deterministic, reproducible output |
+
+### Quick Examples
+
+**Profile-Driven Generation:**
+```
+Build a profile for 100 commercial members:
+- Age 25-45
+- Mix of healthy and chronic conditions
+- Urban geography
+
+Execute the profile
+```
+
+**Template + Journey:**
+```
+Use the Medicare diabetic template with the diabetic first-year journey for 50 patients
+```
+
+### Resources
+
+| Resource | Description |
+|----------|-------------|
+| [Generation Examples](hello-healthsim/examples/generation-examples.md) | 9 comprehensive usage examples |
+| [Profile Templates](skills/generation/templates/profiles/) | Pre-built population profiles |
+| [Journey Templates](skills/generation/templates/journeys/) | Pre-built care pathways |
+| [Generative Framework Skills](skills/generation/) | Full skill documentation |
+
+---
+
 ## Cross-Product Integration
 
 HealthSim products work together to generate complete healthcare data journeys:

@@ -8,6 +8,7 @@ JSON Schema definitions for HealthSim specifications.
 |--------|-------------|---------|
 | [profile-spec-v1.json](profile-spec-v1.json) | Profile Builder specification | 1.0 |
 | [journey-spec-v1.json](journey-spec-v1.json) | Journey Builder specification | 1.0 |
+| [distribution-types.json](distribution-types.json) | Statistical distribution types | 1.0 |
 
 ## Usage
 
