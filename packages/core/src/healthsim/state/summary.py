@@ -150,7 +150,7 @@ def _get_entity_counts(scenario_id: str, connection=None) -> Dict[str, int]:
         try:
             result = conn.execute(f"""
                 SELECT COUNT(*) FROM {table_name}
-                WHERE scenario_id = ?
+                WHERE cohort_id = ?
             """, [scenario_id]).fetchone()
             
             count = result[0] if result else 0
@@ -176,7 +176,7 @@ def _calculate_patient_statistics(scenario_id: str, connection=None) -> Dict[str
                 MAX(CAST((julianday('now') - julianday(birth_date)) / 365.25 AS INTEGER)) as max_age,
                 AVG(CAST((julianday('now') - julianday(birth_date)) / 365.25 AS INTEGER)) as avg_age
             FROM patients
-            WHERE scenario_id = ? AND birth_date IS NOT NULL
+            WHERE cohort_id = ? AND birth_date IS NOT NULL
         """, [scenario_id]).fetchone()
         
         if result and result[0] is not None:
@@ -190,7 +190,7 @@ def _calculate_patient_statistics(scenario_id: str, connection=None) -> Dict[str
         result = conn.execute("""
             SELECT gender, COUNT(*) as count
             FROM patients
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
             GROUP BY gender
         """, [scenario_id]).fetchall()
         
@@ -215,7 +215,7 @@ def _calculate_encounter_statistics(scenario_id: str, connection=None) -> Dict[s
                 MIN(DATE(admission_time)) as min_date,
                 MAX(DATE(admission_time)) as max_date
             FROM encounters
-            WHERE scenario_id = ? AND admission_time IS NOT NULL
+            WHERE cohort_id = ? AND admission_time IS NOT NULL
         """, [scenario_id]).fetchone()
         
         if result and result[0]:
@@ -228,7 +228,7 @@ def _calculate_encounter_statistics(scenario_id: str, connection=None) -> Dict[s
         result = conn.execute("""
             SELECT class_code, COUNT(*) as count
             FROM encounters
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
             GROUP BY class_code
             ORDER BY count DESC
             LIMIT 5
@@ -257,7 +257,7 @@ def _calculate_claims_statistics(scenario_id: str, connection=None) -> Dict[str,
                 SUM(patient_responsibility) as total_patient_resp,
                 AVG(total_charge) as avg_charge
             FROM claims
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
         """, [scenario_id]).fetchone()
         
         if result and result[0]:
@@ -272,7 +272,7 @@ def _calculate_claims_statistics(scenario_id: str, connection=None) -> Dict[str,
         result = conn.execute("""
             SELECT claim_type, COUNT(*) as count
             FROM claims
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
             GROUP BY claim_type
         """, [scenario_id]).fetchall()
         
@@ -295,7 +295,7 @@ def _calculate_diagnosis_statistics(scenario_id: str, connection=None) -> Dict[s
         result = conn.execute("""
             SELECT code, description, COUNT(*) as count
             FROM diagnoses
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
             GROUP BY code, description
             ORDER BY count DESC
             LIMIT 5
@@ -337,7 +337,7 @@ def _get_diverse_samples(
         # Simple diverse sampling: order by created_at and take evenly spaced
         result = conn.execute(f"""
             SELECT * FROM {table_name}
-            WHERE scenario_id = ?
+            WHERE cohort_id = ?
             ORDER BY created_at
         """, [scenario_id]).fetchall()
         
@@ -361,7 +361,7 @@ def _get_diverse_samples(
                     elif isinstance(value, UUID):
                         value = str(value)
                     # Skip internal columns
-                    if col not in ('scenario_id', 'created_at', 'generation_seed'):
+                    if col not in ('cohort_id', 'created_at', 'generation_seed'):
                         sample[col] = value
                 samples.append(sample)
         
@@ -398,7 +398,7 @@ def generate_summary(
     # Get scenario metadata
     result = conn.execute("""
         SELECT id, name, description, created_at, updated_at
-        FROM scenarios
+        FROM cohorts
         WHERE id = ?
     """, [scenario_id]).fetchone()
     
@@ -415,8 +415,8 @@ def generate_summary(
     
     # Get tags
     tags_result = conn.execute("""
-        SELECT tag FROM scenario_tags
-        WHERE scenario_id = ?
+        SELECT tag FROM cohort_tags
+        WHERE cohort_id = ?
         ORDER BY tag
     """, [scenario_id]).fetchall()
     summary.tags = [row[0] for row in tags_result]
@@ -487,7 +487,7 @@ def get_scenario_by_name(
     
     # Try exact match first
     result = conn.execute("""
-        SELECT id FROM scenarios
+        SELECT id FROM cohorts
         WHERE name = ?
     """, [name]).fetchone()
     
@@ -496,7 +496,7 @@ def get_scenario_by_name(
     
     # Try case-insensitive match
     result = conn.execute("""
-        SELECT id FROM scenarios
+        SELECT id FROM cohorts
         WHERE LOWER(name) = LOWER(?)
     """, [name]).fetchone()
     
@@ -505,7 +505,7 @@ def get_scenario_by_name(
     
     # Try contains match
     result = conn.execute("""
-        SELECT id FROM scenarios
+        SELECT id FROM cohorts
         WHERE LOWER(name) LIKE LOWER(?)
         ORDER BY updated_at DESC
         LIMIT 1
