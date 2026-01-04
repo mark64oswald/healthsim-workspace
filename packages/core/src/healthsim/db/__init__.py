@@ -33,11 +33,11 @@ from .migrations import (
 from .queries import (
     get_patient_by_id,
     get_patient_by_mrn,
-    get_patients_in_scenario,
+    get_patients_in_cohort,
     count_entities_by_type,
-    get_scenario_summary,
-    list_scenarios,
-    scenario_exists,
+    get_cohort_summary,
+    list_cohorts,
+    cohort_exists,
     get_schema_version,
 )
 from .reference import (
@@ -70,11 +70,11 @@ __all__ = [
     # Queries
     'get_patient_by_id',
     'get_patient_by_mrn',
-    'get_patients_in_scenario',
+    'get_patients_in_cohort',
     'count_entities_by_type',
-    'get_scenario_summary',
-    'list_scenarios',
-    'scenario_exists',
+    'get_cohort_summary',
+    'list_cohorts',
+    'cohort_exists',
     'get_schema_version',
     
     # Reference Data
