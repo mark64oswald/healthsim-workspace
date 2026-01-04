@@ -162,7 +162,7 @@ class TestConnectionManager:
             )
         """)
         conn.execute("""
-            CREATE TABLE scenario_entities (
+            CREATE TABLE cohort_entities (
                 id INTEGER PRIMARY KEY,
                 scenario_id VARCHAR NOT NULL,
                 entity_type VARCHAR NOT NULL,
@@ -331,7 +331,7 @@ class TestMCPToolsWithDualConnection:
             )
         """)
         conn.execute("""
-            CREATE TABLE scenario_entities (
+            CREATE TABLE cohort_entities (
                 id INTEGER PRIMARY KEY,
                 scenario_id VARCHAR NOT NULL,
                 entity_type VARCHAR NOT NULL,

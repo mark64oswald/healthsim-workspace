@@ -56,7 +56,7 @@ def temp_db():
         )
     """)
     conn.execute("""
-        CREATE TABLE scenario_entities (
+        CREATE TABLE cohort_entities (
             id INTEGER PRIMARY KEY,
             scenario_id VARCHAR NOT NULL,
             entity_type VARCHAR NOT NULL,
@@ -74,7 +74,7 @@ def temp_db():
             UNIQUE(scenario_id, tag)
         )
     """)
-    conn.execute("CREATE SEQUENCE scenario_entities_seq START 1")
+    conn.execute("CREATE SEQUENCE cohort_entities_seq START 1")
     conn.execute("CREATE SEQUENCE scenario_tags_seq START 1")
     conn.close()
     
@@ -154,26 +154,26 @@ class TestAddEntitiesToExisting:
             
             # Add initial entities
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (1, ?, 'patients', 'PAT-001', '{"name": "John"}', ?)
             """, [scenario_id, now])
             
             # Verify initial state
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 1
             
             # Add more entities
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (2, ?, 'patients', 'PAT-002', '{"name": "Jane"}', ?)
             """, [scenario_id, now])
             
             # Verify new count
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 2
@@ -191,19 +191,19 @@ class TestAddEntitiesToExisting:
             
             # Add patients
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (1, ?, 'patients', 'PAT-001', '{"name": "John"}', ?)
             """, [scenario_id, now])
             
             # Add members
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (2, ?, 'members', 'MBR-001', '{"plan": "Gold"}', ?)
             """, [scenario_id, now])
             
             # Verify both types exist
             types = conn.execute("""
-                SELECT DISTINCT entity_type FROM scenario_entities WHERE scenario_id = ?
+                SELECT DISTINCT entity_type FROM cohort_entities WHERE scenario_id = ?
             """, [scenario_id]).fetchall()
             
             type_set = {t[0] for t in types}
@@ -228,13 +228,13 @@ class TestUpsertBehavior:
             # Insert new entity
             entity_id = "NEW-001"
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (1, ?, 'patients', ?, '{"name": "New Patient"}', ?)
             """, [scenario_id, entity_id, now])
             
             # Verify insert
             result = conn.execute("""
-                SELECT entity_data FROM scenario_entities 
+                SELECT entity_data FROM cohort_entities 
                 WHERE scenario_id = ? AND entity_id = ?
             """, [scenario_id, entity_id]).fetchone()
             
@@ -256,14 +256,14 @@ class TestUpsertBehavior:
             # Insert initial entity
             entity_id = "PAT-001"
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES (1, ?, 'patients', ?, '{"name": "Original"}', ?)
             """, [scenario_id, entity_id, now])
             
             # Update via upsert logic
             # Check if exists
             existing = conn.execute("""
-                SELECT id FROM scenario_entities 
+                SELECT id FROM cohort_entities 
                 WHERE scenario_id = ? AND entity_type = ? AND entity_id = ?
             """, [scenario_id, 'patients', entity_id]).fetchone()
             
@@ -271,14 +271,14 @@ class TestUpsertBehavior:
             
             # Update
             conn.execute("""
-                UPDATE scenario_entities 
+                UPDATE cohort_entities 
                 SET entity_data = ?, created_at = ?
                 WHERE scenario_id = ? AND entity_type = ? AND entity_id = ?
             """, ['{"name": "Updated"}', now, scenario_id, 'patients', entity_id])
             
             # Verify update
             result = conn.execute("""
-                SELECT entity_data FROM scenario_entities 
+                SELECT entity_data FROM cohort_entities 
                 WHERE scenario_id = ? AND entity_id = ?
             """, [scenario_id, entity_id]).fetchone()
             
@@ -299,34 +299,34 @@ class TestUpsertBehavior:
             # Insert 3 entities
             for i in range(1, 4):
                 conn.execute("""
-                    INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                    INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                     VALUES (?, ?, 'patients', ?, ?, ?)
                 """, [i, scenario_id, f"PAT-00{i}", f'{{"id": {i}}}', now])
             
             # Verify 3 entities
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 3
             
             # Now "upsert" just one entity (PAT-002)
             conn.execute("""
-                UPDATE scenario_entities 
+                UPDATE cohort_entities 
                 SET entity_data = ?
                 WHERE scenario_id = ? AND entity_id = ?
             """, ['{"id": 2, "updated": true}', scenario_id, "PAT-002"])
             
             # Verify still 3 entities (no deletion)
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 3
             
             # Verify PAT-001 and PAT-003 still exist unchanged
             result = conn.execute("""
-                SELECT entity_id FROM scenario_entities 
+                SELECT entity_id FROM cohort_entities 
                 WHERE scenario_id = ? ORDER BY entity_id
             """, [scenario_id]).fetchall()
             
@@ -352,12 +352,12 @@ class TestBatchTracking:
             batch_1_count = 50
             for i in range(1, batch_1_count + 1):
                 conn.execute("""
-                    INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                    INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                     VALUES (?, ?, 'patients', ?, '{}', ?)
                 """, [i, scenario_id, f"PAT-{i:03d}", now])
             
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 50
@@ -365,12 +365,12 @@ class TestBatchTracking:
             # Simulate batch 2 of 4
             for i in range(51, 101):
                 conn.execute("""
-                    INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                    INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                     VALUES (?, ?, 'patients', ?, '{}', ?)
                 """, [i, scenario_id, f"PAT-{i:03d}", now])
             
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 100
@@ -410,7 +410,7 @@ class TestErrorHandling:
             
             # Scenario should exist with 0 entities
             count = conn.execute(
-                "SELECT COUNT(*) FROM scenario_entities WHERE scenario_id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE scenario_id = ?",
                 [scenario_id]
             ).fetchone()[0]
             assert count == 0
@@ -453,7 +453,7 @@ class TestScenarioTotals:
             
             # Add mixed entities
             conn.execute("""
-                INSERT INTO scenario_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
+                INSERT INTO cohort_entities (id, scenario_id, entity_type, entity_id, entity_data, created_at)
                 VALUES 
                     (1, ?, 'patients', 'P1', '{}', ?),
                     (2, ?, 'patients', 'P2', '{}', ?),
@@ -465,7 +465,7 @@ class TestScenarioTotals:
             # Get totals by type
             result = conn.execute("""
                 SELECT entity_type, COUNT(*) as count 
-                FROM scenario_entities 
+                FROM cohort_entities 
                 WHERE scenario_id = ? 
                 GROUP BY entity_type
             """, [scenario_id]).fetchall()
@@ -560,9 +560,9 @@ class TestToolAnnotations:
         
         # Get the tool from the MCP server
         tools = mcp._tool_manager._tools
-        save_tool = tools.get("healthsim_save_scenario")
+        save_tool = tools.get("healthsim_save_cohort")
         
-        assert save_tool is not None, "healthsim_save_scenario tool should exist"
+        assert save_tool is not None, "healthsim_save_cohort tool should exist"
     
     def test_add_entities_annotations(self):
         """Verify add_entities has correct MCP annotations."""

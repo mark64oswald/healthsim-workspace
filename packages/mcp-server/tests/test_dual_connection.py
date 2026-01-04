@@ -208,7 +208,7 @@ class TestMCPToolsWithDualConnection:
         """Read-only tools should use the shared read connection."""
         check_db_accessible()
         
-        from healthsim_mcp import _get_manager, list_tables, ListScenariosInput, list_scenarios
+        from healthsim_mcp import _get_manager, list_tables, ListCohortsInput, list_scenarios
         
         # Reset manager to ensure fresh state
         import healthsim_mcp
@@ -222,7 +222,7 @@ class TestMCPToolsWithDualConnection:
             tables_result = list_tables()
             assert "reference_tables" in tables_result
             
-            scenarios_result = list_scenarios(ListScenariosInput())
+            scenarios_result = list_scenarios(ListCohortsInput())
             assert isinstance(scenarios_result, str)
             
             # Verify read connection is still active

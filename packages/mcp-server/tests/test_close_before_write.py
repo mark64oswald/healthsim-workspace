@@ -235,7 +235,7 @@ class TestMCPToolsReadThenWrite:
             )
         """)
         conn.execute("""
-            CREATE TABLE scenario_entities (
+            CREATE TABLE cohort_entities (
                 id INTEGER PRIMARY KEY,
                 scenario_id VARCHAR NOT NULL,
                 entity_type VARCHAR NOT NULL,
@@ -275,7 +275,7 @@ class TestMCPToolsReadThenWrite:
         The key validation is that the connection pattern allows read → write → read.
         """
         import healthsim_mcp as mcp_module
-        from healthsim_mcp import QueryInput, SaveScenarioInput
+        from healthsim_mcp import QueryInput, SaveCohortInput
         from unittest.mock import patch
         
         with patch.object(mcp_module, 'DB_PATH', mock_db):
@@ -291,7 +291,7 @@ class TestMCPToolsReadThenWrite:
                 
                 # Step 2: Save scenario with empty entities (focus on connection pattern)
                 # The important thing is that this doesn't fail with connection conflict
-                save_result = mcp_module.save_scenario(SaveScenarioInput(
+                save_result = mcp_module.save_scenario(SaveCohortInput(
                     name="Test Scenario",
                     entities={},  # Empty - we're testing connection pattern, not full save
                     description="Created after query"
@@ -319,7 +319,7 @@ class TestMCPToolsReadThenWrite:
         Test multiple queries followed by save.
         """
         import healthsim_mcp as mcp_module
-        from healthsim_mcp import QueryInput, SaveScenarioInput
+        from healthsim_mcp import QueryInput, SaveCohortInput
         from unittest.mock import patch
         
         with patch.object(mcp_module, 'DB_PATH', mock_db):
@@ -334,7 +334,7 @@ class TestMCPToolsReadThenWrite:
                     assert "rows" in result
                 
                 # Then save
-                save_result = mcp_module.save_scenario(SaveScenarioInput(
+                save_result = mcp_module.save_scenario(SaveCohortInput(
                     name="After Multiple Queries",
                     entities={"patients": []},
                 ))
@@ -352,7 +352,7 @@ class TestMCPToolsReadThenWrite:
         """
         import healthsim_mcp as mcp_module
         from healthsim_mcp import (
-            QueryInput, SaveScenarioInput, ListScenariosInput,
+            QueryInput, SaveCohortInput, ListCohortsInput,
             DeleteScenarioInput
         )
         from unittest.mock import patch
@@ -365,23 +365,23 @@ class TestMCPToolsReadThenWrite:
                 mcp_module.query(QueryInput(sql="SELECT 1"))
                 
                 # Write 1
-                mcp_module.save_scenario(SaveScenarioInput(
+                mcp_module.save_scenario(SaveCohortInput(
                     name="Scenario 1",
                     entities={"patients": [{"id": "P1"}]},
                 ))
                 
                 # Read
-                result = mcp_module.list_scenarios(ListScenariosInput())
+                result = mcp_module.list_scenarios(ListCohortsInput())
                 assert "Scenario 1" in result
                 
                 # Write 2
-                mcp_module.save_scenario(SaveScenarioInput(
+                mcp_module.save_scenario(SaveCohortInput(
                     name="Scenario 2",
                     entities={"patients": [{"id": "P2"}]},
                 ))
                 
                 # Read
-                result = mcp_module.list_scenarios(ListScenariosInput())
+                result = mcp_module.list_scenarios(ListCohortsInput())
                 assert "Scenario 1" in result
                 assert "Scenario 2" in result
                 
@@ -392,7 +392,7 @@ class TestMCPToolsReadThenWrite:
                 ))
                 
                 # Read
-                result = mcp_module.list_scenarios(ListScenariosInput())
+                result = mcp_module.list_scenarios(ListCohortsInput())
                 assert "Scenario 1" not in result
                 assert "Scenario 2" in result
                 

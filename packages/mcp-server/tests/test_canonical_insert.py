@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Test that add_entities correctly writes to BOTH:
-1. scenario_entities (JSON storage)
+1. cohort_entities (JSON storage)
 2. canonical tables (typed columns)
 
 This is an integration test that directly tests the MCP server's

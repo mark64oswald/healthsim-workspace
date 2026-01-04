@@ -252,9 +252,9 @@ class TestValidationInTools:
     
     def test_save_scenario_suggests_real_data_for_facilities(self):
         """save_scenario should suggest real data for facilities."""
-        from healthsim_mcp import save_scenario, SaveScenarioInput
+        from healthsim_mcp import save_scenario, SaveCohortInput
         
-        params = SaveScenarioInput(
+        params = SaveCohortInput(
             name="test-scenario",
             entities={"facilities": [{"npi": "1234567890", "name": "Test Hospital"}]}
         )
@@ -266,10 +266,10 @@ class TestValidationInTools:
     
     def test_save_scenario_accepts_override_parameter(self):
         """save_scenario should accept allow_reference_entities parameter."""
-        from healthsim_mcp import SaveScenarioInput
+        from healthsim_mcp import SaveCohortInput
         
         # Just test the input model accepts the parameter
-        params = SaveScenarioInput(
+        params = SaveCohortInput(
             name="test-scenario",
             entities={"providers": [{"npi": "123"}]},
             allow_reference_entities=True
