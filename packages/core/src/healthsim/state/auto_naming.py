@@ -165,7 +165,7 @@ def ensure_unique_name(
     
     # Check if base name exists
     result = conn.execute(
-        "SELECT COUNT(*) FROM scenarios WHERE name = ?",
+        "SELECT COUNT(*) FROM cohorts WHERE name = ?",
         [base_name]
     ).fetchone()
     
@@ -177,7 +177,7 @@ def ensure_unique_name(
     while True:
         candidate = f"{base_name}-{counter}"
         result = conn.execute(
-            "SELECT COUNT(*) FROM scenarios WHERE name = ?",
+            "SELECT COUNT(*) FROM cohorts WHERE name = ?",
             [candidate]
         ).fetchone()
         
