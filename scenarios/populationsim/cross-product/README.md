@@ -42,8 +42,6 @@ PopulationSim serves as the demographic and SDOH foundation for the entire Healt
 | [Population to Member](population-to-member.md) | Generate members with SDOH-driven plan selection | PopulationSim → MemberSim |
 | [Population to Trial](population-to-trial.md) | Trial feasibility and subject generation | PopulationSim → TrialSim |
 | [Full Ecosystem](full-ecosystem-scenario.md) | End-to-end multi-product generation | All products |
-| [Health Equity Study](health-equity-scenario.md) | SDOH-focused analysis across products | PopulationSim + All |
-| [Provider Network](provider-network-scenario.md) | Population-based network adequacy | PopulationSim → NetworkSim |
 
 ---
 
@@ -295,8 +293,8 @@ When adjusting prevalence or utilization for specific scenarios, document the ra
 
 ## Related Documentation
 
-- [PopulationSim SKILL.md](../../skills/populationsim/SKILL.md)
-- [PatientSim SKILL.md](../../skills/patientsim/SKILL.md)
-- [MemberSim SKILL.md](../../skills/membersim/SKILL.md)
-- [TrialSim SKILL.md](../../skills/trialsim/SKILL.md)
-- [Identity Correlation Guide](../../docs/identity-correlation.md)
+- [PopulationSim SKILL.md](../../../skills/populationsim/SKILL.md)
+- [PatientSim SKILL.md](../../../skills/patientsim/SKILL.md)
+- [MemberSim SKILL.md](../../../skills/membersim/SKILL.md)
+- [TrialSim SKILL.md](../../../skills/trialsim/SKILL.md)
+- [Data Architecture](../../../docs/data-architecture.md)

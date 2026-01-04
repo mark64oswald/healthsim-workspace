@@ -331,7 +331,7 @@ Skills can reference other skills to avoid duplication:
 
 ### Cardiac Medications
 
-For detailed clinical rules, see the [Clinical Rules](../../references/clinical-rules.md#medications).
+For detailed clinical rules, see the [Clinical Rules](../../references/clinical-rules.md#required-medications-by-condition).
 
 **Quick reference for this scenario:**
 - Aspirin 325mg loading, then 81mg daily

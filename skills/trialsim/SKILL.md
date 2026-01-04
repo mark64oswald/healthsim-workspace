@@ -195,7 +195,7 @@ Trial subjects are patients with additional trial-specific data:
 
 > **Integration Pattern:** Use PatientSim for baseline clinical characteristics. TrialSim adds protocol-specific assessments (RECIST, NYHA class changes), randomization, and SDTM-formatted data.
 
-### Cross-Product: PopulationSim (Demographics & SDOH) - v2.0 Data Integration
+### Cross-Product: PopulationSim Integration
 
 PopulationSim v2.0 provides **embedded real-world data** for evidence-based trial planning, site selection, and diversity compliance. When geographies are specified, TrialSim uses actual CDC PLACES, SVI, and ADI data to ground feasibility estimates and enrollment projections.
 

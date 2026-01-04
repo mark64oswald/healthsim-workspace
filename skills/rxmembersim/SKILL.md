@@ -423,7 +423,7 @@ Pharmacy and medical benefits are often coordinated:
 
 > **Integration Pattern:** For integrated medical+Rx plans, pharmacy costs count toward combined OOP maximum. Ensure coverage dates and accumulator totals are synchronized.
 
-### Cross-Product: PopulationSim (Demographics & SDOH) - v2.0 Data Integration
+### Cross-Product: PopulationSim Integration
 
 PopulationSim v2.0 provides **embedded real-world data** for realistic medication utilization modeling. When a geography is specified, RxMemberSim uses actual CDC PLACES, SVI, and ADI data to ground prescribing patterns, adherence behaviors, and formulary utilization.
 

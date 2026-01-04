@@ -267,4 +267,4 @@ Maps to `network.providers` table:
 
 - [Facility Model](facility-model.md) - Healthcare facilities
 - [Network Model](network-model.md) - Network configurations
-- [PopulationSim Person](../populationsim-models/person-model.md) - Base person entity
+- [PopulationSim Population Profile](../populationsim-models/population-profile.md) - Population demographics

@@ -621,4 +621,3 @@ TrialSim
 - [Population to Patient](population-to-patient.md)
 - [Population to Member](population-to-member.md)
 - [Population to Trial](population-to-trial.md)
-- [Health Equity Scenario](health-equity-scenario.md)

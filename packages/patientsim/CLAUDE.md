@@ -33,7 +33,7 @@ PatientSim is a healthcare patient simulation and synthetic data generation plat
 
 ### Layered Architecture (v2.0)
 
-PatientSim v2.0 uses [healthsim-core](../healthsim-core) as its foundation:
+PatientSim v2.0 uses [healthsim-core](../core) as its foundation:
 
 ```
 ┌─────────────────────────────────────────┐

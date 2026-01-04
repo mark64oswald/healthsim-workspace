@@ -83,7 +83,7 @@ This grounds the claims in:
 - Channel preferences (more mail-order with transportation barriers)
 - Generic utilization patterns based on poverty rates
 
-See [SKILL.md](SKILL.md#cross-product-populationsim-demographics--sdoh--v20-data-integration) for full integration details.
+See [SKILL.md](SKILL.md#cross-product-populationsim-integration) for full integration details.
 
 ## DUR Alert Types
 

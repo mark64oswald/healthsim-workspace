@@ -25,7 +25,8 @@ The Generative Framework extends HealthSim with a two-phase architecture for dat
 | [DECISIONS.md](DECISIONS.md) | Design decisions and rationale |
 | [PROFILE-BUILDER-SPEC.md](PROFILE-BUILDER-SPEC.md) | Profile Builder 4-phase conversation flow |
 | [TAXONOMY.md](TAXONOMY.md) | Mental model and terminology reference |
-| [ARCHITECTURE.html](ARCHITECTURE.html) | Visual architecture diagrams |
+
+> **Note:** Visual architecture diagrams will be added during Phase 1 implementation.
 
 ---
 

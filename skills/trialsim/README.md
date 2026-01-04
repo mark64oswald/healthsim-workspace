@@ -96,7 +96,7 @@ This provides:
 - SVI data for site access and enrollment projections
 - Data provenance for audit trails
 
-See [SKILL.md](SKILL.md#cross-product-populationsim-demographics--sdoh---v20-data-integration) for full integration details.
+See [SKILL.md](SKILL.md#cross-product-populationsim-integration) for full integration details.
 
 ## Skills Reference
 

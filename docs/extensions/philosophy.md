@@ -349,7 +349,7 @@ If you can't articulate the conversation, the extension isn't ready yet.
 - **[Skills Guide](skills.md)** - Adding knowledge
 - **[Slash Commands Guide](slash-commands.md)** - Adding shortcuts
 - **[Quick Reference](quick-reference.md)** - Fast lookup
-- **[Architecture](../architecture/layered-pattern.md)** - System design
+- **[Architecture](../HEALTHSIM-ARCHITECTURE-GUIDE.md)** - System design
 - **[Contributing](../contributing.md)** - Development standards
 
 ---

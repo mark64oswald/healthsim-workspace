@@ -580,7 +580,7 @@ Generate a breast cancer patient with clinical data, facility infusion claim, an
 
 ---
 
-## Example 6: Clinical Trial Subject with EMR Linkage (TrialSim + PatientSim)
+## Example 6: Clinical Trial Subject with EMR Linkage
 
 ### Prompt
 ```
@@ -675,7 +675,7 @@ Generate a clinical trial subject enrolled in a Phase III oncology trial with li
 
 ---
 
-## Example 7: Trial Subject with Site Provider Linkage (TrialSim + NetworkSim)
+## Example 7: Trial Subject with Site Provider Linkage
 
 ### Prompt
 ```
@@ -744,7 +744,7 @@ Generate a Phase III trial site with principal investigator from NetworkSim prov
 
 ---
 
-## Example 8: Cross-Product Dimensional Analytics (TrialSim + PatientSim)
+## Example 8: Cross-Product Dimensional Analytics
 
 ### Prompt
 ```

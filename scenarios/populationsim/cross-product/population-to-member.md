@@ -372,4 +372,3 @@ function adjustUtilization(baseRate, sdohProfile):
 
 - [Population to Patient](population-to-patient.md) - Clinical data
 - [Population to Trial](population-to-trial.md) - Trial enrollment
-- [Health Equity Scenario](health-equity-scenario.md) - SDOH analysis

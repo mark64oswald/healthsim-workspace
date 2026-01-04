@@ -140,9 +140,9 @@ Create realistic end-to-end test data spanning multiple products.
 | **Hospitalization Episode** | Inpatient admission, follow-up, discharge meds | [Cross-Domain Example 2](cross-domain-examples.md#example-2-hospitalization-with-follow-up) |
 | **Prior Auth Flow** | Rejection → PA submission → Approval → Fill | [Cross-Domain Example 3](cross-domain-examples.md#example-3-prior-auth-flow) |
 | **Value-Based Care** | Patient with quality measures and care gaps | [Cross-Domain Example 4](cross-domain-examples.md#example-4-value-based-care-report) |
-| **Trial + EMR Linkage** | Trial subject linked to PatientSim medical history | [Cross-Domain Example 6](cross-domain-examples.md#example-6-clinical-trial-subject-with-emr-linkage-trialsim--patientsim) |
-| **Trial + Provider Network** | Trial site linked to NetworkSim facilities | [Cross-Domain Example 7](cross-domain-examples.md#example-7-trial-subject-with-site-provider-linkage-trialsim--networksim) |
-| **Trial Analytics** | Cross-product dimensional analytics | [Cross-Domain Example 8](cross-domain-examples.md#example-8-cross-product-dimensional-analytics-trialsim--patientsim) |
+| **Trial + EMR Linkage** | Trial subject linked to PatientSim medical history | [Cross-Domain Example 6](cross-domain-examples.md#example-6-clinical-trial-subject-with-emr-linkage) |
+| **Trial + Provider Network** | Trial site linked to NetworkSim facilities | [Cross-Domain Example 7](cross-domain-examples.md#example-7-trial-subject-with-site-provider-linkage) |
+| **Trial Analytics** | Cross-product dimensional analytics | [Cross-Domain Example 8](cross-domain-examples.md#example-8-cross-product-dimensional-analytics) |
 
 ---
 
