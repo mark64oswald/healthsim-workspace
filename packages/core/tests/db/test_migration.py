@@ -7,12 +7,12 @@ import tempfile
 import shutil
 
 from healthsim.db import DatabaseConnection
-from healthsim.db.migrate.json_scenarios import (
+from healthsim.db.migrate.json_cohorts import (
     MigrationResult,
-    discover_json_scenarios,
-    migrate_scenario,
-    migrate_all_scenarios,
-    backup_json_scenarios,
+    discover_json_cohorts,
+    migrate_cohort,
+    migrate_all_cohorts,
+    backup_json_cohorts,
     verify_migration,
     get_migration_status,
 )
@@ -131,12 +131,12 @@ class TestDiscoverScenarios:
     
     def test_discover_empty_directory(self, temp_dirs):
         """Empty directory returns empty list."""
-        scenarios = discover_json_scenarios(temp_dirs['legacy'])
+        scenarios = discover_json_cohorts(temp_dirs['legacy'])
         assert scenarios == []
     
     def test_discover_finds_scenarios(self, sample_json_scenarios):
         """Discovers all JSON files."""
-        scenarios = discover_json_scenarios(sample_json_scenarios)
+        scenarios = discover_json_cohorts(sample_json_scenarios)
         
         assert len(scenarios) == 3
         names = [s['name'] for s in scenarios]
@@ -146,7 +146,7 @@ class TestDiscoverScenarios:
     
     def test_discover_includes_metadata(self, sample_json_scenarios):
         """Discovered scenarios include metadata."""
-        scenarios = discover_json_scenarios(sample_json_scenarios)
+        scenarios = discover_json_cohorts(sample_json_scenarios)
         
         for s in scenarios:
             assert 'name' in s
@@ -157,7 +157,7 @@ class TestDiscoverScenarios:
     
     def test_discover_nonexistent_directory(self, temp_dirs):
         """Nonexistent directory returns empty list."""
-        scenarios = discover_json_scenarios(temp_dirs['backup'])  # Doesn't exist
+        scenarios = discover_json_cohorts(temp_dirs['backup'])  # Doesn't exist
         assert scenarios == []
 
 
@@ -168,7 +168,7 @@ class TestMigrateScenario:
         """Migrates a simple scenario."""
         json_path = sample_json_scenarios / "test-scenario-1.json"
         
-        result = migrate_scenario(json_path, state_manager)
+        result = migrate_cohort(json_path, state_manager)
         
         assert result.success
         assert result.name == "test-scenario-1"
@@ -179,7 +179,7 @@ class TestMigrateScenario:
         """Migrates scenario with multiple entities."""
         json_path = sample_json_scenarios / "test-scenario-2.json"
         
-        result = migrate_scenario(json_path, state_manager)
+        result = migrate_cohort(json_path, state_manager)
         
         assert result.success
         assert result.name == "test-scenario-2"
@@ -189,7 +189,7 @@ class TestMigrateScenario:
         """Migrates legacy format scenario."""
         json_path = sample_json_scenarios / "legacy-format.json"
         
-        result = migrate_scenario(json_path, state_manager)
+        result = migrate_cohort(json_path, state_manager)
         
         assert result.success
         assert result.name == "legacy-format"
@@ -199,7 +199,7 @@ class TestMigrateScenario:
         """Migration preserves entity data."""
         json_path = sample_json_scenarios / "test-scenario-1.json"
         
-        migrate_scenario(json_path, state_manager)
+        migrate_cohort(json_path, state_manager)
         
         loaded = state_manager.load_scenario("test-scenario-1")
         assert len(loaded['entities']['patients']) == 1
@@ -210,7 +210,7 @@ class TestMigrateScenario:
         invalid_path = temp_dirs['legacy'] / "invalid.json"
         invalid_path.write_text("not valid json {")
         
-        result = migrate_scenario(invalid_path, state_manager)
+        result = migrate_cohort(invalid_path, state_manager)
         
         assert not result.success
         assert result.error is not None
@@ -220,11 +220,11 @@ class TestMigrateScenario:
         json_path = sample_json_scenarios / "test-scenario-1.json"
         
         # First migration
-        result1 = migrate_scenario(json_path, state_manager)
+        result1 = migrate_cohort(json_path, state_manager)
         assert result1.success
         
         # Second migration should fail
-        result2 = migrate_scenario(json_path, state_manager, overwrite=False)
+        result2 = migrate_cohort(json_path, state_manager, overwrite=False)
         assert not result2.success
     
     def test_migrate_duplicate_with_overwrite(self, sample_json_scenarios, state_manager):
@@ -232,11 +232,11 @@ class TestMigrateScenario:
         json_path = sample_json_scenarios / "test-scenario-1.json"
         
         # First migration
-        result1 = migrate_scenario(json_path, state_manager)
+        result1 = migrate_cohort(json_path, state_manager)
         assert result1.success
         
         # Second migration with overwrite
-        result2 = migrate_scenario(json_path, state_manager, overwrite=True)
+        result2 = migrate_cohort(json_path, state_manager, overwrite=True)
         assert result2.success
 
 
@@ -245,7 +245,7 @@ class TestMigrateAll:
     
     def test_migrate_all_empty(self, temp_dirs):
         """Empty directory returns empty results."""
-        results, backup = migrate_all_scenarios(
+        results, backup = migrate_all_cohorts(
             legacy_path=temp_dirs['legacy'],
             backup_path=temp_dirs['backup']
         )
@@ -255,7 +255,7 @@ class TestMigrateAll:
     
     def test_migrate_all_dry_run(self, sample_json_scenarios, temp_dirs):
         """Dry run reports but doesn't migrate."""
-        results, backup = migrate_all_scenarios(
+        results, backup = migrate_all_cohorts(
             dry_run=True,
             legacy_path=sample_json_scenarios,
             backup_path=temp_dirs['backup']
@@ -275,7 +275,7 @@ class TestBackup:
     
     def test_backup_creates_directory(self, sample_json_scenarios, temp_dirs):
         """Backup moves files to backup location."""
-        backup_path = backup_json_scenarios(
+        backup_path = backup_json_cohorts(
             source_path=sample_json_scenarios,
             backup_path=temp_dirs['backup']
         )
@@ -288,7 +288,7 @@ class TestBackup:
         """Backup preserves all files."""
         original_files = list(sample_json_scenarios.glob("*.json"))
         
-        backup_path = backup_json_scenarios(
+        backup_path = backup_json_cohorts(
             source_path=sample_json_scenarios,
             backup_path=temp_dirs['backup']
         )
@@ -298,7 +298,7 @@ class TestBackup:
     
     def test_backup_nonexistent_source(self, temp_dirs):
         """Nonexistent source returns None."""
-        result = backup_json_scenarios(
+        result = backup_json_cohorts(
             source_path=temp_dirs['backup'],  # Doesn't exist
             backup_path=temp_dirs['backup']
         )
@@ -311,14 +311,14 @@ class TestBackup:
         temp_dirs['backup'].mkdir()
         (temp_dirs['backup'] / "existing.json").write_text("{}")
         
-        backup_path = backup_json_scenarios(
+        backup_path = backup_json_cohorts(
             source_path=sample_json_scenarios,
             backup_path=temp_dirs['backup']
         )
         
         # Should create timestamped directory
         assert backup_path is not None
-        assert 'scenarios_backup_' in backup_path.name
+        assert 'cohorts_backup_' in backup_path.name
 
 
 class TestVerification:
@@ -328,7 +328,7 @@ class TestVerification:
         """Verification passes when all migrated."""
         # Migrate scenarios
         for json_path in sample_json_scenarios.glob("*.json"):
-            migrate_scenario(json_path, state_manager)
+            migrate_cohort(json_path, state_manager)
         
         # Verify using the same manager (proper dependency injection)
         verification = verify_migration(
@@ -344,7 +344,7 @@ class TestVerification:
     def test_verify_missing_scenarios(self, sample_json_scenarios, state_manager):
         """Verification reports missing scenarios."""
         # Only migrate one
-        migrate_scenario(sample_json_scenarios / "test-scenario-1.json", state_manager)
+        migrate_cohort(sample_json_scenarios / "test-scenario-1.json", state_manager)
         
         verification = verify_migration(
             expected_count=3,
