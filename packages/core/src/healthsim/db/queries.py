@@ -53,12 +53,12 @@ def get_patient_by_mrn(mrn: str) -> Optional[Dict[str, Any]]:
     return None
 
 
-def get_patients_in_scenario(scenario_id: str) -> List[Dict[str, Any]]:
+def get_patients_in_cohort(cohort_id: str) -> List[Dict[str, Any]]:
     """
-    Get all patients associated with a scenario.
+    Get all patients associated with a cohort.
     
     Args:
-        scenario_id: The scenario identifier.
+        cohort_id: The cohort identifier.
         
     Returns:
         List of patient dicts.
@@ -66,9 +66,9 @@ def get_patients_in_scenario(scenario_id: str) -> List[Dict[str, Any]]:
     conn = get_connection()
     result = conn.execute("""
         SELECT p.* FROM patients p
-        JOIN scenario_entities se ON p.id = se.entity_id
-        WHERE se.scenario_id = ? AND se.entity_type = 'patient'
-    """, [scenario_id]).fetchall()
+        JOIN cohort_entities ce ON p.id = ce.entity_id
+        WHERE ce.cohort_id = ? AND ce.entity_type = 'patient'
+    """, [cohort_id]).fetchall()
     
     if result:
         columns = [desc[0] for desc in conn.description]
@@ -76,25 +76,25 @@ def get_patients_in_scenario(scenario_id: str) -> List[Dict[str, Any]]:
     return []
 
 
-def count_entities_by_type(scenario_id: Optional[str] = None) -> Dict[str, int]:
+def count_entities_by_type(cohort_id: Optional[str] = None) -> Dict[str, int]:
     """
-    Count entities by type, optionally filtered by scenario.
+    Count entities by type, optionally filtered by cohort.
     
     Args:
-        scenario_id: Optional scenario to filter by.
+        cohort_id: Optional cohort to filter by.
         
     Returns:
         Dict mapping entity types to counts.
     """
     conn = get_connection()
     
-    if scenario_id:
+    if cohort_id:
         result = conn.execute("""
             SELECT entity_type, COUNT(*) as count
-            FROM scenario_entities
-            WHERE scenario_id = ?
+            FROM cohort_entities
+            WHERE cohort_id = ?
             GROUP BY entity_type
-        """, [scenario_id]).fetchall()
+        """, [cohort_id]).fetchall()
     else:
         # Count all entities across all tables
         counts = {}
@@ -111,68 +111,68 @@ def count_entities_by_type(scenario_id: Optional[str] = None) -> Dict[str, int]:
     return {row[0]: row[1] for row in result}
 
 
-def get_scenario_summary(scenario_id: str) -> Optional[Dict[str, Any]]:
+def get_cohort_summary(cohort_id: str) -> Optional[Dict[str, Any]]:
     """
-    Get a summary of a scenario including entity counts.
+    Get a summary of a cohort including entity counts.
     
     Args:
-        scenario_id: The scenario identifier.
+        cohort_id: The cohort identifier.
         
     Returns:
-        Summary dict or None if scenario not found.
+        Summary dict or None if cohort not found.
     """
     conn = get_connection()
     
-    # Get scenario metadata
-    scenario = conn.execute("""
-        SELECT * FROM scenarios WHERE scenario_id = ?
-    """, [scenario_id]).fetchone()
+    # Get cohort metadata
+    cohort = conn.execute("""
+        SELECT * FROM cohorts WHERE id = ?
+    """, [cohort_id]).fetchone()
     
-    if not scenario:
+    if not cohort:
         return None
     
     columns = [desc[0] for desc in conn.description]
-    summary = dict(zip(columns, scenario))
+    summary = dict(zip(columns, cohort))
     
     # Get entity counts
-    summary['entity_counts'] = count_entities_by_type(scenario_id)
+    summary['entity_counts'] = count_entities_by_type(cohort_id)
     
     # Get tags
     tags = conn.execute("""
-        SELECT tag FROM scenario_tags WHERE scenario_id = ?
-    """, [scenario_id]).fetchall()
+        SELECT tag FROM cohort_tags WHERE cohort_id = ?
+    """, [cohort_id]).fetchall()
     summary['tags'] = [row[0] for row in tags]
     
     return summary
 
 
-def list_scenarios(
+def list_cohorts(
     limit: int = 20, 
     tag: Optional[str] = None
 ) -> List[Dict[str, Any]]:
     """
-    List all scenarios, optionally filtered by tag.
+    List all cohorts, optionally filtered by tag.
     
     Args:
-        limit: Maximum number of scenarios to return.
+        limit: Maximum number of cohorts to return.
         tag: Optional tag to filter by.
         
     Returns:
-        List of scenario summary dicts.
+        List of cohort summary dicts.
     """
     conn = get_connection()
     
     if tag:
         result = conn.execute("""
-            SELECT s.* FROM scenarios s
-            JOIN scenario_tags t ON s.scenario_id = t.scenario_id
+            SELECT s.* FROM cohorts s
+            JOIN cohort_tags t ON s.id = t.cohort_id
             WHERE t.tag = ?
             ORDER BY s.updated_at DESC
             LIMIT ?
         """, [tag, limit]).fetchall()
     else:
         result = conn.execute("""
-            SELECT * FROM scenarios
+            SELECT * FROM cohorts
             ORDER BY updated_at DESC
             LIMIT ?
         """, [limit]).fetchall()
@@ -183,19 +183,19 @@ def list_scenarios(
     return []
 
 
-def scenario_exists(name: str) -> bool:
+def cohort_exists(name: str) -> bool:
     """
-    Check if a scenario with the given name exists.
+    Check if a cohort with the given name exists.
     
     Args:
-        name: Scenario name to check.
+        name: Cohort name to check.
         
     Returns:
-        True if scenario exists, False otherwise.
+        True if cohort exists, False otherwise.
     """
     conn = get_connection()
     result = conn.execute(
-        "SELECT 1 FROM scenarios WHERE name = ?", [name]
+        "SELECT 1 FROM cohorts WHERE name = ?", [name]
     ).fetchone()
     return result is not None
 
