@@ -111,6 +111,20 @@ from healthsim.generation.cross_domain_sync import (
     create_cross_domain_sync,
     hash_ssn,
 )
+from healthsim.generation.journey_validation import (
+    ValidationSeverity,
+    ValidationCategory,
+    ValidationIssue,
+    ValidationResult,
+    JourneySpecValidator,
+    TimelineValidator,
+    CrossEventValidator,
+    JourneyValidator,
+    validate_journey_spec,
+    validate_timeline,
+    validate_events,
+    create_journey_validator,
+)
 
 __all__ = [
     # Generators
@@ -209,4 +223,17 @@ __all__ = [
     "CorrelatorType",
     "create_cross_domain_sync",
     "hash_ssn",
+    # Journey Validation
+    "ValidationSeverity",
+    "ValidationCategory",
+    "ValidationIssue",
+    "ValidationResult",
+    "JourneySpecValidator",
+    "TimelineValidator",
+    "CrossEventValidator",
+    "JourneyValidator",
+    "validate_journey_spec",
+    "validate_timeline",
+    "validate_events",
+    "create_journey_validator",
 ]
