@@ -657,3 +657,288 @@ class TestCohortGenerator:
 
         # After reset, should get same values
         assert [r.value for r in results1] == [r.value for r in results2]
+
+
+
+# ============================================================================
+# Tests for new distribution classes
+# ============================================================================
+
+from healthsim.generation.distributions import (
+    AgeBandDistribution,
+    CategoricalDistribution,
+    ConditionalDistribution,
+    ExplicitDistribution,
+    LogNormalDistribution,
+    create_distribution,
+)
+
+
+class TestLogNormalDistribution:
+    """Tests for LogNormalDistribution."""
+
+    def test_creation(self) -> None:
+        """Test creating log-normal distribution."""
+        dist = LogNormalDistribution(mean=5000, std_dev=8000)
+        assert dist.mean == 5000
+        assert dist.std_dev == 8000
+
+    def test_sample_positive(self) -> None:
+        """Test that samples are always positive."""
+        dist = LogNormalDistribution(mean=5000, std_dev=8000)
+        rng = random.Random(42)
+
+        for _ in range(100):
+            value = dist.sample(rng)
+            assert value >= 0
+
+    def test_sample_bounded(self) -> None:
+        """Test bounded sampling."""
+        dist = LogNormalDistribution(mean=100, std_dev=50)
+        rng = random.Random(42)
+
+        value = dist.sample_bounded(max_val=500, rng=rng)
+        assert value <= 500
+
+    def test_right_skewed(self) -> None:
+        """Test that distribution is right-skewed (median < mean)."""
+        dist = LogNormalDistribution(mean=1000, std_dev=2000)
+        rng = random.Random(42)
+
+        samples = [dist.sample(rng) for _ in range(1000)]
+        median = sorted(samples)[500]
+        mean = sum(samples) / len(samples)
+
+        # Log-normal is right-skewed, median typically < mean
+        assert median < mean
+
+
+class TestCategoricalDistribution:
+    """Tests for CategoricalDistribution."""
+
+    def test_creation(self) -> None:
+        """Test creating categorical distribution."""
+        dist = CategoricalDistribution(weights={"M": 0.48, "F": 0.52})
+        assert dist.weights == {"M": 0.48, "F": 0.52}
+
+    def test_weights_validation(self) -> None:
+        """Test that weights must sum to 1.0."""
+        with pytest.raises(ValueError, match="sum to 1.0"):
+            CategoricalDistribution(weights={"A": 0.3, "B": 0.3})
+
+    def test_sample(self) -> None:
+        """Test sampling."""
+        dist = CategoricalDistribution(weights={"M": 0.48, "F": 0.52})
+        rng = random.Random(42)
+
+        result = dist.sample(rng)
+        assert result in ["M", "F"]
+
+    def test_weighted_selection(self) -> None:
+        """Test that weights affect selection."""
+        dist = CategoricalDistribution(weights={"common": 0.95, "rare": 0.05})
+        rng = random.Random(42)
+
+        results = [dist.sample(rng) for _ in range(1000)]
+        common_count = results.count("common")
+
+        assert common_count > 900  # Should be ~95%
+
+    def test_sample_multiple(self) -> None:
+        """Test sampling multiple values."""
+        dist = CategoricalDistribution(weights={"A": 0.5, "B": 0.5})
+        rng = random.Random(42)
+
+        results = dist.sample_multiple(100, rng)
+        assert len(results) == 100
+        assert all(r in ["A", "B"] for r in results)
+
+
+class TestAgeBandDistribution:
+    """Tests for AgeBandDistribution."""
+
+    def test_creation(self) -> None:
+        """Test creating age band distribution."""
+        dist = AgeBandDistribution(bands={"18-34": 0.5, "35-54": 0.3, "55+": 0.2})
+        assert len(dist.bands) == 3
+
+    def test_sample_in_bands(self) -> None:
+        """Test that samples fall within defined bands."""
+        dist = AgeBandDistribution(bands={"18-34": 0.5, "35-54": 0.3, "55-75": 0.2})
+        rng = random.Random(42)
+
+        for _ in range(100):
+            age = dist.sample(rng)
+            assert 18 <= age <= 75
+
+    def test_senior_band(self) -> None:
+        """Test handling of 65+ style bands."""
+        dist = AgeBandDistribution(bands={"65+": 1.0})
+        rng = random.Random(42)
+
+        for _ in range(100):
+            age = dist.sample(rng)
+            assert 65 <= age <= 95  # Upper bound defaults to 95
+
+    def test_sample_multiple(self) -> None:
+        """Test sampling multiple ages."""
+        dist = AgeBandDistribution(bands={"18-64": 0.7, "65+": 0.3})
+        rng = random.Random(42)
+
+        ages = dist.sample_multiple(100, rng)
+        assert len(ages) == 100
+
+
+class TestExplicitDistribution:
+    """Tests for ExplicitDistribution."""
+
+    def test_creation(self) -> None:
+        """Test creating explicit distribution."""
+        dist = ExplicitDistribution(values=[
+            ("48201", 0.4),
+            ("48113", 0.35),
+            ("48029", 0.25),
+        ])
+        assert len(dist.values) == 3
+
+    def test_sample(self) -> None:
+        """Test sampling."""
+        dist = ExplicitDistribution(values=[
+            ("A", 0.5),
+            ("B", 0.3),
+            ("C", 0.2),
+        ])
+        rng = random.Random(42)
+
+        result = dist.sample(rng)
+        assert result in ["A", "B", "C"]
+
+    def test_sample_multiple_unique(self) -> None:
+        """Test sampling unique values."""
+        dist = ExplicitDistribution(values=[
+            ("A", 0.4),
+            ("B", 0.3),
+            ("C", 0.3),
+        ])
+        rng = random.Random(42)
+
+        results = dist.sample_multiple(3, rng, unique=True)
+        assert len(results) == 3
+        assert len(set(results)) == 3  # All unique
+
+
+class TestConditionalDistribution:
+    """Tests for ConditionalDistribution."""
+
+    def test_creation(self) -> None:
+        """Test creating conditional distribution."""
+        dist = ConditionalDistribution(rules=[
+            {"condition": "severity == 'mild'", "distribution": {"type": "normal", "mean": 5, "std_dev": 1}},
+            {"condition": "severity == 'severe'", "distribution": {"type": "normal", "mean": 15, "std_dev": 2}},
+        ])
+        assert len(dist.rules) == 2
+
+    def test_condition_evaluation(self) -> None:
+        """Test that conditions are evaluated correctly."""
+        dist = ConditionalDistribution(rules=[
+            {"condition": "category == 'A'", "distribution": {"type": "normal", "mean": 10, "std_dev": 1}},
+            {"condition": "category == 'B'", "distribution": {"type": "normal", "mean": 100, "std_dev": 1}},
+        ])
+        rng = random.Random(42)
+
+        # Sample with category A - should get values around 10
+        values_a = [dist.sample({"category": "A"}, rng) for _ in range(100)]
+        mean_a = sum(values_a) / len(values_a)
+        assert 8 < mean_a < 12
+
+        # Sample with category B - should get values around 100
+        values_b = [dist.sample({"category": "B"}, rng) for _ in range(100)]
+        mean_b = sum(values_b) / len(values_b)
+        assert 95 < mean_b < 105
+
+    def test_default_distribution(self) -> None:
+        """Test default distribution when no condition matches."""
+        dist = ConditionalDistribution(
+            rules=[
+                {"condition": "x == 'specific'", "distribution": {"type": "normal", "mean": 100, "std_dev": 1}},
+            ],
+            default={"type": "normal", "mean": 50, "std_dev": 1},
+        )
+        rng = random.Random(42)
+
+        # No condition matches, should use default
+        values = [dist.sample({"x": "other"}, rng) for _ in range(100)]
+        mean = sum(values) / len(values)
+        assert 45 < mean < 55
+
+
+class TestCreateDistribution:
+    """Tests for the create_distribution factory function."""
+
+    def test_create_categorical(self) -> None:
+        """Test creating categorical distribution from spec."""
+        dist = create_distribution({
+            "type": "categorical",
+            "weights": {"M": 0.5, "F": 0.5}
+        })
+        assert isinstance(dist, CategoricalDistribution)
+
+    def test_create_normal(self) -> None:
+        """Test creating normal distribution from spec."""
+        dist = create_distribution({
+            "type": "normal",
+            "mean": 100,
+            "std_dev": 15
+        })
+        assert isinstance(dist, NormalDistribution)
+        assert dist.mean == 100
+
+    def test_create_log_normal(self) -> None:
+        """Test creating log-normal distribution from spec."""
+        dist = create_distribution({
+            "type": "log_normal",
+            "mean": 5000,
+            "std_dev": 8000
+        })
+        assert isinstance(dist, LogNormalDistribution)
+
+    def test_create_uniform(self) -> None:
+        """Test creating uniform distribution from spec."""
+        dist = create_distribution({
+            "type": "uniform",
+            "min": 0,
+            "max": 100
+        })
+        assert isinstance(dist, UniformDistribution)
+
+    def test_create_age_bands(self) -> None:
+        """Test creating age band distribution from spec."""
+        dist = create_distribution({
+            "type": "age_bands",
+            "bands": {"18-34": 0.5, "35-54": 0.5}
+        })
+        assert isinstance(dist, AgeBandDistribution)
+
+    def test_create_explicit_dict_format(self) -> None:
+        """Test creating explicit distribution from dict format."""
+        dist = create_distribution({
+            "type": "explicit",
+            "values": {"A": 0.5, "B": 0.5}
+        })
+        assert isinstance(dist, ExplicitDistribution)
+
+    def test_create_explicit_list_format(self) -> None:
+        """Test creating explicit distribution from list format."""
+        dist = create_distribution({
+            "type": "explicit",
+            "values": [
+                {"value": "A", "weight": 0.5},
+                {"value": "B", "weight": 0.5}
+            ]
+        })
+        assert isinstance(dist, ExplicitDistribution)
+
+    def test_unknown_type_raises(self) -> None:
+        """Test that unknown type raises error."""
+        with pytest.raises(ValueError, match="Unknown distribution type"):
+            create_distribution({"type": "invalid"})
