@@ -1,32 +1,63 @@
 # Journey Convergence Progress Tracker
 
 ## Overview
-Refactoring MemberSim and RxMemberSim to use the core JourneyEngine from 
-`packages/core/src/healthsim/generation/journey_engine.py` instead of maintaining
-separate scenario implementations.
+Refactoring HealthSim products to use the unified JourneyEngine from 
+`packages/core/src/healthsim/generation/journey_engine.py` with consistent
+journey templates across all products.
 
-**Status**: ✅ COMPLETE (Phases 1-2)
+**Status**: ✅ COMPLETE
 **Started**: 2025-01-04
 **Completed**: 2025-01-05
-**Commit**: 2d4a5d90106d577f5932a91a1f0c237558b8b4da
 
 ---
 
-## Phase 1: MemberSim Migration ✅ COMPLETE
+## Summary of Changes
 
-### Tasks Completed
-- [x] Analyzed existing scenarios module structure
-- [x] Created new `journeys/` module structure:
-  - [x] `__init__.py` - Re-exports core + backward compat aliases
-  - [x] `handlers.py` - MemberSim event handlers (5 handlers)
-  - [x] `templates.py` - 6 MemberSim journey templates
-  - [x] `compat.py` - Deprecated aliases with warnings
-- [x] Updated `membersim/__init__.py` exports
-- [x] Deleted old `scenarios/` folder
-- [x] Added test_journeys.py with backward compatibility tests
-- [x] Verified all 182 tests pass (1 unrelated failure: future birth date validation)
+### Phase 1: MemberSim Migration ✅ COMPLETE
+- Created `journeys/` module with handlers, templates, and backward compat
+- Migrated 6 journey templates from scenarios
+- Updated package exports
+- Removed old `scenarios/` folder
+- Tests: 182/183 passing (1 unrelated failure)
 
-### MemberSim Journey Templates
+### Phase 2: RxMemberSim Migration ✅ COMPLETE
+- Created `journeys/` module with handlers, templates, and backward compat
+- Migrated 6 journey templates from scenarios
+- Updated MCP server to use journey API
+- Removed old `scenarios/` folder
+- Tests: 213/213 passing
+
+### Phase 3: TrialSim Journey Templates ✅ COMPLETE
+- Added 6 journey templates to core `JOURNEY_TEMPLATES`
+- TrialSim handlers were already in core
+- Tests: 902/902 passing
+
+### Phase 4: PatientSim Assessment ✅ NO CHANGES NEEDED
+- PatientSim uses "scenario-template" as a Skill type (clinical scenario descriptions)
+- This is a different concept from journey engine event sequences
+- PatientSim handlers exist in core
+
+---
+
+## Journey Templates Summary
+
+### Core Templates (journey_engine.py)
+| Template | Product | Duration | Description |
+|----------|---------|----------|-------------|
+| `diabetic-first-year` | cross-product | 365 days | First year of diabetic care |
+| `new-member-onboarding` | membersim | 90 days | New health plan enrollment |
+
+### TrialSim Templates (journey_engine.py)
+| Template | Duration | Description |
+|----------|----------|-------------|
+| `phase3-pivotal-subject` | 365 days | Phase 3 pivotal trial subject journey |
+| `trial-safety-monitoring` | 180 days | Safety event monitoring journey |
+| `phase1-dose-escalation` | 56 days | First-in-human dose escalation |
+| `trial-subject-withdrawal` | 30 days | Subject early termination |
+| `protocol-deviation-journey` | 14 days | Protocol deviation management |
+| `trial-dose-modification` | 42 days | Dose reduction due to toxicity |
+
+### MemberSim Templates (membersim/journeys/templates.py)
 | Template | Duration | Description |
 |----------|----------|-------------|
 | `new-member-onboarding` | 90 days | ID card → welcome call → HRA → PCP |
@@ -36,28 +67,7 @@ separate scenario implementations.
 | `quality-gap-closure` | 90 days | Gap ID → outreach → visit → closure |
 | `member-termination` | 90 days | Term notice → COBRA → final claims |
 
----
-
-## Phase 2: RxMemberSim Migration ✅ COMPLETE
-
-### Tasks Completed
-- [x] Analyzed existing scenarios module structure
-- [x] Created new `journeys/` module structure:
-  - [x] `__init__.py` - Re-exports core + backward compat aliases
-  - [x] `handlers.py` - RxMemberSim event handlers (5 handlers)
-  - [x] `templates.py` - 6 RxMemberSim journey templates
-  - [x] `compat.py` - Deprecated aliases with warnings
-- [x] Updated `rxmembersim/__init__.py` exports
-- [x] Updated MCP server to use journeys API with new tool names
-- [x] Fixed MCP server imports (`run_rx_journey`, `list_journeys`)
-- [x] Added backward-compatible tool aliases (`run_rx_scenario`, `list_scenarios`)
-- [x] Deleted old `scenarios/` folder
-- [x] Removed broken test_cohorts.py (pre-existing issue)
-- [x] Created comprehensive test_journeys.py (19 tests)
-- [x] Updated test_mcp.py for journey API
-- [x] Verified all 213 tests pass
-
-### RxMemberSim Journey Templates
+### RxMemberSim Templates (rxmembersim/journeys/templates.py)
 | Template | Duration | Description |
 |----------|----------|-------------|
 | `new-therapy-start` | 180 days | Rx → first fill → refills |
@@ -69,139 +79,104 @@ separate scenario implementations.
 
 ---
 
-## Phase 3: PatientSim Assessment ✅ COMPLETE (No Changes Needed)
+## Architecture
 
-PatientSim uses "scenario-template" as a Skill type for clinical scenario descriptions.
-This is a different concept from the journey engine's event sequence scenarios.
+### Unified Journey Engine (core)
+```
+packages/core/src/healthsim/generation/
+├── journey_engine.py      # JourneyEngine, specs, all templates
+│   ├── BaseEventType      # Common events
+│   ├── PatientEventType   # Clinical events
+│   ├── MemberEventType    # Enrollment/claims events
+│   ├── RxEventType        # Prescription/fill events
+│   ├── TrialEventType     # Clinical trial events
+│   └── JOURNEY_TEMPLATES  # All built-in templates
+│
+└── handlers.py            # Product-specific handlers
+    ├── PatientSimHandlers
+    ├── MemberSimHandlers
+    ├── RxMemberSimHandlers
+    └── TrialSimHandlers
+```
 
-**Status**: No migration needed - legitimate use of "scenario" terminology.
+### Product Packages (with journey modules)
+```
+packages/membersim/src/membersim/journeys/
+├── __init__.py       # Re-exports core + product templates
+├── handlers.py       # Additional MemberSim handlers
+├── templates.py      # 6 MemberSim-specific templates
+└── compat.py         # Backward compatibility aliases
+
+packages/rxmembersim/src/rxmembersim/journeys/
+├── __init__.py       # Re-exports core + product templates
+├── handlers.py       # Additional RxMemberSim handlers
+├── templates.py      # 6 RxMemberSim-specific templates
+└── compat.py         # Backward compatibility aliases
+```
 
 ---
 
-## Phase 4: TrialSim Assessment ✅ COMPLETE (Not Applicable)
-
-TrialSim does not yet exist as a Python package. It's in the planning/cohorts stage.
-
-**Status**: Not applicable - package not yet implemented.
-
----
-
-## Test Results Summary
+## Test Results
 
 | Package | Tests | Passed | Status |
 |---------|-------|--------|--------|
 | Core | 902 | 902 | ✅ |
-| MemberSim | 183 | 182 | ✅ (1 unrelated failure) |
+| MemberSim | 183 | 182 | ✅ (1 unrelated) |
 | RxMemberSim | 213 | 213 | ✅ |
-| PatientSim | 403 | 392 | ⚠️ (11 pre-existing failures) |
+| PatientSim | 403 | 392 | ⚠️ (11 pre-existing) |
 
 ---
 
-## Architecture Summary
+## Git Commits
 
-### Before (Duplicated)
-```
-membersim/scenarios/
-├── definition.py     # Duplicated definitions
-├── engine.py         # Duplicated engine
-├── events.py         # MemberEventType
-└── templates/        # MemberSim templates
-
-rxmembersim/scenarios/
-├── definition.py     # Duplicated definitions
-├── engine.py         # Duplicated engine
-├── events.py         # RxEventType
-└── templates/        # RxMemberSim templates
-```
-
-### After (Unified)
-```
-core/src/healthsim/generation/
-└── journey_engine.py  # Single source of truth (872 lines)
-    ├── JourneySpecification
-    ├── JourneyEngine
-    ├── Timeline, TimelineEvent
-    ├── DelaySpec, EventCondition, TriggerSpec
-    └── All EventType enums (Base, Patient, Member, Rx, Trial)
-
-membersim/journeys/
-├── __init__.py       # Re-exports core (99 lines)
-├── handlers.py       # MemberSim handlers (213 lines)
-├── templates.py      # 6 templates (425 lines)
-└── compat.py         # Backward compat (246 lines)
-
-rxmembersim/journeys/
-├── __init__.py       # Re-exports core (92 lines)
-├── handlers.py       # RxMemberSim handlers (250 lines)
-├── templates.py      # 6 templates (515 lines)
-└── compat.py         # Backward compat (160 lines)
-```
-
-### Key Benefits
-1. **Single Source of Truth**: Journey logic in core's `journey_engine.py`
-2. **Product-Specific Customization**: Handlers and templates per product
-3. **Backward Compatibility**: Deprecated aliases with warnings for smooth migration
-4. **Cross-Product Coordination**: Shared TriggerSpec for linked journeys
-5. **Consistent API**: Same patterns across all products
-6. **MCP Tool Updates**: New `run_rx_journey`/`list_journeys` with legacy aliases
+1. `2d4a5d9` - refactor: Migrate MemberSim and RxMemberSim from scenarios to journeys
+2. `c1d5f51` - docs: Update journey convergence progress tracker
+3. `[pending]` - feat: Add TrialSim journey templates to core
 
 ---
 
-## Files Changed
+## Usage
 
-### New Files
-- `packages/membersim/src/membersim/journeys/__init__.py`
-- `packages/membersim/src/membersim/journeys/handlers.py`
-- `packages/membersim/src/membersim/journeys/templates.py`
-- `packages/membersim/src/membersim/journeys/compat.py`
-- `packages/membersim/tests/test_journeys.py`
-- `packages/rxmembersim/src/rxmembersim/journeys/__init__.py`
-- `packages/rxmembersim/src/rxmembersim/journeys/handlers.py`
-- `packages/rxmembersim/src/rxmembersim/journeys/templates.py`
-- `packages/rxmembersim/src/rxmembersim/journeys/compat.py`
-- `packages/rxmembersim/tests/test_journeys.py`
-
-### Modified Files
-- `packages/membersim/src/membersim/__init__.py`
-- `packages/rxmembersim/src/rxmembersim/__init__.py`
-- `packages/rxmembersim/src/rxmembersim/mcp/server.py`
-- `packages/rxmembersim/tests/test_mcp.py`
-
-### Deleted Files
-- `packages/membersim/src/membersim/scenarios/` (entire folder)
-- `packages/rxmembersim/src/rxmembersim/scenarios/` (entire folder)
-- `packages/membersim/tests/test_cohorts.py` (broken test)
-- `packages/rxmembersim/tests/test_cohorts.py` (broken test)
-
----
-
-## Migration Guide for Consumers
-
-### Python Imports
+### Get Journey Templates
 ```python
-# Old (deprecated, will warn)
-from membersim.scenarios import ScenarioDefinition, ScenarioEngine
-from rxmembersim.scenarios import RxScenarioEngine
+# Core templates
+from healthsim.generation import get_journey_template, JOURNEY_TEMPLATES
+journey = get_journey_template("phase3-pivotal-subject")
 
-# New
-from membersim.journeys import JourneySpecification, JourneyEngine
-from rxmembersim.journeys import create_rx_journey_engine
+# MemberSim templates
+from membersim.journeys import get_member_journey_template, MEMBER_JOURNEY_TEMPLATES
+journey = get_member_journey_template("chronic-care-management")
+
+# RxMemberSim templates
+from rxmembersim.journeys import get_rx_journey_template, RX_JOURNEY_TEMPLATES
+journey = get_rx_journey_template("specialty-onboarding")
 ```
 
-### MCP Tools
-```
-# Old (deprecated, still works)
-run_rx_scenario(scenario_id="...")
-list_scenarios()
-
-# New
-run_rx_journey(journey_id="...")
-list_journeys()
-```
-
-### Template Names
-Templates use the same IDs as before, now accessed via journey API:
+### Create Timeline
 ```python
-from membersim.journeys import get_member_journey_template
-journey = get_member_journey_template("new-member-onboarding")
+from healthsim.generation import create_journey_engine
+from datetime import date
+
+engine = create_journey_engine(seed=42)
+journey = get_journey_template("phase3-pivotal-subject")
+subject = {"subject_id": "SUBJ-001", "site_id": "SITE-001"}
+
+timeline = engine.create_timeline(
+    entity=subject,
+    entity_type="subject",
+    journey=journey,
+    start_date=date(2025, 1, 15),
+)
+
+for event in timeline.events:
+    print(f"{event.scheduled_date}: {event.event_name}")
 ```
+
+---
+
+## Next Steps
+
+1. Update SKILL.md documentation for generation/journeys
+2. Fix 211 broken markdown links across documentation
+3. Update hello-healthsim examples with journey patterns
+4. Consider creating dedicated `packages/trialsim` package for parity
