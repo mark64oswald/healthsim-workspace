@@ -228,6 +228,35 @@ MIGRATIONS: List[Tuple[str, str, str]] = [
         CREATE INDEX IF NOT EXISTS idx_cohort_tags_cohort ON cohort_tags(cohort_id);
         CREATE INDEX IF NOT EXISTS idx_cohort_tags_tag ON cohort_tags(tag);
     """),
+    
+    # Clean up legacy scenario indexes (now redundant with cohort indexes)
+    ("1.6", "Drop legacy idx_*_scenario indexes (replaced by idx_*_cohort)", """
+        -- Drop legacy scenario-named indexes on entity tables
+        -- These are redundant with the idx_*_cohort indexes created in 1.5
+        DROP INDEX IF EXISTS idx_patients_scenario;
+        DROP INDEX IF EXISTS idx_encounters_scenario;
+        DROP INDEX IF EXISTS idx_diagnoses_scenario;
+        DROP INDEX IF EXISTS idx_medications_scenario;
+        DROP INDEX IF EXISTS idx_lab_results_scenario;
+        DROP INDEX IF EXISTS idx_vital_signs_scenario;
+        DROP INDEX IF EXISTS idx_orders_scenario;
+        DROP INDEX IF EXISTS idx_clinical_notes_scenario;
+        DROP INDEX IF EXISTS idx_members_scenario;
+        DROP INDEX IF EXISTS idx_claims_scenario;
+        DROP INDEX IF EXISTS idx_claim_lines_scenario;
+        DROP INDEX IF EXISTS idx_prescriptions_scenario;
+        DROP INDEX IF EXISTS idx_pharmacy_claims_scenario;
+        DROP INDEX IF EXISTS idx_subjects_scenario;
+        DROP INDEX IF EXISTS idx_trial_visits_scenario;
+        DROP INDEX IF EXISTS idx_adverse_events_scenario;
+        DROP INDEX IF EXISTS idx_exposures_scenario;
+        
+        -- Drop legacy scenario-named indexes on state tables
+        DROP INDEX IF EXISTS idx_scenario_entities_scenario;
+        DROP INDEX IF EXISTS idx_scenario_entities_type;
+        DROP INDEX IF EXISTS idx_scenario_tags_scenario;
+        DROP INDEX IF EXISTS idx_scenario_tags_tag;
+    """),
 ]
 
 
