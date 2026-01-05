@@ -129,39 +129,77 @@ Implementing the Generative Framework to close gaps between design documentation
 - [x] Update profile-executor.md with resolution logic - Added detailed section
 - [x] Add PopulationSim integration guidance - Added geography levels, data sources
 
-### Task 2.4: Git Checkpoint - Phase 2
-- [ ] Run all tests
-- [ ] Commit changes
-- [ ] Push to remote
+### Task 2.4: Git Checkpoint - Phase 2 ✅ COMPLETE
+- [x] Run all tests - 125 tests pass
+- [x] Commit changes - 5f7e470f5bf437a27b69a30bb3beb51b0717d975
+- [x] Push to remote - Pushed 2026-01-04
 
 ---
 
 ## Phase 3: Journey Execution Enhancement
 
-### Task 3.1: Review MemberSim Scenario Engine
-- [ ] Document existing engine capabilities
-- [ ] Identify reusable patterns
-- [ ] Plan cross-product port strategy
+### Task 3.1: Review MemberSim Scenario Engine ✅ COMPLETE
+- [x] Document existing engine capabilities
+- [x] Identify reusable patterns
+- [x] Plan cross-product port strategy
 
-### Task 3.2: Create Shared Journey Engine
-- [ ] Move core engine to packages/core
-- [ ] Abstract product-specific handlers
-- [ ] Create journey specification schema
-- [ ] Implement timeline generation
-- [ ] Add event scheduling
-- [ ] Add conditional branching
-- [ ] Add tests
+**MemberSim ScenarioEngine Analysis:**
+- Location: `packages/membersim/src/membersim/scenarios/engine.py`
+- Clean separation: ScenarioDefinition → ScenarioEngine → MemberTimeline
+- Handler registration pattern for event types
+- Condition evaluation with context
+- Dependency-based event scheduling (depends_on)
+- Delay handling with timedelta conversion
 
-### Task 3.3: Cross-Domain Trigger System
-- [ ] Design trigger specification format
-- [ ] Implement trigger evaluation
-- [ ] Implement cross-product event dispatch
-- [ ] Add delay/timing handling
-- [ ] Add tests
+**Reusable Patterns:**
+1. Event handler registration (pluggable handlers by type)
+2. Context building for condition evaluation
+3. Timeline execution up to a date
+4. Dependency-based scheduling
 
-### Task 3.4: Product-Specific Handlers
+**Port Strategy:**
+- Move core engine logic to `packages/core/src/healthsim/generation/journey_engine.py`
+- Keep product-specific handlers in product packages
+- Abstract EventType to be extensible per product
+
+### Task 3.2: Create Shared Journey Engine ✅ COMPLETE
+- [x] Move core engine to packages/core - journey_engine.py created
+- [x] Abstract product-specific handlers - EventHandler protocol
+- [x] Create journey specification schema - JourneySpecification, EventDefinition
+- [x] Implement timeline generation - Timeline, TimelineEvent
+- [x] Add event scheduling - Dependency-based with delays
+- [x] Add conditional branching - EventCondition with operators
+- [x] Add tests - 27 tests pass
+
+**New Module: `journey_engine.py` (700+ lines)**
+- Event types: BaseEventType, PatientEventType, MemberEventType, RxEventType, TrialEventType
+- Timing: DelaySpec with fixed/uniform/normal distributions
+- Conditions: EventCondition with operators (eq, gt, in, etc.)
+- Specification: JourneySpecification, EventDefinition, TriggerSpec
+- Execution: JourneyEngine, Timeline, TimelineEvent
+- Templates: JOURNEY_TEMPLATES (diabetic-first-year, new-member-onboarding)
+
+### Task 3.3: Cross-Domain Trigger System ✅ COMPLETE
+- [x] Design trigger specification format - RegisteredTrigger, TriggerSpec
+- [x] Implement trigger evaluation - TriggerRegistry.fire_triggers()
+- [x] Implement cross-product event dispatch - CrossProductCoordinator
+- [x] Add delay/timing handling - DelaySpec integration
+- [x] Add tests - 13 tests pass
+
+**New Module: `triggers.py` (470+ lines)**
+- TriggerRegistry - Manages source→target trigger mappings
+- RegisteredTrigger - Single trigger definition
+- TriggerPriority - IMMEDIATE, HIGH, NORMAL, LOW
+- CrossProductCoordinator - Orchestrates linked entities
+- LinkedEntity - Entity with cross-product IDs and timelines
+- Default healthcare triggers registered (diagnosis→claim, med→fill, etc.)
+
+### Task 3.4: Product-Specific Handlers ⏸️ DEFERRED
+Product-specific handlers will be implemented incrementally as each product
+is enhanced to use the shared journey engine. Core infrastructure is ready.
+
 - [ ] PatientSim event handlers (ADT, orders, results)
-- [ ] MemberSim event handlers (enrollment, claims)
+- [ ] MemberSim event handlers (enrollment, claims) - Has existing ScenarioEngine
 - [ ] RxMemberSim event handlers (fills, reversals)
 - [ ] TrialSim event handlers (visits, AEs)
 

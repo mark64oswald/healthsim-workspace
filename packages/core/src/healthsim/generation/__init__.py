@@ -60,6 +60,32 @@ from healthsim.generation.reference_profiles import (
     merge_profile_with_reference,
     resolve_geography,
 )
+from healthsim.generation.journey_engine import (
+    BaseEventType,
+    DelaySpec,
+    EventCondition,
+    EventDefinition,
+    JourneyEngine,
+    JourneySpecification,
+    MemberEventType,
+    PatientEventType,
+    RxEventType,
+    Timeline,
+    TimelineEvent,
+    TrialEventType,
+    create_journey_engine,
+    create_simple_journey,
+    get_journey_template,
+    JOURNEY_TEMPLATES,
+)
+from healthsim.generation.triggers import (
+    CrossProductCoordinator,
+    LinkedEntity,
+    RegisteredTrigger,
+    TriggerPriority,
+    TriggerRegistry,
+    create_coordinator,
+)
 
 __all__ = [
     # Generators
@@ -111,4 +137,28 @@ __all__ = [
     "list_states",
     "create_hybrid_profile",
     "merge_profile_with_reference",
+    # Journey Engine
+    "JourneyEngine",
+    "JourneySpecification",
+    "Timeline",
+    "TimelineEvent",
+    "EventDefinition",
+    "EventCondition",
+    "DelaySpec",
+    "BaseEventType",
+    "PatientEventType",
+    "MemberEventType",
+    "RxEventType",
+    "TrialEventType",
+    "create_journey_engine",
+    "create_simple_journey",
+    "get_journey_template",
+    "JOURNEY_TEMPLATES",
+    # Cross-Product Triggers
+    "TriggerRegistry",
+    "RegisteredTrigger",
+    "TriggerPriority",
+    "CrossProductCoordinator",
+    "LinkedEntity",
+    "create_coordinator",
 ]
