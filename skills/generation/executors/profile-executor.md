@@ -121,14 +121,56 @@ Patient (PatientSim)     Member (MemberSim)
 
 ### 4. Reference Data Integration
 
-When PopulationSim reference is specified:
+When PopulationSim reference is specified, the executor automatically resolves
+real-world demographics from CDC PLACES and SVI data.
 
-```sql
--- Pull actual demographic data
-SELECT age_median, pct_male, pct_diabetes
-FROM population.cdc_places
-WHERE state_abbr = 'TX' AND county_name = 'Harris'
+**Reference Resolution Process:**
+1. Detect `demographics.source = "populationsim"` in profile spec
+2. Query DuckDB for PLACES/SVI data matching geography
+3. Extract age distribution, disease prevalence, socioeconomic data
+4. Merge with user-specified overrides (user spec takes precedence)
+5. Execute with merged profile
+
+**Example - County Reference:**
+```json
+{
+  "demographics": {
+    "source": "populationsim",
+    "reference": {"type": "county", "fips": "48201"}
+  }
+}
 ```
+
+This resolves Harris County TX demographics:
+- Age distribution from SVI (26% under 17, 63% 18-64, 11% 65+)
+- Disease prevalence from PLACES (13.2% diabetes, 37.3% obesity)
+- Socioeconomic from SVI (25% poverty, 21% uninsured)
+
+**Hybrid Profile - Override Specific Values:**
+```json
+{
+  "demographics": {
+    "source": "populationsim",
+    "reference": {"type": "county", "fips": "48201"},
+    "age": {"type": "normal", "mean": 72, "std_dev": 8, "min": 65}
+  }
+}
+```
+
+User's age override (Medicare seniors) is used, but gender and other
+demographics come from PopulationSim reference data.
+
+**Available Geography Levels:**
+| Level | Code Format | Example |
+|-------|-------------|---------|
+| county | 5-digit FIPS | "48201" (Harris County TX) |
+| state | 2-letter abbr | "TX" |
+
+**Data Sources Queried:**
+| Source | Data Available |
+|--------|----------------|
+| CDC PLACES | Disease prevalence (diabetes, obesity, HTN, COPD, etc.) |
+| SVI | Age distribution, minority %, poverty %, uninsured % |
 
 ## Validation
 

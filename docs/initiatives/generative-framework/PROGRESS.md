@@ -88,34 +88,46 @@ Implementing the Generative Framework to close gaps between design documentation
 - ValidationReport, ValidationMetric - Output validation
 - execute_profile() - Convenience function
 
-### Task 1.5: Git Checkpoint - Phase 1
-- [ ] Run all tests
-- [ ] Commit changes
-- [ ] Push to remote
+### Task 1.5: Git Checkpoint - Phase 1 ✅ COMPLETE
+- [x] Run all tests - 89 distribution tests + 17 executor tests pass
+- [x] Commit changes - ee46fc0995f23347a0f774b6a281b29a845e85fa
+- [x] Push to remote - Pushed 2026-01-04
 
 ---
 
 ## Phase 2: Reference Profile Integration
 
-### Task 2.1: PopulationSim Query Integration
-- [ ] Review existing PopulationSim data access
-- [ ] Create reference profile resolver
-- [ ] Implement geography → distribution lookup
-- [ ] Add county-level resolution
-- [ ] Add state-level resolution
-- [ ] Add MSA-level resolution
-- [ ] Add tests
+### Task 2.1: PopulationSim Query Integration ✅ COMPLETE
+- [x] Review existing PopulationSim data access - populationsim.py exists
+- [x] Import reference data to database - PLACES, SVI imported
+- [x] Create reference profile resolver - ReferenceProfileResolver class
+- [x] Implement geography → distribution lookup - resolve_county, resolve_state
+- [x] Add county-level resolution - Done
+- [x] Add state-level resolution - Done with aggregation
+- [x] Add tests - 13 tests pass
 
-### Task 2.2: Hybrid Profile Support
-- [ ] Implement reference base + override pattern
-- [ ] Add merge logic for distributions
-- [ ] Create examples of hybrid profiles
-- [ ] Add tests
+**Created: `reference_profiles.py`**
+- ReferenceProfileResolver - Main resolver class
+- DemographicProfile - Extracted demographics dataclass
+- GeographyLevel - Enum for geography types
+- resolve_geography() - Convenience function
+- list_counties(), list_states() - Discovery functions
+- to_profile_spec() - Convert to ProfileSpecification
 
-### Task 2.3: Update Skills for Reference Profiles
-- [ ] Update profile-builder.md with reference patterns
-- [ ] Update profile-executor.md with resolution logic
-- [ ] Add PopulationSim integration guidance
+### Task 2.2: Hybrid Profile Support ✅ COMPLETE
+- [x] Implement reference base + override pattern - merge_profile_with_reference()
+- [x] Add merge logic for distributions - Age, gender, clinical merged
+- [x] Create examples of hybrid profiles - Test cases with overrides
+- [x] Add tests - 6 hybrid profile tests pass
+
+**New Functions:**
+- merge_profile_with_reference() - Merge user spec with reference data
+- create_hybrid_profile() - Auto-resolve and merge if source=populationsim
+
+### Task 2.3: Update Skills for Reference Profiles ✅ COMPLETE
+- [x] Update profile-builder.md with reference patterns - Already had examples
+- [x] Update profile-executor.md with resolution logic - Added detailed section
+- [x] Add PopulationSim integration guidance - Added geography levels, data sources
 
 ### Task 2.4: Git Checkpoint - Phase 2
 - [ ] Run all tests

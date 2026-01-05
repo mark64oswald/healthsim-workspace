@@ -49,6 +49,17 @@ from healthsim.generation.profile_executor import (
     execute_profile,
 )
 from healthsim.generation.reproducibility import SeedManager
+from healthsim.generation.reference_profiles import (
+    DemographicProfile,
+    GeographyLevel,
+    GeographyReference as GeoReference,
+    ReferenceProfileResolver,
+    create_hybrid_profile,
+    list_counties,
+    list_states,
+    merge_profile_with_reference,
+    resolve_geography,
+)
 
 __all__ = [
     # Generators
@@ -90,4 +101,14 @@ __all__ = [
     "execute_profile",
     # Reproducibility
     "SeedManager",
+    # Reference Profiles
+    "ReferenceProfileResolver",
+    "DemographicProfile",
+    "GeographyLevel",
+    "GeoReference",
+    "resolve_geography",
+    "list_counties",
+    "list_states",
+    "create_hybrid_profile",
+    "merge_profile_with_reference",
 ]
