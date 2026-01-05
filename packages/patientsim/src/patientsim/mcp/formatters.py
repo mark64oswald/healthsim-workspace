@@ -114,7 +114,7 @@ def format_cohort_summary(
     if scenario:
         lines.extend(
             [
-                f"**Scenario**: {scenario}",
+                f"**Skill**: {scenario}",
                 "",
             ]
         )

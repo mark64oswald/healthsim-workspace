@@ -36,7 +36,7 @@ def format_cohort_saved(cohort: Any) -> str:
     lines = [
         f'**Saved: "{cohort.metadata.name}"**',
         "",
-        "**Scenario Summary:**",
+        "**Cohort Summary:**",
         f"- Cohort ID: `{cohort.metadata.workspace_id}`",
         f"- Patients: {cohort.get_entity_count('patients')}",
         f"- Total entities: {cohort.get_entity_count()}",
@@ -98,7 +98,7 @@ def format_cohort_list(cohorts: list[dict]) -> str:
     if not cohorts:
         return "No saved cohorts found.\n\nGenerate some patients and use `save_cohort` to save your work."
 
-    lines = ["**Your Saved Scenarios:**", ""]
+    lines = ["**Your Saved Cohorts:**", ""]
 
     for s in cohorts:
         name = s["name"]
@@ -272,7 +272,7 @@ async def handle_save_cohort(arguments: dict) -> list[TextContent]:
     """Handle save_cohort tool call."""
     name = arguments.get("name")
     if not name:
-        return [TextContent(type="text", text=format_error("Scenario name is required"))]
+        return [TextContent(type="text", text=format_error("Cohort name is required"))]
 
     # Check if workspace has content
     if session_manager.count() == 0:
@@ -356,7 +356,7 @@ async def handle_load_cohort(arguments: dict) -> list[TextContent]:
         return [
             TextContent(
                 type="text",
-                text=format_error(f"Scenario not found: {cohort_id or name}"),
+                text=format_error(f"Cohort not found: {cohort_id or name}"),
             )
         ]
     except ValueError as e:
@@ -409,7 +409,7 @@ async def handle_delete_cohort(arguments: dict) -> list[TextContent]:
         return [
             TextContent(
                 type="text",
-                text=format_error(f"Scenario not found: {cohort_id}"),
+                text=format_error(f"Cohort not found: {cohort_id}"),
             )
         ]
 
