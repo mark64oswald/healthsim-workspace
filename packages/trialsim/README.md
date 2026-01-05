@@ -22,7 +22,7 @@ pip install -e ".[dev]"
 ## Quick Start
 
 ```python
-from trialsim import TrialSubjectGenerator, VisitGenerator
+from trialsim import TrialSubjectGenerator, VisitGenerator, AdverseEventGenerator
 
 # Generate trial subjects
 subject_gen = TrialSubjectGenerator(seed=42)
@@ -36,7 +36,6 @@ visits = visit_gen.generate_schedule(
 )
 
 # Generate adverse events
-from trialsim import AdverseEventGenerator
 ae_gen = AdverseEventGenerator()
 aes = ae_gen.generate_for_subject(subjects[0], visit_count=len(visits))
 ```
@@ -45,35 +44,32 @@ aes = ae_gen.generate_for_subject(subjects[0], visit_count=len(visits))
 
 ```
 trialsim/
-├── core/           # Core models (Subject, Visit, AE)
-├── subjects/       # Subject generation and enrollment
-├── visits/         # Visit scheduling and events
-├── adverse_events/ # AE/SAE generation
-├── exposures/      # Drug exposure records
-├── formats/        # CDISC/SDTM export
+├── core/           # Core models and generators
+│   ├── models.py   # Subject, Visit, AdverseEvent, Exposure
+│   ├── generator.py # TrialSubjectGenerator
+│   ├── visits.py   # VisitGenerator
+│   ├── adverse_events.py # AdverseEventGenerator
+│   └── exposures.py # ExposureGenerator
+├── formats/        # CDISC/SDTM export (planned)
 │   └── sdtm/       # SDTM domain exporters
-├── journeys/       # Journey integration with core
 └── mcp/            # MCP server for AI integration
+    ├── generation_server.py # Subject/visit generation tools
+    ├── state_server.py      # Cohort save/load tools
+    └── formatters.py        # Human-readable output formatting
 ```
 
-## MCP Integration
+## MCP Server Integration
 
-TrialSim provides MCP servers for AI-assisted trial data generation.
+TrialSim provides MCP (Model Context Protocol) servers for AI-assisted clinical trial data generation.
 
 ### Generation Server
 
-Start the generation server:
-
-```bash
-python -m trialsim.mcp.generation_server
-```
-
-**Available Tools:**
+The generation server exposes tools for creating trial data:
 
 | Tool | Description |
 |------|-------------|
 | `generate_subject` | Generate a single trial subject |
-| `generate_subject_cohort` | Generate multiple subjects |
+| `generate_subject_cohort` | Generate multiple subjects for a protocol |
 | `generate_visit_schedule` | Create visit schedule for a subject |
 | `generate_adverse_events` | Generate adverse events |
 | `generate_exposures` | Generate drug exposure records |
@@ -82,25 +78,29 @@ python -m trialsim.mcp.generation_server
 
 ### State Server
 
-Start the state server:
-
-```bash
-python -m trialsim.mcp.state_server
-```
-
-**Available Tools:**
+The state server provides workspace persistence:
 
 | Tool | Description |
 |------|-------------|
-| `save_cohort` | Save current workspace as named cohort |
+| `save_cohort` | Save workspace as a named cohort |
 | `load_cohort` | Load a previously saved cohort |
 | `list_saved_cohorts` | List saved cohorts with filtering |
 | `delete_cohort` | Delete a saved cohort |
 | `workspace_summary` | Get current workspace state |
 
+### Running the MCP Servers
+
+```bash
+# Generation server
+python -m trialsim.mcp.generation_server
+
+# State server  
+python -m trialsim.mcp.state_server
+```
+
 ### Claude Desktop Configuration
 
-Add to your Claude Desktop config (`claude_desktop_config.json`):
+Add to your Claude Desktop config:
 
 ```json
 {
@@ -137,7 +137,7 @@ timeline = engine.create_timeline(
 )
 ```
 
-## CDISC/SDTM Export
+## CDISC/SDTM Export (Planned)
 
 ```python
 from trialsim.formats import SDTMExporter
@@ -155,7 +155,7 @@ datasets = exporter.export(
 
 - [HealthSim Core](../core/README.md) - Shared models and journey engine
 - [PatientSim](../patientsim/README.md) - Clinical data generation
-- [TrialSim Skills](../../skills/trialsim/README.md) - AI conversation skills
+- [MemberSim](../membersim/README.md) - Health plan member generation
 
 ## License
 

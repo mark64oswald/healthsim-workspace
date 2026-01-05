@@ -16,38 +16,38 @@ This plan addresses two tracks:
 ## Track 1: Product Consistency (3 Items)
 
 ### 1.1 Database Index Names
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Effort**: Small
 
 Rename scenario-based index names to cohort-based:
-- [ ] Audit `packages/core/src/healthsim/state/migrations.py` for `idx_*_scenario` patterns
-- [ ] Update index names to `idx_*_cohort`
-- [ ] Verify no breaking changes
-- [ ] Run state management tests
+- [x] Audit `packages/core/src/healthsim/state/migrations.py` for `idx_*_scenario` patterns
+- [x] Added migration 1.6 to drop legacy idx_*_scenario indexes
+- [x] Verify no breaking changes
+- [x] Run state management tests (295 passed)
 
 ### 1.2 MemberSim/RxMemberSim MCP Audit
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Effort**: Small-Medium
 
 Check for remaining "scenario" terminology in MCP layers:
-- [ ] Audit `packages/membersim/src/membersim/mcp/` for scenario references
-- [ ] Audit `packages/rxmembersim/src/rxmembersim/mcp/` for scenario references
-- [ ] Update user-facing messages to use "cohort/skill" terminology
-- [ ] Run MemberSim tests (183)
-- [ ] Run RxMemberSim tests (213)
+- [x] Audit `packages/membersim/src/membersim/mcp/` for scenario references
+- [x] Audit `packages/rxmembersim/src/rxmembersim/mcp/` for scenario references
+- [x] Update user-facing messages to use "cohort/skill" terminology
+- [x] Run MemberSim tests (183 passed)
+- [x] Run RxMemberSim tests (213 passed)
 
 ### 1.3 TrialSim MCP Server
-**Status**: ⬜ Not Started
+**Status**: ✅ Complete
 **Effort**: Medium
 
 Add MCP server integration to TrialSim following PatientSim pattern:
-- [ ] Create `packages/trialsim/src/trialsim/mcp/generation_server.py`
-- [ ] Create `packages/trialsim/src/trialsim/mcp/state_server.py`
-- [ ] Create `packages/trialsim/src/trialsim/mcp/formatters.py`
-- [ ] Add MCP tools: generate_subject, generate_visit_schedule, generate_adverse_events
-- [ ] Add state tools: save_cohort, load_cohort, list_saved_cohorts
-- [ ] Create tests for MCP layer
-- [ ] Update TrialSim README with MCP documentation
+- [x] Create `packages/trialsim/src/trialsim/mcp/generation_server.py`
+- [x] Create `packages/trialsim/src/trialsim/mcp/state_server.py`
+- [x] Create `packages/trialsim/src/trialsim/mcp/formatters.py`
+- [x] Add MCP tools: generate_subject, generate_visit_schedule, generate_adverse_events
+- [x] Add state tools: save_cohort, load_cohort, list_saved_cohorts
+- [x] Create tests for MCP layer (33 passed)
+- [x] Update TrialSim README with MCP documentation
 
 ---
 
@@ -129,6 +129,7 @@ Connect PopulationSim reference data to generation framework:
 | Date | Items Completed | Tests Status | Commits |
 |------|-----------------|--------------|---------|
 | 2026-01-05 | TrialSim core implementation, PatientSim cleanup, README standardization | 1,760 passing | 3 commits |
+| 2026-01-05 | Track 1: 1.1 DB indexes, 1.2 MCP audit, 1.3 TrialSim MCP | 1,777 passing | 1 commit |
 | | | | |
 
 ---
