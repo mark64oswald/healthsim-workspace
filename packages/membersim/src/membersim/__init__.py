@@ -18,16 +18,39 @@ from membersim.generation import (
     UniformDistribution,
     WeightedChoice,
 )
-from membersim.scenarios import (
-    BUILTIN_SCENARIOS,
-    MemberTimeline,
+
+# Journey module (new API)
+from membersim.journeys import (
+    # Core journey classes
+    JourneyEngine,
+    JourneySpecification,
+    Timeline,
+    TimelineEvent,
+    EventDefinition,
+    DelaySpec,
+    EventCondition,
+    MemberEventType,
+    # MemberSim-specific
+    create_member_journey_engine,
+    MEMBER_JOURNEY_TEMPLATES,
+    get_member_journey_template,
+    # Backward compatibility aliases (deprecated)
     ScenarioDefinition,
     ScenarioEngine,
+    MemberTimeline,
     ScenarioLibrary,
-    TimelineEvent,
-    create_default_engine,
-    register_builtin_scenarios,
+    EventDelay,
 )
+
+# Legacy alias for backward compatibility
+BUILTIN_SCENARIOS = MEMBER_JOURNEY_TEMPLATES
+create_default_engine = create_member_journey_engine
+
+
+def register_builtin_scenarios() -> None:
+    """DEPRECATED: Journey templates are auto-loaded. This is a no-op."""
+    pass
+
 
 __version__ = "0.1.0"
 
@@ -56,12 +79,24 @@ __all__ = [
     "CohortConstraints",
     "CohortProgress",
     "CohortGenerator",
-    # Scenarios
+    # Journey API (new)
+    "JourneyEngine",
+    "JourneySpecification",
+    "Timeline",
+    "TimelineEvent",
+    "EventDefinition",
+    "DelaySpec",
+    "EventCondition",
+    "MemberEventType",
+    "create_member_journey_engine",
+    "MEMBER_JOURNEY_TEMPLATES",
+    "get_member_journey_template",
+    # Backward compatibility (deprecated)
     "ScenarioDefinition",
     "ScenarioLibrary",
     "ScenarioEngine",
-    "TimelineEvent",
     "MemberTimeline",
+    "EventDelay",
     "create_default_engine",
     "register_builtin_scenarios",
     "BUILTIN_SCENARIOS",

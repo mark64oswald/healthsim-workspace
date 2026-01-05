@@ -8,7 +8,12 @@ from rxmembersim.mcp.server import (
     formulary,
     member_generator,
     pa_workflow,
-    scenario_engine,
+    journey_engine,
+)
+from rxmembersim.journeys import (
+    get_rx_journey_template,
+    RX_JOURNEY_TEMPLATES,
+    list_rx_journey_templates,
 )
 
 
@@ -88,16 +93,27 @@ class TestMCPComponents:
         assert response is not None
         assert response.auto_approved is True
 
-    def test_scenario_engine_list(self) -> None:
-        """Test scenario engine lists scenarios."""
-        scenarios = scenario_engine.list_scenarios()
-        assert len(scenarios) >= 5
+    def test_journey_engine_list_templates(self) -> None:
+        """Test journey engine lists journey templates."""
+        templates = list_rx_journey_templates()
+        assert len(templates) >= 5
+        assert "new-therapy-start" in templates
+        assert "specialty-onboarding" in templates
 
-    def test_scenario_engine_execute(self) -> None:
-        """Test scenario engine executes scenario."""
-        scenario = scenario_engine.new_therapy_approved()
-        timeline = scenario_engine.execute_scenario(scenario, "MEM001")
-        assert len(timeline.events) == 3
+    def test_journey_engine_create_timeline(self) -> None:
+        """Test journey engine creates timeline from template."""
+        journey = get_rx_journey_template("new-therapy-start")
+        rx_member = {"member_id": "MEM001"}
+        
+        timeline = journey_engine.create_timeline(
+            entity=rx_member,
+            entity_type="rx_member",
+            journey=journey,
+            start_date=date.today(),
+        )
+        
+        assert len(timeline.events) >= 3
+        assert timeline.entity_id == "MEM001"
 
 
 class TestMCPIntegration:
@@ -140,3 +156,22 @@ class TestMCPIntegration:
                 patient_gender="F",
             )
             assert result is not None
+
+    def test_member_journey_workflow(self) -> None:
+        """Test generating member and executing a journey."""
+        # Generate member
+        member = member_generator.generate()
+        
+        # Get journey template
+        journey = get_rx_journey_template("new-therapy-start")
+        
+        # Create timeline
+        timeline = journey_engine.create_timeline(
+            entity={"member_id": member.member_id},
+            entity_type="rx_member",
+            journey=journey,
+            start_date=date.today(),
+        )
+        
+        assert timeline.entity_id == member.member_id
+        assert len(timeline.events) >= 3

@@ -22,10 +22,33 @@ from rxmembersim.formulary import (
     FormularyGenerator,
     StepTherapyManager,
 )
-from rxmembersim.scenarios import (
-    RxScenarioDefinition,
+
+# Journey module (new API)
+from rxmembersim.journeys import (
+    # Core journey classes
+    JourneyEngine,
+    JourneySpecification,
+    Timeline,
+    TimelineEvent,
+    EventDefinition,
+    DelaySpec,
+    EventCondition,
+    RxEventType,
+    # RxMemberSim-specific
+    create_rx_journey_engine,
+    RX_JOURNEY_TEMPLATES,
+    get_rx_journey_template,
+    # Backward compatibility aliases (deprecated)
     RxScenarioEngine,
+    RxScenarioDefinition,
+    LegacyRxTimeline,
 )
+
+# Legacy aliases for backward compatibility
+BUILTIN_SCENARIOS = RX_JOURNEY_TEMPLATES
+create_default_engine = create_rx_journey_engine
+RxTimeline = LegacyRxTimeline
+
 
 __version__ = "1.1.0"
 
@@ -48,9 +71,24 @@ __all__ = [
     "Formulary",
     "FormularyGenerator",
     "StepTherapyManager",
-    # Scenarios
+    # Journey API (new)
+    "JourneyEngine",
+    "JourneySpecification",
+    "Timeline",
+    "TimelineEvent",
+    "EventDefinition",
+    "DelaySpec",
+    "EventCondition",
+    "RxEventType",
+    "create_rx_journey_engine",
+    "RX_JOURNEY_TEMPLATES",
+    "get_rx_journey_template",
+    # Backward compatibility (deprecated)
     "RxScenarioDefinition",
     "RxScenarioEngine",
+    "RxTimeline",
+    "create_default_engine",
+    "BUILTIN_SCENARIOS",
     # Dimensional
     "RxMemberSimDimensionalTransformer",
 ]
