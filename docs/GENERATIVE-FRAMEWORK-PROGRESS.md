@@ -91,7 +91,25 @@ All product READMEs updated with generation examples
 |------|--------|-------|
 | docs/guides/skill-integration.md | ✅ | Created |
 
-**Phase 3 Total New Tests: 41** (18 + 11 + 12)
+**Commit**: 85b2564
+
+### 3.5 Automatic Skill Resolution ✅ COMPLETE
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Create SkillRegistry | ✅ | Maps conditions → skills automatically |
+| Add condition field to EventDefinition | ✅ | Simpler than skill_ref |
+| Default registrations | ✅ | diabetes, ckd, hf, htn, copd, etc. |
+| Auto-resolution journey templates | ✅ | 7 templates in auto_journeys.py |
+| Tests | ✅ | 38 tests (30 registry + 8 integration) |
+
+**Commit**: f6199c6
+
+**Phase 3 Summary:**
+- Two ways to integrate skills:
+  1. **Explicit**: `skill_ref: {skill: "...", lookup: "..."}`
+  2. **Automatic**: `condition: "diabetes"` (simpler!)
+- 79 total Phase 3 tests
 
 ---
 
@@ -162,6 +180,8 @@ All product READMEs updated with generation examples
 
 | Hash | Description |
 |------|-------------|
+| f6199c6 | Phase 3.5: Add automatic skill resolution via SkillRegistry |
+| 85b2564 | Phase 3.4: Add skill integration documentation |
 | 11b52c5 | Phase 3.3: Add skill-aware journey templates |
 | 90fea0f | Phase 3.2: Add JourneyEngine skill integration tests |
 | 323b437 | Phase 3.1: Add SkillReference system |
@@ -183,10 +203,12 @@ All product READMEs updated with generation examples
 | Phase 2 Product Generation | 103 |
 | Phase 2 Orchestrator | 12 |
 | Phase 2 Unified API | 19 |
-| Phase 3 Skill Reference | 18 |
-| Phase 3 Journey Integration | 11 |
-| Phase 3 Skill Journeys | 12 |
-| **Total** | **~650+ generation-related** |
+| Phase 3.1 Skill Reference | 18 |
+| Phase 3.2 Journey Integration | 11 |
+| Phase 3.3 Skill Journeys | 12 |
+| Phase 3.5 Skill Registry | 30 |
+| Phase 3.5 Auto Resolution | 8 |
+| **Total Generation Tests** | **561** |
 
 ---
 
@@ -199,4 +221,6 @@ All product READMEs updated with generation examples
   - Phase 3.2: JourneyEngine integration (11 tests)
   - Phase 3.3: Skill-aware journey templates (12 tests)
   - Phase 3.4: Documentation (skill-integration.md)
+  - Phase 3.5: Automatic skill resolution via SkillRegistry (38 tests)
+- Total generation tests now: 561
 - Ready for Phase 4: PopulationSim/NetworkSim Integration
