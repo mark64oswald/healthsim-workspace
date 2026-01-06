@@ -145,6 +145,20 @@ from healthsim.generation.skill_journeys import (
     list_skill_aware_templates,
     get_skill_aware_template,
 )
+from healthsim.generation.auto_journeys import (
+    AUTO_RESOLUTION_TEMPLATES,
+    list_auto_templates,
+    get_auto_template,
+)
+from healthsim.generation.skill_registry import (
+    SkillRegistry,
+    SkillCapability,
+    SkillCapabilityDeclaration,
+    SkillRegistration,
+    get_skill_registry,
+    auto_resolve_parameters,
+    register_skill,
+)
 
 __all__ = [
     # Generators
@@ -273,4 +287,16 @@ __all__ = [
     "SKILL_AWARE_TEMPLATES",
     "list_skill_aware_templates",
     "get_skill_aware_template",
+    # Auto-Resolution Journeys
+    "AUTO_RESOLUTION_TEMPLATES",
+    "list_auto_templates",
+    "get_auto_template",
+    # Skill Registry (Auto-Resolution)
+    "SkillRegistry",
+    "SkillCapability",
+    "get_skill_registry",
+    "auto_resolve_parameters",
+    "register_skill",
+    "SkillCapabilityDeclaration",
+    "SkillRegistration",
 ]

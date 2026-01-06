@@ -23,6 +23,28 @@ from typing import Any, Protocol
 
 from pydantic import BaseModel, Field
 
+# Import for skill-aware parameter resolution (lazy to avoid circular imports)
+_parameter_resolver = None
+
+def _get_parameter_resolver():
+    """Lazy load the parameter resolver to avoid circular imports."""
+    global _parameter_resolver
+    if _parameter_resolver is None:
+        from healthsim.generation.skill_reference import ParameterResolver
+        _parameter_resolver = ParameterResolver()
+    return _parameter_resolver
+
+
+_skill_registry = None
+
+def _get_skill_registry():
+    """Lazy load the skill registry to avoid circular imports."""
+    global _skill_registry
+    if _skill_registry is None:
+        from healthsim.generation.skill_registry import SkillRegistry
+        _skill_registry = SkillRegistry()
+    return _skill_registry
+
 
 # =============================================================================
 # Event Type System
@@ -218,8 +240,39 @@ class EventCondition(BaseModel):
 # Event Definitions
 # =============================================================================
 
+class SkillRef(BaseModel):
+    """Reference to a skill for parameter resolution.
+    
+    When present in parameters, the ParameterResolver will load the
+    referenced skill and extract values based on the lookup key.
+    
+    Example:
+        skill_ref = SkillRef(
+            skill="diabetes-management",
+            lookup="diagnosis_code",
+            context={"control_status": "${entity.control_status}"}
+        )
+    """
+    skill: str = Field(..., description="Skill name to reference")
+    lookup: str = Field(..., description="What to look up in the skill")
+    context: dict[str, Any] = Field(default_factory=dict, description="Context for resolution")
+    fallback: Any = Field(default=None, description="Fallback if lookup fails")
+
+
 class EventDefinition(BaseModel):
-    """Definition of an event within a journey."""
+    """Definition of an event within a journey.
+    
+    Events can specify parameters in three ways:
+    1. Direct values: {"icd10": "E11.9", "description": "..."}
+    2. Skill references: {"skill_ref": {"skill": "diabetes-management", "lookup": "diagnosis_code"}}
+    3. Auto-resolution: Set `condition` field and parameters are resolved automatically
+    
+    When skill_ref is present, the ParameterResolver will resolve it
+    to concrete values at execution time.
+    
+    When condition is set (e.g., "diabetes"), the SkillRegistry automatically
+    finds the appropriate skill and resolves parameters based on event_type.
+    """
     
     event_id: str
     name: str
@@ -236,11 +289,22 @@ class EventDefinition(BaseModel):
     # Probability (for optional events)
     probability: float = 1.0
     
-    # Event-specific parameters
+    # Auto-resolution: specify condition to auto-resolve from skill
+    condition: str | None = None  # e.g., "diabetes", "ckd", "heart_failure"
+    
+    # Event-specific parameters (can include skill_ref for dynamic resolution)
     parameters: dict[str, Any] = Field(default_factory=dict)
     
     # Cross-product triggers
     triggers: list["TriggerSpec"] = Field(default_factory=list)
+    
+    def has_skill_ref(self) -> bool:
+        """Check if parameters contain a skill reference."""
+        return "skill_ref" in self.parameters
+    
+    def uses_auto_resolution(self) -> bool:
+        """Check if this event uses auto-resolution via condition."""
+        return self.condition is not None
 
 
 class TriggerSpec(BaseModel):
@@ -300,10 +364,19 @@ class TimelineEvent:
     event_name: str
     product: str = "core"
     
+    # Auto-resolution condition (e.g., "diabetes", "ckd")
+    condition: str | None = None
+    
+    # Event parameters (may contain skill_ref for lazy resolution)
+    parameters: dict[str, Any] = field(default_factory=dict)
+    
     # Execution state
     status: str = "pending"  # pending, executed, skipped, failed
     executed_at: datetime | None = None
     result: dict[str, Any] = field(default_factory=dict)
+    
+    # Resolved parameters (after skill_ref resolution)
+    resolved_parameters: dict[str, Any] = field(default_factory=dict)
     
     # Cross-product tracking
     triggered_events: list[str] = field(default_factory=list)
@@ -512,6 +585,8 @@ class JourneyEngine:
                 event_type=event_def.event_type,
                 event_name=event_def.name,
                 product=event_def.product,
+                condition=event_def.condition,  # For auto-resolution
+                parameters=event_def.parameters.copy(),  # Store original params
             )
             
             timeline.add_event(timeline_event)
@@ -559,16 +634,143 @@ class JourneyEngine:
         handler = self._handlers[product][event_type]
         
         try:
-            result = handler(entity, event, context or {})
+            # Resolve skill references in parameters
+            entity_dict = self._entity_to_dict(entity)
+            resolved_params = self._resolve_event_parameters(
+                event.parameters, 
+                entity_dict,
+                event_type=event.event_type,
+                condition=event.condition,
+            )
+            event.resolved_parameters = resolved_params
+            
+            # Merge resolved parameters into context
+            exec_context = dict(context or {})
+            exec_context["event_parameters"] = resolved_params
+            
+            result = handler(entity, event, exec_context)
             timeline.mark_executed(event.timeline_event_id, result)
             
             # Process triggers
-            self._process_triggers(event, result, context or {})
+            self._process_triggers(event, result, exec_context)
             
-            return {"status": "executed", "outputs": result}
+            return {"status": "executed", "outputs": result, "parameters": resolved_params}
         except Exception as e:
             event.status = "failed"
             return {"status": "failed", "error": str(e)}
+    
+    def _entity_to_dict(self, entity: Any) -> dict[str, Any]:
+        """Convert entity to dictionary for parameter resolution."""
+        if isinstance(entity, dict):
+            return entity
+        if hasattr(entity, "model_dump"):
+            return entity.model_dump()
+        if hasattr(entity, "dict"):
+            return entity.dict()
+        if hasattr(entity, "__dict__"):
+            return entity.__dict__
+        return {}
+    
+    def _resolve_event_parameters(
+        self,
+        parameters: dict[str, Any],
+        entity_dict: dict[str, Any],
+        event_type: str | None = None,
+        condition: str | None = None,
+    ) -> dict[str, Any]:
+        """Resolve skill references and entity variables in parameters.
+        
+        Supports three resolution modes:
+        1. Direct values: Used as-is
+        2. skill_ref: Explicit skill reference resolved via ParameterResolver
+        3. Auto-resolution: When condition is set, finds skill automatically
+        
+        Args:
+            parameters: Original event parameters
+            entity_dict: Entity attributes for ${entity.x} substitution
+            event_type: Event type (for auto-resolution)
+            condition: Condition keyword (for auto-resolution)
+            
+        Returns:
+            Resolved parameters with concrete values
+        """
+        # Auto-resolution: condition is set, no skill_ref
+        if condition and "skill_ref" not in parameters and event_type:
+            return self._auto_resolve_parameters(
+                event_type, condition, parameters, entity_dict
+            )
+        
+        # Explicit skill_ref
+        if "skill_ref" in parameters:
+            resolver = _get_parameter_resolver()
+            return resolver.resolve_event_parameters(parameters, entity_dict)
+        
+        # Direct values - just resolve entity variables
+        if not parameters:
+            return {}
+        
+        resolved = {}
+        for key, value in parameters.items():
+            if isinstance(value, str) and "${entity." in value:
+                resolved[key] = self._resolve_entity_var(value, entity_dict)
+            else:
+                resolved[key] = value
+        
+        return resolved
+    
+    def _auto_resolve_parameters(
+        self,
+        event_type: str,
+        condition: str,
+        parameters: dict[str, Any],
+        entity_dict: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Auto-resolve parameters using SkillRegistry.
+        
+        Args:
+            event_type: Type of event (diagnosis, medication_order, etc.)
+            condition: Condition keyword (diabetes, ckd, etc.)
+            parameters: Additional parameters to merge
+            entity_dict: Entity attributes
+            
+        Returns:
+            Resolved parameters
+        """
+        registry = _get_skill_registry()
+        
+        resolved = registry.resolve_for_event(
+            event_type=event_type,
+            condition=condition,
+            context=entity_dict,
+        )
+        
+        # Merge with any additional provided parameters
+        for key, value in parameters.items():
+            if key not in resolved:
+                if isinstance(value, str) and "${entity." in value:
+                    resolved[key] = self._resolve_entity_var(value, entity_dict)
+                else:
+                    resolved[key] = value
+        
+        return resolved
+    
+    def _resolve_entity_var(self, value: str, entity: dict[str, Any]) -> Any:
+        """Resolve ${entity.x} variables in a string."""
+        import re
+        pattern = r"\$\{entity\.(\w+)\}"
+        
+        def replacer(match):
+            attr = match.group(1)
+            return str(entity.get(attr, match.group(0)))
+        
+        result = re.sub(pattern, replacer, value)
+        
+        # If entire string was a variable, return the actual value
+        if value.startswith("${entity.") and value.endswith("}"):
+            attr = value[9:-1]
+            return entity.get(attr, value)
+        
+        return result
     
     def execute_timeline(
         self,
