@@ -19,8 +19,12 @@ from healthsim.generation.reference_profiles import (
 @pytest.fixture
 def conn():
     """Create test database connection."""
-    # Use the actual healthsim database with imported reference data
-    return duckdb.connect('/Users/markoswald/Developer/projects/healthsim-workspace/healthsim_current.duckdb')
+    # Use the canonical healthsim.duckdb database
+    # Path: packages/core/tests/test_reference_profiles.py
+    # tests -> core -> packages -> healthsim-workspace (3 parents)
+    from pathlib import Path
+    db_path = Path(__file__).parent.parent.parent.parent / "healthsim.duckdb"
+    return duckdb.connect(str(db_path), read_only=True)
 
 
 class TestGeographyReference:

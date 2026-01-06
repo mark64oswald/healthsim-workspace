@@ -198,12 +198,12 @@ class TestReferenceProfileResolver:
         # Setup mock
         def mock_execute(query, params=None):
             result = MagicMock()
-            if "ref_places_county" in query:
+            if "population.places_county" in query:
                 cols = list(sample_places_data.keys())
                 values = list(sample_places_data.values())
                 mock_conn.description = [(c,) for c in cols]
                 result.fetchone.return_value = values
-            elif "ref_svi_county" in query:
+            elif "population.svi_county" in query:
                 cols = list(sample_svi_data.keys())
                 values = list(sample_svi_data.values())
                 mock_conn.description = [(c,) for c in cols]
@@ -291,12 +291,12 @@ class TestResolveGeography:
         """Test resolving county specification."""
         def mock_execute(query, params=None):
             result = MagicMock()
-            if "ref_places_county" in query:
+            if "population.places_county" in query:
                 cols = list(sample_places_data.keys())
                 values = list(sample_places_data.values())
                 mock_conn.description = [(c,) for c in cols]
                 result.fetchone.return_value = values
-            elif "ref_svi_county" in query:
+            elif "population.svi_county" in query:
                 cols = list(sample_svi_data.keys())
                 values = list(sample_svi_data.values())
                 mock_conn.description = [(c,) for c in cols]
@@ -467,12 +467,12 @@ class TestCreateHybridProfile:
         """Test creating hybrid profile with PopulationSim source."""
         def mock_execute(query, params=None):
             result = MagicMock()
-            if "ref_places_county" in query:
+            if "population.places_county" in query:
                 cols = list(sample_places_data.keys())
                 values = list(sample_places_data.values())
                 mock_conn.description = [(c,) for c in cols]
                 result.fetchone.return_value = values
-            elif "ref_svi_county" in query:
+            elif "population.svi_county" in query:
                 cols = list(sample_svi_data.keys())
                 values = list(sample_svi_data.values())
                 mock_conn.description = [(c,) for c in cols]
@@ -516,12 +516,12 @@ class TestCreateHybridProfile:
         """Test hybrid profile respects user overrides."""
         def mock_execute(query, params=None):
             result = MagicMock()
-            if "ref_places_county" in query:
+            if "population.places_county" in query:
                 cols = list(sample_places_data.keys())
                 values = list(sample_places_data.values())
                 mock_conn.description = [(c,) for c in cols]
                 result.fetchone.return_value = values
-            elif "ref_svi_county" in query:
+            elif "population.svi_county" in query:
                 cols = list(sample_svi_data.keys())
                 values = list(sample_svi_data.values())
                 mock_conn.description = [(c,) for c in cols]
