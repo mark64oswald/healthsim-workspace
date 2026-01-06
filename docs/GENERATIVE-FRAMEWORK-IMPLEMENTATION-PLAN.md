@@ -34,6 +34,85 @@ It's not that we haven't built anything - **we've built lots**. The problem is:
 
 ---
 
+## Cross-Product Implementation Matrix
+
+**CRITICAL**: Every feature must be implemented across ALL products. This matrix tracks completion.
+
+### Phase 2: Product Integration Layer
+
+| Feature | Core | MemberSim | PatientSim | RxMemberSim | TrialSim | PopulationSim | NetworkSim |
+|---------|------|-----------|------------|-------------|----------|---------------|------------|
+| `generation/` module | N/A | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| `profiles.py` | N/A | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| `executor.py` | N/A | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| `templates.py` | N/A | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| `generate()` function | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Unit tests | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Integration tests | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+
+### Phase 3: Skill Integration
+
+| Feature | Core | MemberSim | PatientSim | RxMemberSim | TrialSim |
+|---------|------|-----------|------------|-------------|----------|
+| SkillReference in journeys | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Skill-aware event resolution | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Migrated hardcoded values | N/A | ⬜ | ⬜ | ⬜ | ⬜ |
+
+### Phase 5: State Management
+
+| Feature | Core | MemberSim | PatientSim | RxMemberSim | TrialSim |
+|---------|------|-----------|------------|-------------|----------|
+| Profile persistence | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Execution history | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+
+### Documentation Checklist (Per Product)
+
+| Documentation | Core | MemberSim | PatientSim | RxMemberSim | TrialSim | PopulationSim | NetworkSim |
+|---------------|------|-----------|------------|-------------|----------|---------------|------------|
+| README updated | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| API docs (`docs/api/`) | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Usage examples | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Skill integration guide | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | N/A | N/A |
+| Links verified | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+
+---
+
+## Documentation Requirements (Integrated per Phase)
+
+Documentation is NOT deferred to the end. Each phase includes documentation deliverables.
+
+### Phase 2 Documentation
+- [ ] Update each product's README with generation module usage
+- [ ] Create `docs/api/generation.md` with full API reference
+- [ ] Add docstrings to all new classes/functions (Google style)
+- [ ] Create quick-start example for each product
+- [ ] Verify all existing links still work after changes
+
+### Phase 3 Documentation
+- [ ] Create `docs/guides/skill-integration.md` explaining the pattern
+- [ ] Update affected Skills with integration examples
+- [ ] Document SkillReference schema in API docs
+- [ ] Add examples of skill-aware journey templates
+
+### Phase 4 Documentation
+- [ ] Create `docs/guides/reference-data.md` for PopulationSim/NetworkSim
+- [ ] Document `healthsim init` command usage
+- [ ] Add geography resolution examples
+
+### Phase 5 Documentation
+- [ ] Create `docs/guides/state-management.md` user guide
+- [ ] Document profile persistence API
+- [ ] Add execution history query examples
+
+### Phase 6 Documentation (Final Polish)
+- [ ] Create comprehensive `docs/guides/generative-framework.md`
+- [ ] Review and update ALL product READMEs
+- [ ] Run link validation across all docs
+- [ ] Create "Oswald Family" demo script/walkthrough
+- [ ] Update root README with framework overview
+
+---
+
 ## Architecture: How It Should Work
 
 ```
@@ -169,6 +248,43 @@ members = result.entities
 orchestrator = ProfileJourneyOrchestrator(profile_spec)
 results = orchestrator.execute()  # Returns entities WITH timelines
 ```
+
+### 2.3 Create Unified Entry Point (Addresses Gap 3)
+
+**Goal**: Single, consistent API for users to generate healthcare data.
+
+**Tasks**:
+- [ ] Create `healthsim.generate()` convenience function in core
+- [ ] Create product-specific `{product}.generate()` functions
+- [ ] Wire to state persistence automatically
+- [ ] Add format output options
+
+**Unified API**:
+```python
+# Option 1: Core-level generation (multi-product)
+from healthsim import generate
+
+result = generate(
+    profile="medicare-diabetic",      # Template name or ProfileSpec
+    journey="diabetic-first-year",    # Optional journey
+    count=100,
+    products=["patientsim", "membersim"],
+    output_formats=["fhir_r4", "x12_837"],
+    persist=True,                     # Auto-save to state
+    seed=42,                          # Reproducibility
+)
+
+# Option 2: Product-specific generation
+from patientsim import generate as generate_patients
+
+patients = generate_patients(
+    profile="diabetic-senior",
+    journey="chronic-management",
+    count=50,
+)
+```
+
+**Implementation Location**: `packages/core/src/healthsim/generate.py`
 
 ---
 

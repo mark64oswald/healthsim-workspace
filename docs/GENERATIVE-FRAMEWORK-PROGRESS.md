@@ -1,88 +1,148 @@
 # Generative Framework Implementation - Progress Tracker
 
 **Started**: 2026-01-06
-**Current Phase**: Phase 1 - Foundation Verification
+**Current Phase**: Phase 2 - Product Integration Layer
 **Last Updated**: 2026-01-06
 
 ---
 
-## Phase 1: Foundation Verification (Days 1-2)
-
-### 1.1 Verify Core Infrastructure Works
+## Phase 1: Foundation Verification ✅ COMPLETE
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Run existing generation tests | ✅ Complete | **470/470 passed** (0.58s) |
-| Run existing state tests | ✅ Complete | **228/230 passed** (2 pyarrow optional) |
-| Run integration tests | ✅ Complete | **35/35 passed** |
-| Run Oswald family tests | ✅ Complete | **9/9 passed** |
-| Distributions module | ✅ Verified | All distribution types work |
-| ProfileExecutor | ✅ Verified | Two-phase architecture works |
-| ProfileSchema | ✅ Verified | Pydantic models validate |
-| Reference Profiles | ✅ Verified | Tests use mock DB |
-| Journey Engine | ✅ Verified | Event scheduling works |
-| Cross-domain sync | ✅ Verified | Identity correlation works |
-| Triggers | ✅ Verified | Cross-product triggers work |
-| State persistence | ✅ Verified | File + DuckDB backends work |
+| Generation tests | ✅ | 470/470 passed |
+| State tests | ✅ | 228/230 passed (2 pyarrow optional) |
+| Integration tests | ✅ | 35/35 passed |
+| Oswald family tests | ✅ | 9/9 passed |
 
-**Total Tests Run: 742+ passed**
-
-### Issues Found
-
-1. **MCP test import error**: `packages/core/tests/mcp/test_profile_server.py` fails to import due to missing `mcp` module. Not critical for core functionality.
-
-2. **Pyarrow not installed**: 2 state tests skip Parquet export (optional feature).
-
-### 1.2 Document Existing APIs
-
-| Task | Status | Notes |
-|------|--------|-------|
-| Create `docs/api/generation.md` | ⬜ Pending | |
-| Create `docs/api/state.md` | ⬜ Pending | |
-| Update README files | ⬜ Pending | |
+**Total: 742+ tests passing**
 
 ---
 
-## Summary: Phase 1.1 Complete ✅
+## Phase 2: Product Integration Layer (Current)
 
-The core infrastructure is **solid and working**:
+### 2.1 Create generation/ Module
 
-- **Distributions**: All types (Normal, LogNormal, Categorical, AgeBands, Conditional, Explicit) work correctly
-- **ProfileExecutor**: Two-phase architecture (spec → entities) executes with validation
-- **JourneyEngine**: Event scheduling, delays, dependencies all functional
-- **State Management**: Both file-based workspaces and DuckDB-backed persistence work
-- **Cross-Product**: Identity correlation and triggers pass integration tests
+| Product | Module Created | profiles.py | executor.py | templates.py | Tests | README |
+|---------|---------------|-------------|-------------|--------------|-------|--------|
+| Core | N/A | N/A | N/A | N/A | ⬜ | ⬜ |
+| MemberSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| PatientSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| RxMemberSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| TrialSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| PopulationSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| NetworkSim | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 
-**Key Finding**: The framework is more complete than documentation suggested. The gap is not "unbuilt code" but rather:
-1. Products don't consistently expose core APIs
-2. Skills aren't programmatically integrated with journey templates
-3. Reference data (PopulationSim) not tested with real DB in CI
+### 2.2 ProfileJourneyOrchestrator
+
+| Task | Status |
+|------|--------|
+| Create orchestrator class | ⬜ |
+| Wire profile → journey | ⬜ |
+| Tests | ⬜ |
+
+### 2.3 Unified Entry Point
+
+| Product | generate() function | Tests | Docs |
+|---------|---------------------|-------|------|
+| Core (healthsim.generate) | ⬜ | ⬜ | ⬜ |
+| MemberSim | ⬜ | ⬜ | ⬜ |
+| PatientSim | ⬜ | ⬜ | ⬜ |
+| RxMemberSim | ⬜ | ⬜ | ⬜ |
+| TrialSim | ⬜ | ⬜ | ⬜ |
+
+### Phase 2 Documentation
+
+| Task | Status |
+|------|--------|
+| docs/api/generation.md | ⬜ |
+| Product README updates | ⬜ |
+| Quick-start examples | ⬜ |
+| Link validation | ⬜ |
 
 ---
 
-## Commits Made
+## Phase 3: Skill Integration (Pending)
 
-| Commit | Description |
-|--------|-------------|
+### 3.1 SkillReference Pattern
+
+| Product | Schema Added | Event Resolution | Hardcoded Migrated | Tests |
+|---------|--------------|------------------|-------------------|-------|
+| Core | ⬜ | ⬜ | N/A | ⬜ |
+| MemberSim | ⬜ | ⬜ | ⬜ | ⬜ |
+| PatientSim | ⬜ | ⬜ | ⬜ | ⬜ |
+| RxMemberSim | ⬜ | ⬜ | ⬜ | ⬜ |
+| TrialSim | ⬜ | ⬜ | ⬜ | ⬜ |
+
+### Phase 3 Documentation
+
+| Task | Status |
+|------|--------|
+| docs/guides/skill-integration.md | ⬜ |
+| Update affected Skills | ⬜ |
+| SkillReference schema docs | ⬜ |
+
+---
+
+## Phase 4: PopulationSim/NetworkSim (Pending)
+
+| Task | Status |
+|------|--------|
+| healthsim init command | ⬜ |
+| CDC PLACES data verified | ⬜ |
+| SVI data verified | ⬜ |
+| NetworkSim provider data | ⬜ |
+| docs/guides/reference-data.md | ⬜ |
+
+---
+
+## Phase 5: State Management Integration (Pending)
+
+| Product | Profile Persistence | Execution History | Tests |
+|---------|---------------------|-------------------|-------|
+| Core | ⬜ | ⬜ | ⬜ |
+| MemberSim | ⬜ | ⬜ | ⬜ |
+| PatientSim | ⬜ | ⬜ | ⬜ |
+| RxMemberSim | ⬜ | ⬜ | ⬜ |
+| TrialSim | ⬜ | ⬜ | ⬜ |
+
+### Phase 5 Documentation
+
+| Task | Status |
+|------|--------|
+| docs/guides/state-management.md | ⬜ |
+| Profile persistence API docs | ⬜ |
+
+---
+
+## Phase 6: Final Testing & Documentation (Pending)
+
+| Task | Status |
+|------|--------|
+| docs/guides/generative-framework.md | ⬜ |
+| All READMEs reviewed | ⬜ |
+| Link validation (full) | ⬜ |
+| Oswald Family demo script | ⬜ |
+| Root README updated | ⬜ |
+
+---
+
+## Commits
+
+| Hash | Description |
+|------|-------------|
 | 7047a86 | Add Git LFS detection and implementation plan |
+| 42d38fc | Complete Phase 1.1: Foundation verification |
 
 ---
 
-## Session Notes
+## Session Log
 
 ### Session 1 (2026-01-06)
-- Audited existing codebase - found more implemented than expected
 - Created implementation plan
-- Added Git LFS detection utilities
-- **Completed Phase 1.1**: All core tests pass (742+ tests)
-- Next: Document APIs (Phase 1.2) or proceed to Phase 2 (Product Integration)
-
----
-
-## Next Steps
-
-**Option A**: Complete Phase 1.2 (API documentation) before moving on
-**Option B**: Proceed directly to Phase 2 (Product Integration) since core is verified
-
-Recommendation: **Option B** - The code works, documentation can be done incrementally. The real gap is product integration.
+- Added Git LFS detection utilities  
+- Completed Phase 1.1 (742+ tests passing)
+- Added cross-product matrix to plan
+- Added per-phase documentation requirements
+- **Next**: Begin Phase 2.1 - Create MemberSim generation/ module as reference
 
