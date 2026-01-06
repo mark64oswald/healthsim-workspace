@@ -159,6 +159,19 @@ from healthsim.generation.skill_registry import (
     auto_resolve_parameters,
     register_skill,
 )
+from healthsim.generation.networksim_reference import (
+    EntityType,
+    FacilityType,
+    Provider,
+    Facility,
+    NetworkSimResolver,
+    TAXONOMY_MAP,
+    get_networksim_db_path,
+    get_providers_by_geography,
+    get_facilities_by_geography,
+    assign_provider_to_patient,
+    assign_facility_to_patient,
+)
 
 __all__ = [
     # Generators
@@ -299,4 +312,16 @@ __all__ = [
     "register_skill",
     "SkillCapabilityDeclaration",
     "SkillRegistration",
+    # NetworkSim Reference Data
+    "EntityType",
+    "FacilityType",
+    "Provider",
+    "Facility",
+    "NetworkSimResolver",
+    "TAXONOMY_MAP",
+    "get_networksim_db_path",
+    "get_providers_by_geography",
+    "get_facilities_by_geography",
+    "assign_provider_to_patient",
+    "assign_facility_to_patient",
 ]
