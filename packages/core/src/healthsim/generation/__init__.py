@@ -125,6 +125,12 @@ from healthsim.generation.journey_validation import (
     validate_events,
     create_journey_validator,
 )
+from healthsim.generation.orchestrator import (
+    ProfileJourneyOrchestrator,
+    EntityWithTimeline,
+    OrchestratorResult,
+    orchestrate,
+)
 
 __all__ = [
     # Generators
@@ -236,4 +242,9 @@ __all__ = [
     "validate_timeline",
     "validate_events",
     "create_journey_validator",
+    # Orchestrator
+    "ProfileJourneyOrchestrator",
+    "EntityWithTimeline",
+    "OrchestratorResult",
+    "orchestrate",
 ]

@@ -30,16 +30,18 @@
 | RxMemberSim | ✅ | ✅ | ✅ | ✅ | ✅ |
 | TrialSim | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-### 2.2 Tests for Generation Modules (IN PROGRESS)
+### 2.2 Tests for Generation Modules ✅ COMPLETE
 
 | Product | Unit Tests | Integration Tests | Status |
 |---------|------------|-------------------|--------|
 | MemberSim | ✅ 28 passed | ✅ | Complete |
-| PatientSim | ⬜ | ⬜ | Needs tests |
+| PatientSim | ✅ 24 passed | ✅ | Complete |
 | RxMemberSim | ✅ 21 passed | ✅ | Complete |
-| TrialSim | ⬜ | ⬜ | Needs tests |
+| TrialSim | ✅ 61 passed | ✅ | Complete |
 
-### 2.3 ProfileJourneyOrchestrator
+**Total: 134 generation module tests**
+
+### 2.3 ProfileJourneyOrchestrator (IN PROGRESS)
 
 | Task | Status |
 |------|--------|
@@ -75,7 +77,9 @@
 
 ---
 
-## Current Task: Phase 2.2 - Create tests for PatientSim and TrialSim
+## Current Task: Phase 2.3 - ProfileJourneyOrchestrator
+
+Wire profiles to journeys - entities generated from profiles can be assigned journeys.
 
 ---
 
@@ -83,6 +87,7 @@
 
 | Hash | Description |
 |------|-------------|
+| 50a7db6 | Complete Phase 2.2: Add generation tests for all products |
 | 3dfab5c | Complete Phase 2.1: Add generation modules to all products |
 | 94587b6 | Add cross-product matrix and documentation requirements |
 | 42d38fc | Complete Phase 1.1: Foundation verification |
@@ -102,4 +107,8 @@
 - Completed Phase 2.1: All 4 products have generation/ modules
 - MemberSim tests: 28 passed
 - RxMemberSim tests: 21 passed (fixed adherence clamping)
-- **Next**: Create tests for PatientSim and TrialSim (Phase 2.2)
+
+### Session 3 (2026-01-06)
+- Completed Phase 2.2: Tests for PatientSim (24) and TrialSim (61)
+- Total: 134 generation module tests passing
+- **Next**: Phase 2.3 - ProfileJourneyOrchestrator
