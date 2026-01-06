@@ -41,20 +41,20 @@
 
 **Total: 134 generation module tests**
 
-### 2.3 ProfileJourneyOrchestrator (IN PROGRESS)
+### 2.3 ProfileJourneyOrchestrator ✅ COMPLETE
 
 | Task | Status |
 |------|--------|
-| Create orchestrator class | ⬜ |
-| Wire profile → journey | ⬜ |
-| Tests | ⬜ |
+| Create orchestrator class | ✅ |
+| Wire profile → journey | ✅ |
+| Tests | ✅ 12 passed |
 
-### 2.4 Core Unified Entry Point
+### 2.4 Core Unified Entry Point ✅ COMPLETE
 
 | Task | Status |
 |------|--------|
-| Create healthsim.generate() | ⬜ |
-| Tests | ⬜ |
+| Create healthsim.generate() | ✅ |
+| Tests | ✅ 19 passed |
 | Docs | ⬜ |
 
 ### 2.5 README Updates
@@ -77,9 +77,9 @@
 
 ---
 
-## Current Task: Phase 2.3 - ProfileJourneyOrchestrator
+## Current Task: Phase 2.5 - README Updates and Documentation
 
-Wire profiles to journeys - entities generated from profiles can be assigned journeys.
+Update product READMEs with generation examples and create docs/api/generation.md.
 
 ---
 
@@ -87,6 +87,8 @@ Wire profiles to journeys - entities generated from profiles can be assigned jou
 
 | Hash | Description |
 |------|-------------|
+| 0968481 | Complete Phase 2.4: Add unified healthsim.generate() entry point |
+| 12af54d | Complete Phase 2.3: Add ProfileJourneyOrchestrator |
 | 50a7db6 | Complete Phase 2.2: Add generation tests for all products |
 | 3dfab5c | Complete Phase 2.1: Add generation modules to all products |
 | 94587b6 | Add cross-product matrix and documentation requirements |
@@ -110,5 +112,7 @@ Wire profiles to journeys - entities generated from profiles can be assigned jou
 
 ### Session 3 (2026-01-06)
 - Completed Phase 2.2: Tests for PatientSim (24) and TrialSim (61)
-- Total: 134 generation module tests passing
-- **Next**: Phase 2.3 - ProfileJourneyOrchestrator
+- Completed Phase 2.3: ProfileJourneyOrchestrator (12 tests)
+- Completed Phase 2.4: healthsim.generate() unified entry point (19 tests)
+- Total generation tests: 165 (134 product + 12 orchestrator + 19 unified)
+- **Next**: Phase 2.5 - README Updates
