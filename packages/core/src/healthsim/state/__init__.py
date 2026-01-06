@@ -118,6 +118,15 @@ from .profile_manager import (
     get_profile_manager,
 )
 
+# Journey persistence
+from .journey_manager import (
+    JourneyManager,
+    JourneyRecord,
+    JourneySummary,
+    JourneyExecutionRecord,
+    get_journey_manager,
+)
+
 __all__ = [
     # Provenance
     "Provenance",
@@ -178,4 +187,10 @@ __all__ = [
     "ProfileSummary",
     "ExecutionRecord",
     "get_profile_manager",
+    # Journey Persistence
+    "JourneyManager",
+    "JourneyRecord",
+    "JourneySummary",
+    "JourneyExecutionRecord",
+    "get_journey_manager",
 ]

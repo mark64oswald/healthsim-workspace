@@ -203,7 +203,28 @@ All product READMEs updated with generation examples
 | Link cohorts to profiles | ✅ | get_cohort_profile() |
 | Enable re-execution with seed | ✅ | get_execution_spec() |
 
-**Phase 5 Tests: 33 passing**
+**Phase 5.1-5.2 Tests: 33 passing**
+
+### 5.3 Journey Persistence ✅ COMPLETE
+
+| Task | Status | Notes |
+|------|--------|-------|
+| Add journey storage to StateManager | ✅ | manager.journeys property |
+| Create save_journey/load_journey | ✅ | JourneyManager class |
+| Add journey versioning | ✅ | Auto-increment on update |
+| Create journey listing/search | ✅ | Filter by product, tags, search |
+| Track journey executions | ✅ | record_execution() per entity |
+| Get entity journey history | ✅ | get_entity_journeys() |
+
+**Files Created**:
+- `src/healthsim/state/journey_manager.py` (645 lines)
+- `tests/state/test_journey_manager.py` (647 lines)
+- `docs/guides/journey-persistence.md` (361 lines)
+- Schema: journeys, journey_executions tables (v1.7)
+
+**Phase 5.3 Tests: 39 passing**
+
+**Phase 5 Total Tests: 72 passing** (33 profile + 39 journey)
 
 ---
 
@@ -231,10 +252,10 @@ All major phases completed:
 - Phase 2: Product Integration ✅
 - Phase 3: Skill Integration ✅
 - Phase 4: Reference Data Integration ✅
-- Phase 5: Profile Persistence ✅
+- Phase 5: Profile & Journey Persistence ✅
 - Phase 6: Documentation ✅
 
-**Total Tests: 1,634 passing**
+**Total Tests: 1,673 passing** (1,634 + 39 journey)
 
 ---
 
@@ -277,7 +298,8 @@ All major phases completed:
 | Phase 4.2 Reference Integration | 19 |
 | Phase 4.4 Hybrid Profiles | 15 |
 | Phase 5 Profile Manager | 33 |
-| **Total Tests** | **1,634** |
+| Phase 5 Journey Manager | 39 |
+| **Total Tests** | **1,673** |
 
 ---
 

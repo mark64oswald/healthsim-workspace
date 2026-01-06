@@ -9,7 +9,7 @@ from typing import List
 import duckdb
 
 # Current schema version
-SCHEMA_VERSION = "1.6"
+SCHEMA_VERSION = "1.7"
 
 # Standard provenance columns included in all canonical tables
 PROVENANCE_COLUMNS = """
@@ -113,6 +113,49 @@ CREATE TABLE IF NOT EXISTS profile_executions (
     status          VARCHAR DEFAULT 'completed',  -- 'completed', 'failed', 'partial'
     error_message   VARCHAR,                -- Error details if failed
     metadata        JSON                    -- Execution metadata (timings, etc.)
+);
+"""
+
+# ============================================================================
+# JOURNEY MANAGEMENT TABLES
+# ============================================================================
+
+JOURNEYS_SEQ_DDL = """
+CREATE SEQUENCE IF NOT EXISTS journeys_seq START 1;
+"""
+
+JOURNEYS_DDL = """
+CREATE TABLE IF NOT EXISTS journeys (
+    id              VARCHAR PRIMARY KEY,
+    name            VARCHAR NOT NULL UNIQUE,
+    description     VARCHAR,
+    version         INTEGER DEFAULT 1,
+    journey_spec    JSON NOT NULL,          -- Full JourneySpecification as JSON
+    products        JSON,                   -- Array of products this applies to
+    tags            JSON,                   -- Array of tags for filtering
+    duration_days   INTEGER,                -- Journey duration
+    event_count     INTEGER,                -- Number of events in journey
+    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    metadata        JSON                    -- Additional metadata
+);
+"""
+
+JOURNEY_EXECUTIONS_DDL = """
+CREATE TABLE IF NOT EXISTS journey_executions (
+    id              INTEGER PRIMARY KEY DEFAULT nextval('journeys_seq'),
+    journey_id      VARCHAR NOT NULL REFERENCES journeys(id),
+    profile_id      VARCHAR REFERENCES profiles(id),
+    cohort_id       VARCHAR REFERENCES cohorts(id),
+    entity_id       VARCHAR,                -- The entity (patient, member) this was executed for
+    executed_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    start_date      DATE,                   -- Journey start date
+    end_date        DATE,                   -- Journey end date
+    events_generated INTEGER,               -- Number of events generated
+    duration_ms     INTEGER,                -- Execution time in milliseconds
+    status          VARCHAR DEFAULT 'completed',
+    error_message   VARCHAR,
+    metadata        JSON
 );
 """
 
@@ -584,6 +627,11 @@ ALL_DDL = [
     PROFILES_SEQ_DDL,
     PROFILES_DDL,
     PROFILE_EXECUTIONS_DDL,
+    
+    # Journey management tables
+    JOURNEYS_SEQ_DDL,
+    JOURNEYS_DDL,
+    JOURNEY_EXECUTIONS_DDL,
     
     # PatientSim canonical tables
     PATIENTS_DDL,
