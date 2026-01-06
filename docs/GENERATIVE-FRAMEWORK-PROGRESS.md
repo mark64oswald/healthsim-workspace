@@ -57,29 +57,29 @@
 | Tests | ✅ 19 passed |
 | Docs | ⬜ |
 
-### 2.5 README Updates
+### 2.5 README Updates ✅ COMPLETE
 
 | Product | README Updated |
 |---------|----------------|
-| Core | ⬜ |
-| MemberSim | ⬜ |
-| PatientSim | ⬜ |
-| RxMemberSim | ⬜ |
-| TrialSim | ⬜ |
+| Core | ✅ |
+| MemberSim | ✅ |
+| PatientSim | ✅ |
+| RxMemberSim | ✅ |
+| TrialSim | ✅ |
 
-### Phase 2 Documentation
+### Phase 2 Documentation ✅ COMPLETE
 
 | Task | Status |
 |------|--------|
-| docs/api/generation.md | ⬜ |
-| Quick-start examples | ⬜ |
+| docs/api/generation.md | ✅ |
+| Quick-start examples | ✅ |
 | Link validation | ⬜ |
 
 ---
 
-## Current Task: Phase 2.5 - README Updates and Documentation
+## Current Task: Phase 3 - Pending
 
-Update product READMEs with generation examples and create docs/api/generation.md.
+Phase 2 complete. Ready for Phase 3 planning.
 
 ---
 
@@ -87,6 +87,8 @@ Update product READMEs with generation examples and create docs/api/generation.m
 
 | Hash | Description |
 |------|-------------|
+| ebfa973 | Phase 2.5: Add generation examples to product READMEs |
+| 41e2bfb | Update progress: Phase 2.3-2.4 complete |
 | 0968481 | Complete Phase 2.4: Add unified healthsim.generate() entry point |
 | 12af54d | Complete Phase 2.3: Add ProfileJourneyOrchestrator |
 | 50a7db6 | Complete Phase 2.2: Add generation tests for all products |
