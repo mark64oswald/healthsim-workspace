@@ -264,7 +264,28 @@ All major phases completed:
 - Phase 5: Profile & Journey Persistence ✅
 - Phase 6: Documentation ✅
 
-**Total Tests: 1,673 passing** (1,634 + 39 journey)
+**Test Suite: 1,690 passed, 2 skipped**
+
+---
+
+## Post-Completion Enhancements
+
+### MCP Server for Profile/Journey Management ✅ COMPLETE
+
+| Task | Status | Notes |
+|------|--------|-------|
+| MCP server implementation | ✅ | profile_server.py (571 lines) |
+| Profile tools | ✅ | build, save, load, list, templates, execute |
+| Journey tools | ✅ | list_templates, get_template |
+| Tests | ✅ | 19 tests passing |
+| Documentation | ✅ | README.md with usage examples |
+
+**Files:**
+- `packages/core/src/healthsim/mcp/profile_server.py` (571 lines)
+- `packages/core/src/healthsim/mcp/README.md` (109 lines)
+- `packages/core/tests/mcp/test_profile_server.py` (294 lines)
+
+**Commit**: 79cacdc
 
 ---
 
