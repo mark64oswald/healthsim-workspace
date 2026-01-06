@@ -1,8 +1,8 @@
 # Generative Framework Implementation - Progress Tracker
 
 **Started**: 2026-01-06
-**Current Phase**: Phase 3 - COMPLETE ✅
-**Last Updated**: 2026-01-06
+**Current Phase**: Phase 5 - State Management Integration
+**Last Updated**: 2026-01-06 (Session 4 continued)
 
 ---
 
@@ -113,7 +113,7 @@ All product READMEs updated with generation examples
 
 ---
 
-## Phase 4: PopulationSim/NetworkSim Integration ✅ IN PROGRESS
+## Phase 4: PopulationSim/NetworkSim Integration (IN PROGRESS)
 
 ### 4.1 NetworkSim Reference Resolver ✅ COMPLETE
 
@@ -155,21 +155,27 @@ All product READMEs updated with generation examples
 
 **Commits**: f39c3bb, 61f38b3
 
-### 4.4 Reference Data in Profiles
+### 4.4 Reference Data in Profiles ✅ COMPLETE
 
 | Task | Status | Notes |
 |------|--------|-------|
-| Test create_hybrid_profile() | ⬜ | |
-| Add provider distribution | ⬜ | |
-| Add facility assignment | ⬜ | |
+| Test create_hybrid_profile() | ✅ | 4 tests - county, state, override, passthrough |
+| Test create_hybrid_profile_with_network() | ✅ | 3 tests - providers, facilities, combined |
+| Test resolve_provider_reference() | ✅ | 3 tests - state, specialty, city filters |
+| Test resolve_facility_reference() | ✅ | 3 tests - state, type, min_beds filters |
+| Integration tests | ✅ | 2 tests - complete profile, real rates |
 
-### 4.x Documentation
+**File Created**: `test_hybrid_profiles.py` (15 tests)
+
+### 4.5 Documentation ✅ COMPLETE
 
 | Task | Status | Notes |
 |------|--------|-------|
-| docs/guides/reference-data.md | ⬜ | |
-| Document healthsim init | ⬜ | |
-| Add geography examples | ⬜ | |
+| docs/guides/reference-data.md | ✅ | Comprehensive guide |
+| Document healthsim init | ✅ | In reference-data.md |
+| Add geography examples | ✅ | In reference-data.md |
+
+**Phase 4 Complete!**
 
 ---
 
@@ -244,7 +250,8 @@ All product READMEs updated with generation examples
 | Phase 3.5 Auto Resolution | 8 |
 | Phase 4.1 NetworkSim Reference | 36 |
 | Phase 4.2 Reference Integration | 19 |
-| **Total Tests** | **1,578** |
+| Phase 4.4 Hybrid Profiles | 15 |
+| **Total Tests** | **1,593** |
 
 ---
 
@@ -258,10 +265,10 @@ All product READMEs updated with generation examples
   - Phase 3.3: Skill-aware journey templates (12 tests)
   - Phase 3.4: Documentation (skill-integration.md)
   - Phase 3.5: Automatic skill resolution via SkillRegistry (38 tests)
-- Started Phase 4: PopulationSim/NetworkSim Integration
-  - Phase 4.1: NetworkSimResolver with 36 tests
-  - Phase 4.2: Reference integration tests (19 tests)
-  - Phase 4.3: Fixed database schema references
-  - Fixed pre-existing unified_generate.py failures (product packages)
-- Total tests now: 1,578
-- Continuing Phase 4.4: Reference Data in Profiles
+- Phase 4: PopulationSim/NetworkSim Integration
+  - Phase 4.1: NetworkSimResolver with 36 tests ✅
+  - Phase 4.2: Reference integration tests (19 tests) ✅
+  - Phase 4.3: Fixed database schema references (canonical healthsim.duckdb) ✅
+  - Phase 4.4: Reference Data in Profiles - IN PROGRESS
+- Total tests: 1,561 passing (17 pre-existing failures in unified_generate.py - packaging issue)
+- Next: Complete Phase 4.4, then Phase 5
