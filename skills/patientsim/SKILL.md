@@ -22,8 +22,8 @@ Use this skill when the user requests clinical patient data, EMR/EHR test data, 
 - Generate patients with realistic demographics and identifiers
 - Create encounters across care settings (inpatient, outpatient, ED, observation)
 - Apply clinical cohorts from specialized skills (diabetes, oncology, etc.)
-- Produce appropriately coded data (ICD-10, CPT, LOINC, RxNorm)
-- Transform output to healthcare standards (FHIR R4, HL7v2, C-CDA)
+- Produce appropriately coded data (ICD-10, CPT, HCPCS, LOINC, RxNorm, SNOMED)
+- Transform output to FHIR R4 (Bundle, Patient, Condition, Encounter), HL7v2, C-CDA
 
 For specific clinical cohorts, load the appropriate cohort skill from the table below.
 
@@ -74,7 +74,7 @@ Load the appropriate cohort based on user request:
 | **ADT Workflow** | admission, discharge, transfer, ADT, patient movement | [adt-workflow.md](adt-workflow.md) |
 | **Behavioral Health** | depression, anxiety, bipolar, PTSD, mental health, psychiatric, substance use, PHQ-9, GAD-7 | [behavioral-health.md](behavioral-health.md) |
 | **Diabetes Management** | diabetes, A1C, glucose, metformin, insulin | [diabetes-management.md](diabetes-management.md) |
-| **Heart Failure** | CHF, HFrEF, HFpEF, BNP, ejection fraction | [heart-failure.md](heart-failure.md) |
+| **Heart Failure** | CHF, HFrEF, HFpEF, BNP, ejection fraction, I50 | [heart-failure.md](heart-failure.md) |
 | **Chronic Kidney Disease** | CKD, eGFR, dialysis, nephropathy | [chronic-kidney-disease.md](chronic-kidney-disease.md) |
 | **Sepsis/Acute Care** | sepsis, infection, ICU, critical care | [sepsis-acute-care.md](sepsis-acute-care.md) |
 | **Orders & Results** | lab order, radiology, ORM, ORU, results | [orders-results.md](orders-results.md) |
@@ -127,14 +127,15 @@ PatientSim ensures generated data is clinically realistic:
 1. **Age-appropriate conditions**: No pediatric conditions in adults, geriatric conditions require appropriate age
 2. **Gender-appropriate conditions**: Prostate conditions for males only, pregnancy for females only
 3. **Medication indications**: Drugs match diagnoses (metformin requires diabetes)
-4. **Lab coherence**: Values align with conditions (elevated A1C with diabetes)
+4. **Lab coherence**: Values align with conditions (elevated A1C with diabetes, BMP reflects renal status)
 5. **Temporal consistency**: Diagnoses before treatments, labs after orders
+6. **Comorbidity patterns**: Realistic comorbid conditions cluster together (e.g., diabetes + hypertension + CKD)
 
 See [validation-rules.md](../../references/validation-rules.md) for complete rules.
 
 ## Safety Guardrails
 
-All PatientSim data is **100% synthetic**. Enforce these rules at all times:
+All PatientSim data is **100% synthetic** (fictional and simulated). Enforce these rules at all times:
 
 1. **No real patient data.** Never copy real medical records, real MRNs, or real SSNs into output. All identifiers must be generated.
 2. **No clinical advice.** Output is test data, not medical guidance. Never phrase output as a recommendation for actual patient care.
@@ -230,7 +231,19 @@ Add `geography` (5-digit county FIPS or 11-digit tract FIPS) to ground generatio
 }
 ```
 
-### Example 2: Complex Multi-Condition Patient
+### Example 2: Acute Inpatient Encounter
+
+**Request:** "Create an inpatient admission for pneumonia"
+
+Generates a hospital encounter with:
+- Encounter class `I` (inpatient), admission and discharge dates
+- Diagnosis: J18.9 (Pneumonia, unspecified organism) plus respiratory symptoms
+- Procedures: chest X-ray (CPT 71046), blood cultures, CBC
+- Labs: WBC, procalcitonin, BMP, blood gas
+- Medications: antibiotics (ceftriaxone + azithromycin)
+- Imaging results documenting chest infiltrates
+
+### Example 3: Complex Multi-Condition Patient
 
 **Request:** "Generate a 68-year-old female with diabetes, hypertension, and CKD stage 3"
 
@@ -243,30 +256,9 @@ Claude combines patterns from multiple cohort skills to generate a coherent pati
 
 ## Related Skills
 
-### Chronic Disease
-- [diabetes-management.md](diabetes-management.md) - Diabetes cohorts
-- [heart-failure.md](heart-failure.md) - Heart failure cohorts
-- [chronic-kidney-disease.md](chronic-kidney-disease.md) - CKD cohorts
+All cohort sub-skills are listed in the [Cohort Skills](#cohort-skills) table above. Additional references:
 
-### Behavioral Health
-
-- [behavioral-health.md](behavioral-health.md) - Depression, anxiety, bipolar, PTSD, substance use
-
-### Acute Care
-- [adt-workflow.md](adt-workflow.md) - ADT workflow cohorts
-- [sepsis-acute-care.md](sepsis-acute-care.md) - Acute care cohorts
-- [orders-results.md](orders-results.md) - Orders and results
-
-### Pediatrics
-
-- [pediatrics/childhood-asthma.md](pediatrics/childhood-asthma.md) - Pediatric asthma cohorts
-- [pediatrics/acute-otitis-media.md](pediatrics/acute-otitis-media.md) - Ear infection cohorts
-
-### Oncology
 - [oncology-domain.md](../../references/oncology-domain.md) - Foundational oncology knowledge
-- [oncology/breast-cancer.md](oncology/breast-cancer.md) - Breast cancer cohorts
-- [oncology/lung-cancer.md](oncology/lung-cancer.md) - Lung cancer cohorts (NSCLC/SCLC)
-- [oncology/colorectal-cancer.md](oncology/colorectal-cancer.md) - Colorectal cancer cohorts
 
 ### Cross-Product: MemberSim (Claims)
 
