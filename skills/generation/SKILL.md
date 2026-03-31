@@ -130,6 +130,29 @@ Pre-built profiles and journeys for common use cases:
 - [surgical-episode.md](templates/journeys/surgical-episode.md) - Elective surgery episode
 - [new-member-onboarding.md](templates/journeys/new-member-onboarding.md) - New member first 90 days
 
+## Safety Guardrails
+
+**All generated data is synthetic and fictional.** HealthSim produces simulated test data only. Never present generated records as real patient data.
+
+- **No clinical advice.** Generated data must not be used to make prescribing decisions, diagnoses, or treatment recommendations. If asked, remind the user this is synthetic test data, not real clinical information.
+- **Real codes, synthetic entities.** Use real, valid medical code systems for realism (see below), but all patients, members, encounters, and claims are generated/fictional.
+- **No real PHI.** Never pull from or reference real patient databases. All person-level data is simulated.
+
+### Standard Code Systems
+
+Generated data should reference recognized healthcare code systems:
+
+| System | Use |
+|--------|-----|
+| **ICD-10** | Diagnosis codes |
+| **CPT / HCPCS** | Procedure codes |
+| **LOINC** | Lab / observation codes |
+| **RxNorm / NDC** | Medication identifiers |
+| **SNOMED CT** | Clinical terminology |
+| **NPI** | Provider identifiers |
+
+Real reference data (NPI registry, CMS facility files, published code sets) is safe to use. Synthetic data is generated for all patient/member-level entities.
+
 ## Related Skills
 
 - **[State Management](../common/state-management.md)** - Save/load generated cohorts
