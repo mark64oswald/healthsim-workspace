@@ -395,37 +395,63 @@ See [populationsim-integration.md](populationsim-integration.md) for detailed da
 
 ---
 
+### Example 6: ADaM Datasets (ADSL + ADTTE)
+
+**Prompt:** "Derive ADSL and ADTTE datasets from the SDTM data for this trial"
+
+**ADSL (subject-level analysis dataset with baseline characteristics):**
+```json
+{
+  "dataset": "ADSL",
+  "records": [
+    {
+      "STUDYID": "ONCO-2025-001", "USUBJID": "ONCO-2025-001-001-0001",
+      "SUBJID": "0001", "SITEID": "001", "TRT01P": "ABC-123 + SOC",
+      "AGE": 66, "SEX": "M", "RACE": "WHITE",
+      "RFSTDTC": "2025-01-22", "RFENDTC": "2025-07-15",
+      "EOSSTT": "COMPLETED", "DCSREAS": null,
+      "BMIBL": 24.3, "ECOGBL": 1
+    }
+  ]
+}
+```
+
+**ADTTE (time-to-event analysis dataset):**
+```json
+{
+  "dataset": "ADTTE",
+  "records": [
+    {
+      "STUDYID": "ONCO-2025-001", "USUBJID": "ONCO-2025-001-001-0001",
+      "PARAMCD": "PFS", "PARAM": "Progression-Free Survival",
+      "AVAL": 182, "AVALU": "DAYS",
+      "CNSR": 0, "EVNTDESC": "Disease Progression (RECIST)",
+      "STARTDT": "2025-01-22", "ADT": "2025-07-23"
+    },
+    {
+      "STUDYID": "ONCO-2025-001", "USUBJID": "ONCO-2025-001-001-0002",
+      "PARAMCD": "OS", "PARAM": "Overall Survival",
+      "AVAL": 365, "AVALU": "DAYS",
+      "CNSR": 1, "EVNTDESC": "Censored (alive at cutoff)",
+      "STARTDT": "2025-01-29", "ADT": "2026-01-29"
+    }
+  ]
+}
+```
+
+---
+
 ## Generative Framework Integration
 
 TrialSim integrates with the [Generative Framework](../generation/SKILL.md) for specification-driven generation at scale.
 
 ### Profile-Driven Generation
 
-Use profile specifications to generate trial subject populations:
-
-```
-"Generate 150 subjects for an oncology Phase 3 trial"
-```
-
-The Profile Executor will:
-1. Sample demographics meeting I/E criteria
-2. Generate baseline disease characteristics
-3. Apply randomization to treatment arms
-4. Create screening and baseline assessments
+Use profile specifications to generate trial subject populations. The Profile Executor samples demographics meeting I/E criteria, generates baseline disease characteristics, applies randomization, and creates screening assessments.
 
 ### Journey-Driven Generation
 
-Attach protocol journey specifications to create visit sequences:
-
-```
-"Add a 6-cycle treatment protocol journey"
-```
-
-The Journey Executor will:
-1. Generate protocol visits at specified windows
-2. Create assessments per visit schedule
-3. Apply visit variance within windows
-4. Handle protocol deviations and early termination
+Attach protocol journey specifications to create visit sequences. The Journey Executor generates protocol visits at specified windows, creates assessments per schedule, applies visit variance, and handles protocol deviations and early termination.
 
 ### Cross-Domain Sync
 
