@@ -92,6 +92,17 @@ Save as cohort "ma-diabetic-cohort-2025"
 
 See [distributions/distribution-types.md](distributions/distribution-types.md) for details.
 
+### Statistical Fidelity — Matching Real Populations
+
+Generated cohorts should use statistical distributions that match real-world population characteristics. The goal is realistic synthetic data, not random noise.
+
+**How to match a target population:**
+
+1. **Identify the source benchmark.** For Medicare Advantage, use CMS enrollment statistics (mean age ~72, 55% female, regional mix). For Commercial, use employer-census norms. For Medicaid, use state-level demographics.
+2. **Select distribution types that fit the data shape.** Age in MA populations follows a roughly normal distribution centered near 72-74 with standard deviation ~7. Cost distributions are log-normal (many low-cost, few high-cost). Chronic condition prevalence uses categorical distributions with rates from CDC PLACES or CMS Chronic Conditions data.
+3. **Parameterize from published statistics.** Do not guess distribution parameters. Use published prevalence rates (e.g., 27% diabetes in Medicare, 14% heart failure) and demographic breakdowns. PopulationSim data (`skills/populationsim/`) provides county- and tract-level benchmarks for prevalence and social determinants.
+4. **Validate output against inputs.** After generation, confirm the cohort's statistical profile (mean, median, standard deviation, category proportions) matches the specification within an acceptable tolerance. Flag drift greater than 5% from target parameters.
+
 ## Journey Patterns
 
 | Pattern | Use Case | Example |
