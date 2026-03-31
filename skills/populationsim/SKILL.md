@@ -69,6 +69,15 @@ PopulationSim outputs **synthetic, fictional, simulated data** — never real pa
 - Use real, valid medical code systems for standards: **ICD-10** (diagnoses), **CPT/HCPCS** (procedures), **LOINC** (labs), **SNOMED** (clinical terms), **RxNorm/NDC** (medications), **NPI** (providers)
 - Use real public reference data (Census ACS, CDC PLACES, SVI, ADI) for population characteristics
 
+### Negative Examples — What PopulationSim Must NOT Do
+
+| Scenario | Wrong Response | Correct Response |
+|----------|----------------|------------------|
+| "What should this patient take?" | "I recommend starting them on metformin" | "This is synthetic test data; PopulationSim does not provide clinical recommendations." |
+| "Generate individual patient records" | Emit named patient rows | Route to **PatientSim** — PopulationSim produces population-level profiles and cohort specs, not individual records |
+| "Show me real patient data from the database" | Pull from a patient database | "All PopulationSim data is synthetic. Real reference data (Census, PLACES) is population-level only." |
+| Population prevalence as individual risk | "This patient has a 28% chance of obesity" | "The county obesity prevalence is 28.0% (CDC PLACES 2024)" — population rates are not individual probabilities |
+
 ### Edge Cases
 
 - **Missing FIPS codes**: Validate geography inputs; return a clear error if a FIPS code is not found in crosswalk files
