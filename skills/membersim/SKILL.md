@@ -77,7 +77,24 @@ MemberSim generates synthetic claims and payer data for testing claims processin
 
 **Request:** "Generate an inpatient claim for heart failure admission"
 
-Claude loads [facility-claims.md](facility-claims.md) and produces a complete 837I-style claim with DRG assignment.
+Claude loads [facility-claims.md](facility-claims.md) and produces a complete 837I-style claim:
+
+```json
+{
+  "claim": {
+    "claim_type": "INSTITUTIONAL",
+    "principal_diagnosis": "I50.9",
+    "drg": { "ms_drg": "291", "description": "Heart failure & shock w/o CC/MCC" },
+    "admit_date": "2025-01-10",
+    "discharge_date": "2025-01-13",
+    "claim_lines": [
+      { "revenue_code": "0120", "description": "Room and board - semi-private", "per_diem": 1800.00, "units": 3 },
+      { "revenue_code": "0250", "description": "Pharmacy", "charge_amount": 950.00 },
+      { "revenue_code": "0300", "description": "Laboratory", "charge_amount": 1200.00 }
+    ]
+  }
+}
+```
 
 ## Cohort Skills
 
@@ -106,47 +123,14 @@ Load the appropriate cohort based on user request:
 
 ## Output Entities
 
-### Member
-Extends Person with coverage information:
-- member_id, subscriber_id, relationship_code
-- group_id, plan_code
-- coverage_start, coverage_end
-- PCP assignment (for HMO)
-
-### Claim
-Claim header with:
-- claim_id, claim_type
-- member_id, provider_npi
-- service dates, place of service
-- diagnosis codes (principal + secondary)
-- claim_lines array
-
-### ClaimLine
-Individual service line:
-- procedure_code (CPT/HCPCS)
-- modifiers, units
-- charge_amount
-- revenue_code (for institutional)
-
-### Adjudication
-Payment determination:
-- status (paid, denied, pending)
-- allowed_amount, paid_amount
-- deductible, copay, coinsurance
-- adjustment_reason_codes
-
-### Plan
-Benefit plan configuration:
-- plan_type (HMO, PPO, etc.)
-- deductibles, OOP maximums
-- copays, coinsurance rates
-- network requirements
-
-### Accumulator
-Year-to-date cost sharing:
-- deductible_applied vs deductible_limit
-- oop_applied vs oop_limit
-- Family vs individual tracking
+| Entity | Key Fields |
+|--------|-----------|
+| **Member** | member_id, subscriber_id, group_id, plan_code, coverage_start/end, PCP (HMO) |
+| **Claim** | claim_id, claim_type, member_id, provider_npi, service dates, diagnosis codes, claim_lines[] |
+| **ClaimLine** | procedure_code (CPT/HCPCS), modifiers, units, charge_amount, revenue_code (institutional) |
+| **Adjudication** | status (paid/denied/pending), allowed_amount, paid_amount, deductible, copay, coinsurance, adjustment_reason_codes |
+| **Plan** | plan_type (HMO/PPO/etc.), deductibles, OOP maximums, copays, coinsurance rates, network requirements |
+| **Accumulator** | deductible_applied vs limit, oop_applied vs limit, family vs individual tracking |
 
 See [../../references/data-models.md](../../references/data-models.md) for complete schemas.
 
