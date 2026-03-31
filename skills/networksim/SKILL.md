@@ -21,8 +21,6 @@ NetworkSim provides provider network intelligence using real NPPES provider data
 3. **Healthcare Access**: Identify deserts combining access gaps, health needs, and vulnerability
 4. **Cross-Product Integration**: Provide authentic providers for PatientSim, MemberSim, TrialSim
 
-**Key Differentiator**: NetworkSim uses real NPPES registry data, not synthetic generation. Every NPI returned is a real, registered healthcare provider.
-
 ## Quick Reference
 
 | I want to... | Use This Skill | Key Triggers |
@@ -269,17 +267,13 @@ ORDER BY per_100k ASC;
 ## Safety Guardrails
 
 ### Real Data Disclaimer
-NetworkSim queries **real NPPES registry data** (public CMS data). Every NPI returned is a real, registered provider. This data is public and non-PHI, but:
-- **Never present results as provider recommendations or referrals**
-- **Never imply clinical competence** from registry presence alone
-- **Never use for actual patient care decisions** -- this is a simulation/analytics tool
-- Results reflect registry status, not current accepting-patients or insurance status
+NetworkSim queries **real NPPES registry data** (public CMS data, non-PHI). Every NPI is a real registered provider. Results reflect registry status only -- not accepting-patients status, insurance participation, or clinical competence.
 
 ### What NetworkSim Does NOT Do
-- **No clinical advice**: Do not suggest a provider is "best" for a condition
-- **No insurance verification**: Network status queries are simulated, not real-time eligibility checks
-- **No appointment scheduling**: Provider contact info is registry data, not a booking system
-- **No synthetic NPIs in real queries**: Never mix synthetic-generated NPIs into real NPPES query results; use `synthetic/` skills only when explicitly generating test data
+- **No clinical advice**: Never suggest a provider is "best" for a condition
+- **No insurance verification**: Network status queries are simulated, not real-time eligibility
+- **No appointment scheduling**: Registry data is not a booking system
+- **No synthetic NPIs in real queries**: Use `synthetic/` skills only for test data generation
 
 ### Code System References
 | System | Used For | Example |
@@ -296,25 +290,25 @@ NetworkSim queries **real NPPES registry data** (public CMS data). Every NPI ret
 - **Multi-taxonomy providers**: Providers may have up to 15 taxonomies; `taxonomy_1` is the primary but check `taxonomy_2`-`taxonomy_4` for dual-specialty searches
 - **Organization vs Individual**: `entity_type_code = 1` (individual) vs `2` (organization); filter appropriately
 
----
+### Negative Examples (What NOT to Do)
+
+**Never give clinical advice based on provider data:**
+- WRONG: "I recommend Dr. Smith for your heart condition" or "The patient needs a cardiologist at this facility"
+- RIGHT: "Here are cardiologists registered in Harris County per NPPES data. This is simulated/test data for analytics, not a referral."
+
+**Always distinguish real reference data from synthetic entities:**
+- WRONG: "Here is the patient's real provider" (implies real clinical relationship)
+- RIGHT: "Provider NPI data comes from the real NPPES registry (public CMS data). Patient and encounter data is synthetic/generated -- not real patient information."
+
+**Never mix synthetic and real data without labeling:**
+- WRONG: Return synthetic NPIs alongside real NPPES query results
+- RIGHT: Clearly label synthetic providers (from `synthetic/` skills) vs real providers (from `network.providers`)
 
 ## Validation Rules
 
-### NPI Validation
-- 10 digits exactly
-- Luhn algorithm checksum
-- Prefix 1 or 2 (individual vs organization)
-- Active status in NPPES
-
-### Taxonomy Validation
-- Valid NUCC taxonomy codes
-- Matches provider specialty claim
-- Primary taxonomy switch indicator
-
-### Geographic Validation
-- Valid state abbreviation (2 letters)
-- Valid county FIPS (5 digits)
-- ZIP code format (5 or 9 digits)
+### NPI: 10 digits, Luhn checksum, prefix 1 (individual) or 2 (organization), active in NPPES
+### Taxonomy: Valid NUCC codes, primary taxonomy switch indicator
+### Geography: 2-letter state, 5-digit county FIPS, 5- or 9-digit ZIP
 
 ---
 
