@@ -84,13 +84,14 @@ Activate TrialSim when user mentions:
 | EX | [domains/exposure-ex.md](domains/exposure-ex.md) | Study drug exposure, dose modifications |
 | DS | [domains/disposition-ds.md](domains/disposition-ds.md) | Subject disposition, discontinuation |
 | MH | [domains/medical-history-mh.md](domains/medical-history-mh.md) | Medical history, comorbidities |
+| RS/TR | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | Tumor results / disease response (RECIST) |
 | Domain Index | [domains/README.md](domains/README.md) | All SDTM domains overview |
 
 ### Therapeutic Areas
 
 | Area | Skill | Key Endpoints |
 |------|-------|---------------|
-| Oncology | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | RECIST, ORR, PFS, OS |
+| Oncology | [therapeutic-areas/oncology.md](therapeutic-areas/oncology.md) | Tumor response (RECIST), ORR, PFS, OS |
 | Cardiovascular | [therapeutic-areas/cardiovascular.md](therapeutic-areas/cardiovascular.md) | MACE, CV outcomes |
 | CNS | [therapeutic-areas/cns.md](therapeutic-areas/cns.md) | Cognitive scales, imaging |
 | CGT | [therapeutic-areas/cgt.md](therapeutic-areas/cgt.md) | CAR-T, gene therapy |
@@ -202,17 +203,7 @@ See [populationsim-integration.md](populationsim-integration.md) for detailed da
 
 ## Development Status
 
-| Component | Status |
-|-----------|--------|
-| SKILL.md (this file) | ✅ Complete |
-| clinical-trials-domain.md | ✅ Complete |
-| recruitment-enrollment.md | ✅ Complete |
-| phase3-pivotal.md | ✅ Complete |
-| domains/ (DM, AE, VS, LB, CM, EX, DS, MH) | ✅ Complete |
-| therapeutic-areas/ | ✅ Complete |
-| rwe/ | ✅ Complete |
-| phase1-dose-escalation.md | ✅ Complete |
-| phase2-proof-of-concept.md | ✅ Complete |
+All skill files complete: core skills, Phase 1-3, SDTM domains (DM, AE, VS, LB, CM, EX, DS, MH), therapeutic areas, and RWE.
 
 ## Related Skills
 
