@@ -13,12 +13,12 @@ description: >
 
 ## Overview
 
-PopulationSim provides population-level intelligence using public data sources (Census ACS, CDC PLACES, Social Vulnerability Index, Area Deprivation Index) to enable:
+PopulationSim provides population-level intelligence using public data (Census ACS, CDC PLACES, SVI, ADI) for:
 
-1. **Standalone Analysis**: Geographic profiling, health disparities analysis, population comparisons
-2. **Cross-Product Integration**: Cohort specifications that drive realistic data generation in PatientSim, MemberSim, RxMemberSim, and TrialSim
+1. **Standalone Analysis**: Geographic profiling, health disparities, population comparisons
+2. **Cross-Product Integration**: Cohort specs driving generation in PatientSim, MemberSim, RxMemberSim, TrialSim
 
-**Key Differentiator**: Unlike other HealthSim products that generate synthetic records, PopulationSim analyzes real population characteristics and creates specifications for generation.
+**Key Differentiator**: PopulationSim analyzes real population characteristics and creates specifications — it does not generate synthetic records itself.
 
 ## Quick Reference
 
@@ -57,7 +57,7 @@ PopulationSim provides population-level intelligence using public data sources (
 
 ### All Generated Data is Synthetic
 
-PopulationSim outputs **synthetic, fictional, simulated data** — never real patient records. All population profiles, cohort specifications, and demographic distributions are generated or derived from aggregated public statistics. They are **not real** patient data and must not be treated as such.
+PopulationSim outputs **synthetic, fictional, simulated data** — never real patient records. All profiles and cohort specs are derived from aggregated public statistics and must not be treated as real patient data.
 
 **Do NOT:**
 - Present synthetic data as actual patient records
@@ -80,9 +80,9 @@ PopulationSim outputs **synthetic, fictional, simulated data** — never real pa
 
 ### Edge Cases
 
-- **Missing FIPS codes**: Validate geography inputs; return a clear error if a FIPS code is not found in crosswalk files
-- **Partial data**: Some tracts lack CDC PLACES or SVI coverage — flag missing indicators rather than imputing zeros
-- **Invalid code references**: Only emit ICD-10, CPT, LOINC, RxNorm, NDC codes that exist in recognized code systems
+- **Missing FIPS**: Validate inputs; return clear error if FIPS not found in crosswalk files
+- **Partial data**: Some tracts lack PLACES or SVI coverage — flag gaps rather than imputing zeros
+- **Invalid codes**: Only emit ICD-10, CPT, LOINC, RxNorm, NDC codes from recognized systems
 
 ## Output Types
 
@@ -226,8 +226,8 @@ Generation input for other HealthSim products:
 
 ### Integration Patterns
 
-| PopulationSim Output | Receiving Product | Result |
-|----------------------|-------------------|--------|
+| Output | Receiver | Result |
+|--------|----------|--------|
 | CohortSpecification | PatientSim | Patients matching demographic/clinical profile |
 | CohortSpecification | MemberSim | Members with realistic plan/utilization mix |
 | CohortSpecification | TrialSim | Diverse trial subjects meeting FDA guidance |
@@ -235,7 +235,7 @@ Generation input for other HealthSim products:
 
 ## Data Sources (Embedded v2.0)
 
-PopulationSim includes an embedded data package (148 MB) with 100% US coverage:
+Embedded data package (148 MB, 100% US coverage):
 
 | Source | File | Records | Data Year |
 |--------|------|---------|-----------|
@@ -248,7 +248,7 @@ PopulationSim includes an embedded data package (148 MB) with 100% US coverage:
 
 ### DuckDB Reference Tables
 
-For SQL-based analysis, reference data is also available in the DuckDB database:
+Reference data also available in DuckDB:
 
 | Table | Source | Purpose |
 |-------|--------|---------|
@@ -340,7 +340,20 @@ San Diego County, CA (FIPS 06073) Population Profile:
 - SVI Overall: 0.42 (moderate vulnerability)
 - ADI National Rank: 35th percentile
 
-### Example 2: Cohort for PatientSim
+### Example 2: Disparities by SVI Quartile
+
+**Request:** "How do health outcomes vary across SVI quartiles?"
+
+**Response:** Stratification by SVI quartile shows clear outcome variation:
+
+| SVI Quartile | Diabetes | Obesity | Uninsured |
+|---|---|---|---|
+| Q1 (lowest vulnerability) | 8.2% | 26% | 5.1% |
+| Q4 (highest vulnerability) | 13.8% | 38% | 14.2% |
+
+Disparity: Q4 tracts show higher prevalence vs Q1 across all indicators; lower-vulnerability areas have better outcomes. See `health-patterns/health-outcome-disparities.md`.
+
+### Example 3: Cohort for PatientSim
 
 **Request:** "Define a cohort of high-risk diabetics in underserved California"
 
@@ -350,7 +363,7 @@ San Diego County, CA (FIPS 06073) Population Profile:
 - Comorbidities: HTN 71%, obesity 62%
 - SDOH: Rx cost barrier 31%, food insecurity 22%
 
-### Example 3: Trial Feasibility
+### Example 4: Trial Feasibility
 
 **Request:** "Feasibility for T2DM trial: age 40-70, HbA1c 8-11%"
 
@@ -375,11 +388,10 @@ San Diego County, CA (FIPS 06073) Population Profile:
 
 ## Domain Knowledge
 
-For detailed concepts and methodology, see:
-- [Population Intelligence Domain](population-intelligence-domain.md) - Geographic hierarchy, census data, SDOH frameworks
+See [Population Intelligence Domain](population-intelligence-domain.md) for geographic hierarchy, census data, and SDOH frameworks.
 
 ---
 
 ## Generative Framework Integration
 
-PopulationSim feeds the [Generative Framework](../generation/SKILL.md) by querying real reference data (Census, CDC PLACES, SVI/ADI) and outputting CohortSpecifications that drive realistic synthetic generation in PatientSim, MemberSim, and TrialSim.
+PopulationSim feeds the [Generative Framework](../generation/SKILL.md) via CohortSpecifications that drive synthetic generation in PatientSim, MemberSim, and TrialSim.
