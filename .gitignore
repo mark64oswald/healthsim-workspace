@@ -70,23 +70,15 @@ cohorts/*/data/processed/**/*.csv
 cohorts/*/archive/**/*.duckdb
 cohorts/*/*.duckdb
 
-# Legacy paths (scenarios/ was renamed to cohorts/)
-scenarios/networksim/data/raw/**/*.csv
-scenarios/networksim/data/raw/**/*.zip
-scenarios/networksim/data/raw/**/*.txt
-scenarios/networksim/data/processed/**/*.csv
-scenarios/networksim/archive/**/*.duckdb
-
 # Keep documentation and directory structure
 !cohorts/*/data/**/*.md
 !cohorts/*/data/**/.gitkeep
-!scenarios/networksim/data/**/*.md
-!scenarios/networksim/data/**/.gitkeep
 
 # DuckDB databases (large, regenerable)
 # Keep healthsim.duckdb as the primary dev database
-healthsim_current.duckdb
-healthsim_current_backup.duckdb
+*.duckdb
+!healthsim.duckdb
+healthsim_current*.duckdb
 *.duckdb-wal
 *.duckdb-tmp
 
