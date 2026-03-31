@@ -21,6 +21,24 @@ Use this skill when the user requests pharmacy data, prescription fills, or PBM 
 - **NDC codes are illustrative.** Example NDCs approximate real formats but may not map to FDA-registered products. Validate against the FDA NDC Directory for production use.
 - **Pricing is synthetic.** Ingredient costs, dispensing fees, and copay amounts do not reflect actual AWP, WAC, or MAC pricing.
 
+## Edge Cases and Validation
+
+- **Missing NDC or drug name:** Generate a plausible synthetic NDC (11-digit 5-4-2 format) and map to a fictional drug. Never leave NDC blank.
+- **Invalid BIN/PCN/Group:** Flag as rejected with reject code 99 ("Host Processing Error") and include a corrective message.
+- **Partial member data:** Fill missing fields with realistic defaults (e.g., person_code "01", relationship_code "1" for subscriber). Note which fields were defaulted.
+- **Unknown RxNorm or GPI code:** Use a synthetic code in the correct format. Note that production systems should validate against the RxNorm API or GPI reference.
+- **Negative examples — do NOT generate:** real DEA numbers, actual AWP/WAC pricing, clinical dosing recommendations, or data presented as non-synthetic.
+
+## Pharmacy Code Systems
+
+| System | Use | Example |
+|--------|-----|---------|
+| NDC | Drug product identifier (11-digit) | 00071015523 |
+| RxNorm | Standard drug concept (ingredient, dose form) | RxCUI 83367 |
+| GPI | Generic Product Identifier (drug class hierarchy) | 39400010100310 |
+| NCPDP | Pharmacy identifier and transaction standard | D.0 format |
+| NPI | Provider/pharmacy identifier | 1234567890 |
+
 ## Quick Start
 
 ### Simple Pharmacy Claim
@@ -149,7 +167,7 @@ Drug utilization review alert:
 
 ### FormularyDrug
 Drug coverage information:
-- ndc, gpi, drug_name
+- ndc, gpi, rxnorm_code, drug_name
 - tier, covered status
 - PA required, step therapy required
 - quantity limits, age/gender restrictions
@@ -218,45 +236,25 @@ See [../../formats/ncpdp-d0.md](../../formats/ncpdp-d0.md) for transformation.
 
 ```json
 {
-  "member": {
-    "member_id": "MEM001234",
-    "cardholder_id": "001234001",
-    "bin": "610014",
-    "pcn": "RXGROUP",
-    "group_number": "CORP001"
-  },
-  "prescription": {
-    "prescription_number": "RX78901234",
-    "ndc": "00093505601",
-    "drug_name": "Lisinopril 10mg Tablet",
-    "quantity_prescribed": 30,
-    "days_supply": 30,
-    "refills_authorized": 5,
-    "prescriber_npi": "1234567890",
-    "written_date": "2025-01-10"
-  },
   "claim": {
     "claim_id": "RX20250115000001",
     "transaction_code": "B1",
     "service_date": "2025-01-15",
-    "pharmacy_npi": "9876543210",
-    "pharmacy_ncpdp": "1234567",
+    "bin": "610014", "pcn": "RXGROUP", "group_number": "CORP001",
+    "cardholder_id": "001234001",
     "ndc": "00093505601",
+    "drug_name": "Lisinopril 10mg Tablet",
     "quantity_dispensed": 30,
     "days_supply": 30,
-    "fill_number": 0,
-    "daw_code": "0",
+    "pharmacy_npi": "9876543210",
+    "prescriber_npi": "1234567890",
     "ingredient_cost_submitted": 8.50,
-    "dispensing_fee_submitted": 2.00,
-    "usual_customary_charge": 15.00,
-    "gross_amount_due": 10.50
+    "dispensing_fee_submitted": 2.00
   },
   "response": {
     "status": "paid",
-    "message": "Claim accepted",
     "ingredient_cost_paid": 8.50,
     "dispensing_fee_paid": 1.75,
-    "total_amount_paid": 0.25,
     "patient_pay_amount": 10.00,
     "copay_amount": 10.00,
     "authorization_number": "AUTH20250115001"
@@ -373,14 +371,9 @@ RxMemberSim pharmacy claims correspond to PatientSim medication orders:
 | [dur-alerts.md](dur-alerts.md) | Multi-drug regimens | DDI based on patient's med list |
 | [rx-prior-auth.md](rx-prior-auth.md) | High-cost drugs | Clinical criteria from PatientSim |
 
-**PatientSim Cohort Links:**
-- [../patientsim/diabetes-management.md](../patientsim/diabetes-management.md) - Oral agents, insulin, GLP-1s
-- [../patientsim/heart-failure.md](../patientsim/heart-failure.md) - GDMT medications
-- [../patientsim/chronic-kidney-disease.md](../patientsim/chronic-kidney-disease.md) - ESAs, phosphate binders
-- [../patientsim/behavioral-health.md](../patientsim/behavioral-health.md) - Psychiatric medications
-- [../patientsim/oncology/](../patientsim/oncology/) - Oral oncolytics, supportive care
+**PatientSim Cohort Links:** [diabetes-management](../patientsim/diabetes-management.md), [heart-failure](../patientsim/heart-failure.md), [chronic-kidney-disease](../patientsim/chronic-kidney-disease.md), [behavioral-health](../patientsim/behavioral-health.md), [oncology](../patientsim/oncology/)
 
-> **Integration Pattern:** Generate medication orders in PatientSim, then use RxMemberSim to model pharmacy fills. Match NDCs, use appropriate fill timing (retail: same day; specialty: +1-7 days), and apply formulary/PA rules.
+> **Integration Pattern:** Generate medication orders in PatientSim, then model pharmacy fills in RxMemberSim. Match NDCs, apply fill timing (retail: same day; specialty: +1-7 days), and formulary/PA rules.
 
 ### Cross-Product: MemberSim (Claims)
 
@@ -419,7 +412,7 @@ NetworkSim provides realistic pharmacy entities and benefit structures for presc
 
 ### Reference Data
 - [../../references/data-models.md](../../references/data-models.md) - Entity schemas
-- [../../references/code-systems.md](../../references/code-systems.md) - NDC, GPI, NCPDP codes
+- [../../references/code-systems.md](../../references/code-systems.md) - NDC, RxNorm, GPI, NCPDP codes
 
 ---
 
@@ -427,43 +420,6 @@ NetworkSim provides realistic pharmacy entities and benefit structures for presc
 
 RxMemberSim integrates with the [Generative Framework](../generation/SKILL.md) for specification-driven generation at scale.
 
-### Profile-Driven Generation
-
-Use profile specifications to generate pharmacy member populations:
-
-```
-"Use the Medicare diabetic profile to generate 200 pharmacy members"
-```
-
-The Profile Executor will:
-1. Sample demographics from profile distributions
-2. Generate pharmacy benefit coverage
-3. Create medication profiles based on conditions
-4. Link to formulary and pharmacy network
-
-### Journey-Driven Generation
-
-Attach journey specifications to create prescription fills over time:
-
-```
-"Add the diabetic first-year journey with medication fills"
-```
-
-The Journey Executor will:
-1. Generate initial prescriptions
-2. Create refill events at appropriate intervals
-3. Apply DUR alerts when clinically appropriate
-4. Track accumulator impacts (TrOOP for Part D)
-
-### Cross-Domain Sync
-
-When generating across products, RxMemberSim entities are automatically linked:
-
-| RxMemberSim Entity | Links To |
-|--------------------|----------|
-| RxMember | MemberSim Member (via member_id) |
-| Fill | PatientSim Prescription |
-| Pharmacy | NetworkSim Pharmacy |
-| Prescriber | NetworkSim Provider |
-
-See: [../generation/executors/cross-domain-sync.md](../generation/executors/cross-domain-sync.md)
+- **Profile-Driven:** `"Use the Medicare diabetic profile to generate 200 pharmacy members"` -- samples demographics, assigns Rx coverage, creates medication profiles linked to formulary/network.
+- **Journey-Driven:** `"Add the diabetic first-year journey with medication fills"` -- generates initial Rx, refills at appropriate intervals, DUR alerts, and accumulator impacts (TrOOP for Part D).
+- **Cross-Domain Sync:** RxMember links to MemberSim Member (via member_id), Fill to PatientSim Prescription, Pharmacy/Prescriber to NetworkSim entities. See [cross-domain-sync.md](../generation/executors/cross-domain-sync.md).
