@@ -132,6 +132,27 @@ PatientSim ensures generated data is clinically realistic:
 
 See [validation-rules.md](../../references/validation-rules.md) for complete rules.
 
+## Safety Guardrails
+
+All PatientSim data is **100% synthetic**. Enforce these rules at all times:
+
+1. **No real patient data.** Never copy real medical records, real MRNs, or real SSNs into output. All identifiers must be generated.
+2. **No clinical advice.** Output is test data, not medical guidance. Never phrase output as a recommendation for actual patient care.
+3. **No real provider NPIs in patient context.** Use synthetic NPIs (prefix with `9999`) unless explicitly pulling from NetworkSim reference data.
+4. **Validate code systems.** Only emit ICD-10-CM codes from the current valid set (e.g., `E11.65` not `E11.999`). Same for CPT, LOINC, and RxNorm -- use real codes, not invented ones.
+5. **PHI boundary.** If a user supplies real patient details, refuse and explain that PatientSim generates synthetic data only.
+
+## Negative Examples (What NOT to Generate)
+
+| Mistake | Why It Fails | Correct Approach |
+|---------|-------------|------------------|
+| Assigning pregnancy to a male patient | Gender-inappropriate | Check gender before obstetric conditions |
+| Metformin without a diabetes diagnosis | Medication without indication | Always pair drugs with supporting Dx |
+| A1C of 14.2% on a healthy patient | Lab contradicts condition list | Abnormal values require matching diagnosis |
+| ICD-10 code `E11.999` | Invalid code -- does not exist | Use valid codes like `E11.65` (with complications) |
+| Discharge date before admission date | Temporal inversion | Ensure chronological ordering of all events |
+| Using a real SSN (e.g., `078-05-1120`) | PHI leak risk | Generate synthetic SSNs in `900-xx-xxxx` range |
+
 ## Output Formats
 
 | Format | Request | Use Case |
@@ -141,80 +162,9 @@ See [validation-rules.md](../../references/validation-rules.md) for complete rul
 | HL7v2 ADT | "as HL7", "ADT message" | Legacy EMR |
 | CSV | "as CSV" | Analytics |
 
-## Data Integration (PopulationSim v2.0)
+## Data Integration (PopulationSim)
 
-PatientSim integrates with PopulationSim's embedded data package to generate patients grounded in real demographic and health data.
-
-### Enabling Data-Driven Generation
-
-Add a `geography` parameter to any request to enable data-driven generation:
-
-| Parameter | Type | Example | Description |
-|-----------|------|---------|-------------|
-| geography | string | "48201" | 5-digit county FIPS code |
-| geography | string | "48201002300" | 11-digit census tract FIPS code |
-
-**Example request:**
-```
-Generate a diabetic patient in Harris County, TX (geography: 48201)
-```
-
-### What Data-Driven Generation Provides
-
-When geography is specified, PatientSim uses real population data:
-
-1. **Demographics**: Age, sex, race/ethnicity distributions match real population
-2. **Condition Prevalence**: Diabetes, obesity, hypertension rates from CDC PLACES
-3. **SDOH Context**: SVI vulnerability scores affect adherence and outcomes
-4. **Comorbidity Rates**: Realistic co-occurrence based on area health profile
-
-### Embedded Data Sources
-
-| Source | File | Coverage | Use |
-|--------|------|----------|-----|
-| CDC PLACES 2024 | `populationsim/data/county/places_county_2024.csv` | 3,144 counties | Health indicators (40 measures) |
-| CDC PLACES 2024 | `populationsim/data/tract/places_tract_2024.csv` | 84,000 tracts | Neighborhood-level health |
-| CDC SVI 2022 | `populationsim/data/county/svi_county_2022.csv` | 3,144 counties | Social vulnerability |
-| CDC SVI 2022 | `populationsim/data/tract/svi_tract_2022.csv` | 84,000 tracts | Tract vulnerability |
-| ADI 2023 | `populationsim/data/block_group/adi_blockgroup_2023.csv` | 242,000 block groups | Area deprivation |
-
-### Provenance Tracking
-
-Data-driven generation includes provenance in output metadata:
-
-```json
-{
-  "patient": { ... },
-  "metadata": {
-    "generation_mode": "data_driven",
-    "geography": {
-      "fips": "48201",
-      "name": "Harris County, TX",
-      "level": "county"
-    },
-    "data_provenance": [
-      {
-        "source": "CDC_PLACES_2024",
-        "data_year": 2022,
-        "file": "populationsim/data/county/places_county_2024.csv",
-        "fields_used": ["DIABETES_CrudePrev", "OBESITY_CrudePrev", "BPHIGH_CrudePrev"]
-      },
-      {
-        "source": "CDC_SVI_2022",
-        "data_year": 2022,
-        "file": "populationsim/data/county/svi_county_2022.csv",
-        "fields_used": ["RPL_THEMES", "EP_UNINSUR"]
-      }
-    ]
-  }
-}
-```
-
-### Foundation Skill
-
-For detailed data integration patterns, see [data-integration.md](data-integration.md).
-
-For complete mapping specification, see [PopulationSim → PatientSim Integration](../populationsim/integration/patientsim-integration.md).
+Add `geography` (5-digit county FIPS or 11-digit tract FIPS) to ground generation in real CDC PLACES, SVI, and ADI data. See [data-integration.md](data-integration.md) for full patterns, data sources, and provenance tracking.
 
 ## Examples
 
@@ -333,112 +283,9 @@ PatientSim medication orders generate prescription fills in RxMemberSim:
 
 > **Integration Pattern:** Generate medication orders in PatientSim, then use RxMemberSim to model pharmacy fills with matching NDCs and appropriate fill timing.
 
-### Cross-Product: PopulationSim (Demographics & SDOH) - v2.0 Data Integration
+### Cross-Product: PopulationSim (Demographics & SDOH)
 
-PopulationSim v2.0 provides **embedded real-world data** for statistically accurate patient generation. When a geography is specified, PatientSim uses actual CDC PLACES, SVI, and ADI data to ground demographics and health patterns.
-
-#### Data-Driven Generation Pattern
-
-**Step 1: Look up real population data**
-```
-# For Harris County, TX (FIPS: 48201)
-Read from: skills/populationsim/data/county/places_county_2024.csv
-→ DIABETES_CrudePrev: 12.1%
-→ OBESITY_CrudePrev: 32.8%
-→ BPHIGH_CrudePrev: 32.4%
-→ TotalPopulation: 4,731,145
-
-Read from: skills/populationsim/data/county/svi_county_2022.csv
-→ RPL_THEMES (overall SVI): 0.68
-→ EP_POV150: 22.3% (below 150% poverty)
-→ EP_MINRTY: 72.1% (minority percentage)
-```
-
-**Step 2: Apply rates to patient generation**
-```json
-{
-  "cohort_parameters": {
-    "geography": { "county_fips": "48201", "name": "Harris County, TX" },
-    "condition_weights": {
-      "diabetes": 0.121,
-      "obesity": 0.328,
-      "hypertension": 0.324
-    },
-    "demographic_distribution": {
-      "minority_percentage": 0.721,
-      "poverty_percentage": 0.223
-    },
-    "sdoh_context": {
-      "svi_overall": 0.68,
-      "vulnerability_category": "high"
-    },
-    "data_provenance": {
-      "source": "CDC_PLACES_2024",
-      "data_year": 2022
-    }
-  }
-}
-```
-
-**Step 3: Generate patients matching real rates**
-- Assign diabetes to ~12.1% of patients (not generic 10%)
-- Weight demographics toward 72% minority representation
-- Apply SDOH factors consistent with SVI 0.68
-
-#### PopulationSim Data Files
-
-| Dataset | File | Key Measures | Use Case |
-|---------|------|--------------|----------|
-| CDC PLACES County | `populationsim/data/county/places_county_2024.csv` | 40 health measures | Condition prevalence by county |
-| CDC PLACES Tract | `populationsim/data/tract/places_tract_2024.csv` | 40 health measures | Neighborhood-level health |
-| SVI County | `populationsim/data/county/svi_county_2022.csv` | 16 vulnerability vars | County SDOH context |
-| SVI Tract | `populationsim/data/tract/svi_tract_2022.csv` | 16 vulnerability vars | Tract SDOH context |
-| ADI Block Group | `populationsim/data/block_group/adi_blockgroup_2023.csv` | National/state ADI | Deprivation scoring |
-
-#### Integration Skills
-
-| PopulationSim Skill | PatientSim Application | Data Source |
-|---------------------|------------------------|-------------|
-| [data-lookup.md](../populationsim/data-access/data-lookup.md) | Exact prevalence rates | CDC PLACES 2024 |
-| [county-profile.md](../populationsim/geographic/county-profile.md) | County demographics, health patterns | PLACES + SVI |
-| [census-tract-analysis.md](../populationsim/geographic/census-tract-analysis.md) | Neighborhood health context | Tract PLACES + SVI |
-| [svi-analysis.md](../populationsim/sdoh/svi-analysis.md) | Social vulnerability factors | CDC SVI 2022 |
-| [adi-analysis.md](../populationsim/sdoh/adi-analysis.md) | Area deprivation | ADI 2023 |
-| [cohort-specification.md](../populationsim/cohorts/cohort-specification.md) | Data-driven cohort definition | All sources |
-
-#### Example: Data-Grounded Patient Generation
-
-**Request:** "Generate 50 diabetic patients for Harris County, TX"
-
-**Process:**
-1. **Data Lookup**: Read Harris County from `places_county_2024.csv`
-   - Diabetes: 12.1% (used to weight comorbidities)
-   - Obesity: 32.8%, Hypertension: 32.4%, CKD: 3.2%
-   
-2. **SVI Context**: Read from `svi_county_2022.csv`
-   - Overall SVI: 0.68 (high vulnerability)
-   - Poverty: 22.3%, Uninsured: 18.1%
-   
-3. **Patient Generation**: Apply real rates
-   - ~85% of diabetics have obesity (county rate 32.8% baseline)
-   - ~75% have hypertension (county rate 32.4% baseline)
-   - SDOH factors reflect high vulnerability (transportation barriers, food insecurity)
-
-4. **Output with Provenance**:
-```json
-{
-  "patient": { "mrn": "MRN00000001", "...": "..." },
-  "generation_context": {
-    "geography": "Harris County, TX (48201)",
-    "data_sources": ["CDC_PLACES_2024", "CDC_SVI_2022"],
-    "condition_rates_applied": {
-      "diabetes": { "rate": 0.121, "source": "places_county_2024.csv" }
-    }
-  }
-}
-```
-
-> **Key Principle:** When geography is specified, always ground generation in real PopulationSim data. Never use generic national averages when local data is available.
+When geography is specified, PatientSim grounds generation in real CDC PLACES, SVI, and ADI data via PopulationSim. See [data-integration.md](data-integration.md) for the full data-driven generation pattern, data files, and provenance tracking.
 
 ### Cross-Product: NetworkSim (Provider Networks)
 
