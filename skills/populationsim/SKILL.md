@@ -53,49 +53,27 @@ PopulationSim provides population-level intelligence using public data sources (
 | Select trial sites | `trial-support/site-selection-support.md` | "site selection", "best locations" |
 | Project enrollment | `trial-support/enrollment-projection.md` | "enrollment timeline", "recruitment rate" |
 
-## Trigger Phrases
+## Safety Guardrails
 
-### Data Access (v2.0)
-- "What is the exact [measure] in [geography]?"
-- "Look up [measure] from CDC PLACES"
-- "What's the FIPS code for [county]?"
-- "Which counties are in the [metro] MSA?"
-- "Aggregate tract data for [county]"
+### All Generated Data is Synthetic
 
-### Geographic Intelligence
-- "What's the population profile for [county/region]?"
-- "Show me demographics for [geography]"
-- "Compare [region A] to [region B]"
-- "Analyze census tracts in [area] with high vulnerability"
-- "Profile the [metro area] MSA"
+PopulationSim outputs **synthetic, fictional, simulated data** — never real patient records. All population profiles, cohort specifications, and demographic distributions are generated or derived from aggregated public statistics. They are **not real** patient data and must not be treated as such.
 
-### Health Patterns
-- "What's the diabetes prevalence in [geography]?"
-- "Show health disparities by race in [region]"
-- "Compare chronic disease rates across [geographies]"
-- "What are the smoking rates in [county]?"
-- "Which counties have the highest obesity?"
+**Do NOT:**
+- Present synthetic data as actual patient records
+- Make clinical recommendations (e.g., "you should prescribe," "the patient needs") based on generated data
+- Pull from or reference real patient databases — use only public reference data
 
-### SDOH Analysis
-- "What's the SVI for [geography]?"
-- "Show me high-deprivation areas in [state]"
-- "Analyze social determinants in [region]"
-- "Which tracts have transportation barriers?"
-- "Find food deserts in [county]"
+**Do:**
+- Remind users that all generated data is synthetic test data
+- Use real, valid medical code systems for standards: **ICD-10** (diagnoses), **CPT/HCPCS** (procedures), **LOINC** (labs), **SNOMED** (clinical terms), **RxNorm/NDC** (medications), **NPI** (providers)
+- Use real public reference data (Census ACS, CDC PLACES, SVI, ADI) for population characteristics
 
-### Cohort Definition
-- "Define a cohort of diabetics in underserved California areas"
-- "Create a population specification for high-risk heart failure patients"
-- "Build a cohort spec for PatientSim generation"
-- "Specify a population segment for claims testing"
-- "What are the comorbidity rates for diabetics?"
+### Edge Cases
 
-### Trial Support
-- "Estimate feasibility for a T2DM trial"
-- "How many patients are eligible for [criteria]?"
-- "Rank trial sites for cardiovascular outcomes study"
-- "Best locations for diabetes trial enrollment"
-- "Project enrollment for 2,000 subjects across 40 sites"
+- **Missing FIPS codes**: Validate geography inputs; return a clear error if a FIPS code is not found in crosswalk files
+- **Partial data**: Some tracts lack CDC PLACES or SVI coverage — flag missing indicators rather than imputing zeros
+- **Invalid code references**: Only emit ICD-10, CPT, LOINC, RxNorm, NDC codes that exist in recognized code systems
 
 ## Output Types
 
@@ -395,41 +373,4 @@ For detailed concepts and methodology, see:
 
 ## Generative Framework Integration
 
-PopulationSim provides **real population data** that drives realistic generation in the [Generative Framework](../generation/SKILL.md).
-
-### PopulationSim's Unique Role
-
-Unlike other products that generate synthetic data, PopulationSim:
-1. **Queries real reference data** (Census, CDC PLACES, SVI/ADI)
-2. **Outputs specifications** that define cohort characteristics
-3. **Feeds the Profile Builder** with realistic distributions
-
-### Integration Flow
-
-```
-User Request
-     │
-     ▼
-┌─────────────┐     ┌─────────────────┐     ┌───────────────┐
-│ PopulationSim │──►│ Profile Builder │──►│ Profile Executor │
-│ "TX Medicare" │   │ Add conditions  │    │ Generate 100    │
-│ demographics  │   │ Add coverage    │    │ patients        │
-└─────────────┘     └─────────────────┘     └───────────────┘
-```
-
-### Example: Realistic Geographic Cohort
-
-```
-"Generate 200 Medicare diabetics in Harris County, TX with realistic demographics"
-```
-
-PopulationSim provides:
-- Age distribution from Census (mean 72.3, std 8.1)
-- Gender split (47% M, 53% F)
-- Race/ethnicity from ACS (38% Hispanic, 32% White, 22% Black, 8% Asian)
-- SDOH indicators from SVI (moderate vulnerability)
-- Diabetes prevalence from CDC PLACES (16.2%)
-
-This becomes a ProfileSpecification that the Profile Executor uses.
-
-See: [integration/](integration/) for detailed integration patterns
+PopulationSim feeds the [Generative Framework](../generation/SKILL.md) by querying real reference data (Census, CDC PLACES, SVI/ADI) and outputting CohortSpecifications that drive realistic synthetic generation in PatientSim, MemberSim, and TrialSim.
