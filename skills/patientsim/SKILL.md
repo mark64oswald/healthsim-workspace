@@ -153,6 +153,17 @@ All PatientSim data is **100% synthetic**. Enforce these rules at all times:
 | Discharge date before admission date | Temporal inversion | Ensure chronological ordering of all events |
 | Using a real SSN (e.g., `078-05-1120`) | PHI leak risk | Generate synthetic SSNs in `900-xx-xxxx` range |
 
+## Edge Case Handling
+
+| Scenario | Behavior |
+|----------|----------|
+| **Partial data request** ("just demographics") | Omit clinical entities (encounters, labs, meds); return only requested subset |
+| **Age-cohort conflict** ("5-year-old with COPD") | Flag the clinical implausibility, suggest an age-appropriate alternative, and ask before proceeding |
+| **Invalid ICD-10 code from user** (e.g., `E11.999`) | Reject the code, suggest the nearest valid code, explain why |
+| **Missing required fields** (no age or gender given) | Apply defaults from Generation Parameters table; note assumptions in output |
+| **Contradictory instructions** ("healthy patient with A1C of 12%") | Prioritize clinical coherence; ask user to clarify intent |
+| **Unsupported output format** ("as X12 837") | Redirect to MemberSim which owns claims formats; explain the boundary |
+
 ## Output Formats
 
 | Format | Request | Use Case |
