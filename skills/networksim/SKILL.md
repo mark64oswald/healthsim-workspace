@@ -14,12 +14,12 @@ description: >
 
 ## Overview
 
-NetworkSim provides provider network intelligence using real NPPES provider data (8.9M records), CMS facility data (60K+ facilities), and quality metrics integrated with PopulationSim demographics. Unlike synthetic generation, NetworkSim queries **actual registered providers** to enable:
+NetworkSim queries **real NPPES provider data** (8.9M records), CMS facility data (60K+ facilities), and quality metrics. Unlike synthetic generation, it uses **actual registered providers** to enable:
 
-1. **Provider Discovery**: Search providers by specialty, location, credentials, quality
-2. **Network Analysis**: Assess adequacy against regulatory standards (CMS MA, NCQA, Medicaid)
-3. **Healthcare Access**: Identify deserts combining access gaps, health needs, and vulnerability
-4. **Cross-Product Integration**: Provide authentic providers for PatientSim, MemberSim, TrialSim
+1. **Provider Discovery**: Search by specialty, location, credentials, quality
+2. **Network Analysis**: Assess adequacy against CMS MA, NCQA, Medicaid standards
+3. **Healthcare Access**: Identify deserts via access gaps, health needs, vulnerability
+4. **Cross-Product Integration**: Provide real providers for PatientSim, MemberSim, TrialSim
 
 ## Quick Reference
 
@@ -54,10 +54,10 @@ NetworkSim provides provider network intelligence using real NPPES provider data
 
 ## Trigger Phrases
 
-- **Provider/Facility Search**: "find [specialty] in [location]", "hospitals in [state]", "nursing homes near", "pharmacies in"
+- **Provider/Facility**: "find [specialty] in [location]", "hospitals in [state]", "nursing homes near", "pharmacies in"
 - **Validation/Roster**: "validate NPI", "is NPI valid", "create roster", "export providers"
-- **Density/Coverage**: "providers per 100K", "density in [county]", "HRSA benchmark", "specialty gaps"
-- **Quality**: "4-star hospitals", "MD/DO only", "board certified", "high quality"
+- **Density/Coverage**: "providers per 100K", "density in [county]", "HRSA benchmark"
+- **Quality**: "4-star hospitals", "MD/DO only", "board certified"
 - **Adequacy**: "CMS adequacy standards", "NCQA coverage", "provider ratio", "time/distance"
 - **Deserts/Access**: "healthcare deserts", "underserved counties", "access gaps", "shortage areas"
 
@@ -267,13 +267,13 @@ ORDER BY per_100k ASC;
 ## Safety Guardrails
 
 ### Real Data Disclaimer
-NetworkSim queries **real NPPES registry data** (public CMS data, non-PHI). Every NPI is a real registered provider. Results reflect registry status only -- not accepting-patients status, insurance participation, or clinical competence.
+NetworkSim queries **real NPPES registry data** (public CMS data, non-PHI). Every NPI is a real registered provider. Results reflect registry status only -- not accepting-patients, insurance participation, or clinical competence.
 
 ### What NetworkSim Does NOT Do
 - **No clinical advice**: Never suggest a provider is "best" for a condition
-- **No insurance verification**: Network status queries are simulated, not real-time eligibility
+- **No insurance verification**: Network status is simulated, not real-time eligibility
 - **No appointment scheduling**: Registry data is not a booking system
-- **No synthetic NPIs in real queries**: Use `synthetic/` skills only for test data generation
+- **No synthetic NPIs in real queries**: Use `synthetic/` skills only for test data
 
 ### Code System References
 | System | Used For | Example |
@@ -283,26 +283,29 @@ NetworkSim queries **real NPPES registry data** (public CMS data, non-PHI). Ever
 | County FIPS | Geographic scoping | `48201` = Harris County, TX |
 | CMS Certification Number | Facility identification | POS file facility IDs |
 | CBSA | Urban/rural classification | Metro, micro, rural designations |
+| HCPCS | Provider service codes | Level I (CPT) and Level II codes |
+
+**Cross-product code systems** (via PatientSim/MemberSim/RxMemberSim integration): ICD-10 (diagnoses), CPT (procedures), LOINC (labs), SNOMED (clinical terms), RxNorm/NDC (medications). These are real standard codes -- linked patient data is synthetic/fictional.
 
 ### Edge Cases
-- **Missing county_fips**: ~2.2% of NPPES records lack county FIPS; filter with `WHERE county_fips IS NOT NULL` for geographic queries
-- **Deactivated NPIs**: NPPES includes deactivated records; check `npi_deactivation_date IS NULL` for active providers
-- **Multi-taxonomy providers**: Providers may have up to 15 taxonomies; `taxonomy_1` is the primary but check `taxonomy_2`-`taxonomy_4` for dual-specialty searches
+- **Missing county_fips**: ~2.2% of records lack county FIPS; filter with `WHERE county_fips IS NOT NULL` for geographic queries
+- **Deactivated NPIs**: Check `npi_deactivation_date IS NULL` for active providers
+- **Multi-taxonomy providers**: Up to 15 taxonomies; `taxonomy_1` is primary but check `taxonomy_2`-`taxonomy_4` for dual-specialty searches
 - **Organization vs Individual**: `entity_type_code = 1` (individual) vs `2` (organization); filter appropriately
 
 ### Negative Examples (What NOT to Do)
 
 **Never give clinical advice based on provider data:**
-- WRONG: "I recommend Dr. Smith for your heart condition" or "The patient needs a cardiologist at this facility"
-- RIGHT: "Here are cardiologists registered in Harris County per NPPES data. This is simulated/test data for analytics, not a referral."
+- WRONG: "I recommend Dr. Smith for your heart condition" or "The patient needs a cardiologist"
+- RIGHT: "Here are cardiologists registered in Harris County per NPPES data. This is simulated test data for analytics, not a referral."
 
-**Always distinguish real reference data from synthetic entities:**
+**Always distinguish real reference data from synthetic/fictional entities:**
 - WRONG: "Here is the patient's real provider" (implies real clinical relationship)
-- RIGHT: "Provider NPI data comes from the real NPPES registry (public CMS data). Patient and encounter data is synthetic/generated -- not real patient information."
+- RIGHT: "NPI data is from the real NPPES registry (public CMS data). Patient/encounter data is synthetic/fictional -- not real patient information."
 
 **Never mix synthetic and real data without labeling:**
 - WRONG: Return synthetic NPIs alongside real NPPES query results
-- RIGHT: Clearly label synthetic providers (from `synthetic/` skills) vs real providers (from `network.providers`)
+- RIGHT: Label synthetic providers (from `synthetic/` skills) vs real providers (from `network.providers`)
 
 ## Validation Rules
 
