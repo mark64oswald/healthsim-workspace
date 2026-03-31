@@ -7,7 +7,7 @@ description: "RxMemberSim generates realistic synthetic pharmacy data for testin
 
 ## For Claude
 
-Use this skill when the user requests pharmacy data, prescription fills, or PBM cohorts. Load the appropriate cohort sub-skill from the Cohort Skills table for specific scenarios.
+Use this skill when the user requests pharmacy data, prescription fills, or PBM cohorts. Load the cohort sub-skill from the Cohort Skills table for specific scenarios.
 
 **Triggers:** prescriptions, pharmacy claims, medication fills, DUR alerts, drug interactions, formulary/tier cohorts, NCPDP output, pharmacy prior authorization, step therapy
 
@@ -38,6 +38,8 @@ Use this skill when the user requests pharmacy data, prescription fills, or PBM 
 | GPI | Generic Product Identifier (drug class hierarchy) | 39400010100310 |
 | NCPDP | Pharmacy identifier and transaction standard | D.0 format |
 | NPI | Provider/pharmacy identifier | 1234567890 |
+| ICD-10-CM | Diagnosis code (required for PA submissions) | E11.9 |
+| HCPCS | Medical pharmacy / buy-and-bill drugs | J0135 |
 
 ## Quick Start
 
@@ -373,11 +375,11 @@ RxMemberSim pharmacy claims correspond to PatientSim medication orders:
 
 **PatientSim Cohort Links:** [diabetes-management](../patientsim/diabetes-management.md), [heart-failure](../patientsim/heart-failure.md), [chronic-kidney-disease](../patientsim/chronic-kidney-disease.md), [behavioral-health](../patientsim/behavioral-health.md), [oncology](../patientsim/oncology/)
 
-> **Integration Pattern:** Generate medication orders in PatientSim, then model pharmacy fills in RxMemberSim. Match NDCs, apply fill timing (retail: same day; specialty: +1-7 days), and formulary/PA rules.
+> **Integration Pattern:** Generate medication orders in PatientSim, then model fills in RxMemberSim. Match NDCs, apply fill timing (retail: same day; specialty: +1-7 days), and PA rules.
 
 ### Cross-Product: MemberSim (Claims)
 
-Pharmacy and medical benefits are often coordinated:
+Pharmacy and medical benefits coordinate:
 
 | RxMemberSim Skill | MemberSim Skill | Integration |
 |-------------------|-----------------|-------------|
@@ -390,11 +392,11 @@ Pharmacy and medical benefits are often coordinated:
 
 ### Cross-Product: PopulationSim Integration
 
-When a geography is specified, RxMemberSim grounds prescribing patterns, adherence, and formulary utilization in real CDC PLACES, SVI, and ADI data from PopulationSim. See [populationsim-integration.md](populationsim-integration.md) for the full data-driven generation pattern, embedded data sources, and SDOH impact tables.
+When a geography is specified, RxMemberSim grounds prescribing patterns and adherence in PopulationSim's CDC PLACES, SVI, and ADI data. See [populationsim-integration.md](populationsim-integration.md) for the generation pattern and SDOH impact tables.
 
 ### Cross-Product: NetworkSim (Pharmacy Networks)
 
-NetworkSim provides realistic pharmacy entities and benefit structures for prescription claims:
+NetworkSim provides pharmacy entities and benefit structures for prescription claims:
 
 | RxMemberSim Need | NetworkSim Skill | Generated Entity |
 |------------------|------------------|------------------|
@@ -403,7 +405,7 @@ NetworkSim provides realistic pharmacy entities and benefit structures for presc
 | Pharmacy benefit | [synthetic-pharmacy-benefit.md](../networksim/synthetic/synthetic-pharmacy-benefit.md) | Benefit design |
 | Specialty pharmacy | [specialty-pharmacy.md](../networksim/reference/specialty-pharmacy.md) | Limited distribution, hub model |
 
-> **Integration Pattern:** Generate prescription claims in RxMemberSim first, then use NetworkSim to add realistic pharmacy entities with proper NCPDP IDs, network status, and formulary context.
+> **Integration Pattern:** Generate claims in RxMemberSim first, then use NetworkSim to add pharmacy entities with NCPDP IDs and formulary context.
 
 ### Output Formats
 - [../../formats/ncpdp-d0.md](../../formats/ncpdp-d0.md) - NCPDP D.0 format
