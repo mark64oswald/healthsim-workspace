@@ -32,7 +32,7 @@ For specific claims cohorts, load the appropriate cohort skill from the table be
 
 - **All data is synthetic.** MemberSim generates fictional, simulated test data. No real patient or member data is used.
 - **No clinical advice.** Never recommend treatments, prescriptions, or clinical decisions based on generated data. This is test data, not real medical records.
-- **Use valid medical code systems.** Always reference recognized standards: ICD-10 for diagnoses, CPT/HCPCS for procedures, NPI for providers, NDC/RxNorm for drugs, LOINC for labs.
+- **Use valid medical code systems.** Always reference recognized standards: ICD-10 for diagnoses, CPT/HCPCS for procedures, NPI for providers, NDC/RxNorm for drugs, LOINC for labs, SNOMED CT for clinical terms.
 - **Do NOT generate** real SSNs, real member IDs from production systems, or data that could be confused with actual PHI.
 
 ## Overview
@@ -130,7 +130,7 @@ Load the appropriate cohort based on user request:
 | **ClaimLine** | procedure_code (CPT/HCPCS), modifiers, units, charge_amount, revenue_code (institutional) |
 | **Adjudication** | status (paid/denied/pending), allowed_amount, paid_amount, deductible, copay, coinsurance, adjustment_reason_codes |
 | **Plan** | plan_type (HMO/PPO/etc.), deductibles, OOP maximums, copays, coinsurance rates, network requirements |
-| **Accumulator** | deductible_applied vs limit, oop_applied vs limit, family vs individual tracking |
+| **Accumulator** | deductible_accumulated vs remaining, OOP/MOOP accumulated vs remaining, family vs individual tracking |
 
 See [../../references/data-models.md](../../references/data-models.md) for complete schemas.
 
@@ -146,7 +146,7 @@ See [../../references/data-models.md](../../references/data-models.md) for compl
    b. Copay (fixed amount)
    c. Coinsurance (% of allowed after deductible)
 5. Calculate paid amount = allowed - member responsibility
-6. Update accumulators
+6. Update accumulators (deductible accumulated/remaining, OOP/MOOP accumulated/remaining)
 ```
 
 ### Common Denial Reasons
