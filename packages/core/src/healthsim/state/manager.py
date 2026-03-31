@@ -77,6 +77,8 @@ class StateManager:
         """
         self._conn = connection
         self._auto_persist: Optional[AutoPersistService] = None
+        self._profile_manager: Optional["ProfileManager"] = None
+        self._journey_manager: Optional["JourneyManager"] = None
     
     @property
     def conn(self) -> duckdb.DuckDBPyConnection:
@@ -91,6 +93,22 @@ class StateManager:
         if self._auto_persist is None:
             self._auto_persist = AutoPersistService(self.conn)
         return self._auto_persist
+    
+    @property
+    def profiles(self) -> "ProfileManager":
+        """Get profile manager (lazy initialization)."""
+        if self._profile_manager is None:
+            from .profile_manager import ProfileManager
+            self._profile_manager = ProfileManager(self.conn)
+        return self._profile_manager
+    
+    @property
+    def journeys(self) -> "JourneyManager":
+        """Get journey manager (lazy initialization)."""
+        if self._journey_manager is None:
+            from .journey_manager import JourneyManager
+            self._journey_manager = JourneyManager(self.conn)
+        return self._journey_manager
     
     # =========================================================================
     # Auto-Persist Methods (Token-Efficient)

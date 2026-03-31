@@ -258,6 +258,89 @@ spec = manager.profiles.get_execution_spec(execution_id=123)
 result = executor.execute(spec)
 ```
 
+## Journey Persistence
+
+Journeys define temporal event sequences and can be persisted for reuse across profiles and products.
+
+### Saving Journeys
+
+```python
+from healthsim.state import get_manager
+
+manager = get_manager()
+
+# Save a reusable journey
+journey_id = manager.journeys.save_journey(
+    name="diabetic-first-year",
+    journey_spec={
+        "journey_id": "diabetic-first-year",
+        "name": "First Year Diabetes Management",
+        "duration_days": 365,
+        "products": ["patientsim"],
+        "events": [
+            {"event_id": "q1-visit", "event_type": "encounter", "delay": {"days": 0}},
+            {"event_id": "q2-visit", "event_type": "encounter", "delay": {"days": 90}},
+            {"event_id": "q3-visit", "event_type": "encounter", "delay": {"days": 180}},
+            {"event_id": "q4-visit", "event_type": "encounter", "delay": {"days": 270}},
+        ]
+    },
+    description="Quarterly visits for new diabetics",
+    tags=["diabetes", "chronic-care"]
+)
+```
+
+### Loading and Executing Journeys
+
+```python
+# Load by name
+journey = manager.journeys.load_journey("diabetic-first-year")
+
+# Execute for a patient
+from healthsim.generation import JourneyEngine
+engine = JourneyEngine()
+events = engine.execute_journey(journey.journey_spec, patient, start_date)
+
+# Record execution
+manager.journeys.record_execution(
+    journey_id=journey.id,
+    entity_id=patient.id,
+    start_date=start_date,
+    events_generated=len(events),
+    duration_ms=250
+)
+```
+
+### Listing and Searching Journeys
+
+```python
+# List all chronic care journeys
+journeys = manager.journeys.list_journeys(tags=["chronic-care"])
+
+# Filter by product
+journeys = manager.journeys.list_journeys(products=["patientsim"])
+
+# Search by name
+journeys = manager.journeys.list_journeys(search="diabetic")
+```
+
+### Linking Journeys to Profiles
+
+```python
+# Record execution with profile and cohort links
+manager.journeys.record_execution(
+    journey_id=journey_id,
+    profile_id=profile_id,
+    cohort_id=cohort_id,
+    entity_id="patient-123",
+    start_date=date(2024, 1, 1),
+    end_date=date(2024, 12, 31),
+    events_generated=12
+)
+
+# Get all journeys executed for an entity
+executions = manager.journeys.get_entity_journeys("patient-123")
+```
+
 ## Journey Engine
 
 The JourneyEngine generates sequences of healthcare events over time:

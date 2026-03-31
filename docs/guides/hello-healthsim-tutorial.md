@@ -241,7 +241,7 @@ from healthsim.generation import (
 )
 
 # Connect to reference database
-conn = duckdb.connect("healthsim_current.duckdb")
+conn = duckdb.connect("healthsim.duckdb", read_only=True)
 
 # Look up Harris County, Texas
 resolver = ReferenceProfileResolver(conn)

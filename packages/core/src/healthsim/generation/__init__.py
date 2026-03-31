@@ -55,10 +55,13 @@ from healthsim.generation.reference_profiles import (
     GeographyReference as GeoReference,
     ReferenceProfileResolver,
     create_hybrid_profile,
+    create_hybrid_profile_with_network,
     list_counties,
     list_states,
     merge_profile_with_reference,
+    resolve_facility_reference,
     resolve_geography,
+    resolve_provider_reference,
 )
 from healthsim.generation.journey_engine import (
     BaseEventType,
@@ -172,6 +175,14 @@ from healthsim.generation.networksim_reference import (
     assign_provider_to_patient,
     assign_facility_to_patient,
 )
+from healthsim.generation.geography_builder import (
+    GeographyProfile,
+    GeographyAwareProfileBuilder,
+    create_geography_profile,
+    build_cohort_with_geography,
+    get_provider_for_entity,
+    get_facility_for_entity,
+)
 
 __all__ = [
     # Generators
@@ -222,6 +233,9 @@ __all__ = [
     "list_counties",
     "list_states",
     "create_hybrid_profile",
+    "create_hybrid_profile_with_network",
+    "resolve_provider_reference",
+    "resolve_facility_reference",
     "merge_profile_with_reference",
     # Journey Engine
     "JourneyEngine",
@@ -324,4 +338,11 @@ __all__ = [
     "get_facilities_by_geography",
     "assign_provider_to_patient",
     "assign_facility_to_patient",
+    # Geography-Aware Profile Builder
+    "GeographyProfile",
+    "GeographyAwareProfileBuilder",
+    "create_geography_profile",
+    "build_cohort_with_geography",
+    "get_provider_for_entity",
+    "get_facility_for_entity",
 ]

@@ -1,7 +1,7 @@
-"""Reference profile resolver for PopulationSim integration.
+"""Reference profile resolver for PopulationSim and NetworkSim integration.
 
 Resolves geography references to actual demographic distributions
-from CDC PLACES and SVI data.
+from CDC PLACES and SVI data, and provider/facility data from NPPES.
 """
 
 from dataclasses import dataclass, field
@@ -645,3 +645,208 @@ def create_hybrid_profile(
     
     # No reference requested, return as-is
     return user_spec
+
+
+def resolve_provider_reference(
+    reference: dict,
+    conn: "duckdb.DuckDBPyConnection",
+    limit: int = 100
+) -> list[dict]:
+    """Resolve provider reference to actual provider data from NetworkSim.
+    
+    Args:
+        reference: Provider search criteria
+            - state: 2-letter state abbreviation (required)
+            - city: City name (optional)
+            - specialty: Specialty name or taxonomy code (optional)
+            - entity_type: "individual" or "organization" (optional)
+        conn: DuckDB connection with network schema
+        limit: Maximum providers to return
+        
+    Returns:
+        List of provider dictionaries with NPI, name, location, specialty
+        
+    Example:
+        >>> ref = {"state": "TX", "specialty": "internal_medicine"}
+        >>> providers = resolve_provider_reference(ref, conn)
+        >>> len(providers)  # Up to 100 TX internists
+    """
+    from .networksim_reference import NetworkSimResolver, TAXONOMY_MAP
+    
+    resolver = NetworkSimResolver(conn)
+    
+    state = reference.get("state")
+    city = reference.get("city")
+    specialty = reference.get("specialty")
+    entity_type = reference.get("entity_type")
+    
+    # Convert specialty name to taxonomy code if needed
+    taxonomy = None
+    if specialty:
+        taxonomy = TAXONOMY_MAP.get(specialty, specialty)
+    
+    providers = resolver.find_providers(
+        state=state,
+        city=city,
+        taxonomy=taxonomy,
+        entity_type=entity_type,
+        limit=limit
+    )
+    
+    return [
+        {
+            "npi": p.npi,
+            "name": p.display_name,
+            "entity_type": p.entity_type.value,
+            "state": p.practice_state,
+            "city": p.practice_city,
+            "zip": p.practice_zip,
+            "specialty": p.primary_taxonomy,
+        }
+        for p in providers
+    ]
+
+
+def resolve_facility_reference(
+    reference: dict,
+    conn: "duckdb.DuckDBPyConnection",
+    limit: int = 50
+) -> list[dict]:
+    """Resolve facility reference to actual facility data from NetworkSim.
+    
+    Args:
+        reference: Facility search criteria
+            - state: 2-letter state abbreviation (required)
+            - city: City name (optional)
+            - type: Facility type (hospital, snf, hha, etc.) (optional)
+            - min_beds: Minimum bed count (optional)
+        conn: DuckDB connection with network schema
+        limit: Maximum facilities to return
+        
+    Returns:
+        List of facility dictionaries with CCN, name, type, location
+        
+    Example:
+        >>> ref = {"state": "TX", "type": "hospital", "min_beds": 100}
+        >>> facilities = resolve_facility_reference(ref, conn)
+    """
+    from .networksim_reference import NetworkSimResolver, FacilityType
+    
+    resolver = NetworkSimResolver(conn)
+    
+    state = reference.get("state")
+    city = reference.get("city")
+    facility_type_str = reference.get("type")
+    min_beds = reference.get("min_beds")
+    
+    # Convert type string to enum if provided
+    facility_type = None
+    if facility_type_str:
+        try:
+            facility_type = FacilityType(facility_type_str.lower())
+        except ValueError:
+            pass  # Use None if invalid type
+    
+    facilities = resolver.find_facilities(
+        state=state,
+        city=city,
+        facility_type=facility_type,
+        min_beds=min_beds,
+        limit=limit
+    )
+    
+    return [
+        {
+            "ccn": f.ccn,
+            "name": f.name,
+            "type": f.facility_type or "other",
+            "state": f.state,
+            "city": f.city,
+            "zip": f.zip_code,
+            "beds": f.beds,
+        }
+        for f in facilities
+    ]
+
+
+def create_hybrid_profile_with_network(
+    user_spec: dict,
+    conn: "duckdb.DuckDBPyConnection"
+) -> dict:
+    """Create a hybrid profile with PopulationSim demographics AND NetworkSim providers.
+    
+    Extends create_hybrid_profile() to also resolve provider and facility
+    references from NetworkSim data.
+    
+    Args:
+        user_spec: User's profile specification with optional:
+            - demographics.source = "populationsim"
+            - providers.source = "networksim"
+            - facilities.source = "networksim"
+        conn: DuckDB connection for both PopulationSim and NetworkSim data
+        
+    Returns:
+        Complete profile specification with resolved references
+        
+    Example:
+        >>> spec = {
+        ...     "profile": {
+        ...         "id": "harris-diabetic-with-pcp",
+        ...         "generation": {"count": 100},
+        ...         "demographics": {
+        ...             "source": "populationsim",
+        ...             "reference": {"type": "county", "fips": "48201"}
+        ...         },
+        ...         "providers": {
+        ...             "source": "networksim",
+        ...             "reference": {"state": "TX", "specialty": "internal_medicine"},
+        ...             "assignment": "pcp"
+        ...         },
+        ...         "facilities": {
+        ...             "source": "networksim", 
+        ...             "reference": {"state": "TX", "type": "hospital"},
+        ...             "assignment": "primary"
+        ...         }
+        ...     }
+        ... }
+        >>> hybrid = create_hybrid_profile_with_network(spec, conn)
+    """
+    # First, apply PopulationSim demographics if requested
+    result = create_hybrid_profile(user_spec, conn)
+    
+    profile = result.get("profile", {})
+    
+    # Resolve provider reference if requested
+    providers_config = profile.get("providers", {})
+    if providers_config.get("source", "").lower() == "networksim":
+        provider_ref = providers_config.get("reference", {})
+        if provider_ref:
+            resolved_providers = resolve_provider_reference(provider_ref, conn)
+            
+            # Add to profile
+            profile["_providers"] = {
+                "source": "networksim",
+                "reference": provider_ref,
+                "count": len(resolved_providers),
+                "pool": resolved_providers[:20],  # Sample for context
+                "assignment": providers_config.get("assignment"),
+            }
+    
+    # Resolve facility reference if requested
+    facilities_config = profile.get("facilities", {})
+    if facilities_config.get("source", "").lower() == "networksim":
+        facility_ref = facilities_config.get("reference", {})
+        if facility_ref:
+            resolved_facilities = resolve_facility_reference(facility_ref, conn)
+            
+            # Add to profile
+            profile["_facilities"] = {
+                "source": "networksim",
+                "reference": facility_ref,
+                "count": len(resolved_facilities),
+                "pool": resolved_facilities[:10],  # Sample for context
+                "assignment": facilities_config.get("assignment"),
+            }
+    
+    result["profile"] = profile
+    return result

@@ -171,7 +171,7 @@ class TestConnectionManager:
             )
         """)
         conn.execute("""
-            INSERT INTO cohorts (id, name, description)
+            INSERT INTO cohorts (cohort_id, name, description)
             VALUES ('test-123', 'Test Cohort', 'A test cohort')
         """)
         conn.close()
@@ -204,7 +204,7 @@ class TestConnectionManager:
         conn = manager.get_read_connection()
         
         with pytest.raises(duckdb.InvalidInputException):
-            conn.execute("INSERT INTO cohorts (id, name) VALUES ('x', 'x')")
+            conn.execute("INSERT INTO cohorts (cohort_id, name) VALUES ('x', 'x')")
         
         manager.close()
     
@@ -217,7 +217,7 @@ class TestConnectionManager:
         # Write using context manager
         with manager.write_connection() as conn:
             conn.execute("""
-                INSERT INTO cohorts (id, name, description)
+                INSERT INTO cohorts (cohort_id, name, description)
                 VALUES ('new-123', 'New Scenario', 'Created via write_connection')
             """)
         
@@ -225,7 +225,7 @@ class TestConnectionManager:
         # Verify by reading with read connection
         read_conn = manager.get_read_connection()
         result = read_conn.execute(
-            "SELECT name FROM cohorts WHERE id = 'new-123'"
+            "SELECT name FROM cohorts WHERE cohort_id = 'new-123'"
         ).fetchone()
         
         assert result[0] == "New Scenario"
@@ -241,14 +241,14 @@ class TestConnectionManager:
         # First write
         with manager.write_connection() as conn:
             conn.execute("""
-                INSERT INTO cohorts (id, name)
+                INSERT INTO cohorts (cohort_id, name)
                 VALUES ('cohort-1', 'First')
             """)
         
         # Second write should work (lock was released)
         with manager.write_connection() as conn:
             conn.execute("""
-                INSERT INTO cohorts (id, name)
+                INSERT INTO cohorts (cohort_id, name)
                 VALUES ('cohort-2', 'Second')
             """)
         
@@ -286,7 +286,7 @@ class TestConnectionManager:
         write_manager = ConnectionManager(temp_db)
         with write_manager.write_connection() as write_conn:
             write_conn.execute("""
-                INSERT INTO cohorts (id, name)
+                INSERT INTO cohorts (cohort_id, name)
                 VALUES ('new-1', 'New One')
             """)
         write_manager.close()  # Release all connections
@@ -449,7 +449,8 @@ class TestConcurrentAccessWithProduction:
         tables = [row[0] for row in result]
         
         assert len(tables) > 0
-        assert "cohorts" in tables or "ref_places_county" in tables
+        # Tables are in main schema (scenarios, patients) or population schema
+        assert "scenarios" in tables or "patients" in tables
         
         conn.close()
     
@@ -471,12 +472,12 @@ class TestConcurrentAccessWithProduction:
         conn2.close()
     
     def test_query_cohorts_read_only(self, production_db):
-        """Can query cohorts table with read-only connection."""
+        """Can query scenarios table with read-only connection."""
         self._check_can_connect(production_db)
         
         conn = duckdb.connect(str(production_db), read_only=True)
         
-        result = conn.execute("SELECT COUNT(*) FROM cohorts").fetchone()[0]
+        result = conn.execute("SELECT COUNT(*) FROM scenarios").fetchone()[0]
         
         # Just verify we can query - count may be 0 or more
         assert result >= 0
@@ -681,10 +682,11 @@ class TestMultiProcessConcurrency:
         """Multiple processes can read simultaneously."""
         self._check_can_connect(production_db)
         
+        # Use tables that actually exist in the healthsim database
         tables = [
-            "ref_places_county",
-            "ref_svi_county",
-            "cohorts",
+            "patients",
+            "members",
+            "encounters",
         ]
         
         args = [(production_db, t) for t in tables]

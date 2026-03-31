@@ -73,6 +73,11 @@ class OrchestratorResult:
     
     duration_seconds: float = 0.0
     
+    # Profile persistence tracking (optional)
+    profile_name: str | None = None
+    execution_id: int | None = None
+    cohort_id: str | None = None
+    
     @property
     def entity_count(self) -> int:
         """Number of entities generated."""
@@ -251,6 +256,119 @@ class ProfileJourneyOrchestrator:
             seed=self.seed,
             entities=entities_with_timelines,
             duration_seconds=duration,
+        )
+    
+    def execute_with_persistence(
+        self,
+        profile: str | ProfileSpecification | dict,
+        profile_name: str,
+        journey: str | JourneySpecification | dict | list | None = None,
+        count: int | None = None,
+        start_date: date | None = None,
+        execute_events: bool = False,
+        up_to_date: date | None = None,
+        description: str | None = None,
+        tags: list[str] | None = None,
+        persist_entities: bool = True,
+    ) -> OrchestratorResult:
+        """Execute profile with automatic persistence tracking.
+        
+        This method:
+        1. Saves/updates the profile specification
+        2. Executes the profile and journey
+        3. Optionally persists generated entities
+        4. Records execution history
+        
+        Args:
+            profile: Profile template name, spec object, or dict
+            profile_name: Name to save/load profile as
+            journey: Journey template name, spec object, dict, or list
+            count: Override entity count
+            start_date: Base date for journey timelines
+            execute_events: If True, execute events up to up_to_date
+            up_to_date: Date to execute events up to
+            description: Profile description
+            tags: Profile tags for filtering
+            persist_entities: If True, persist generated entities
+            
+        Returns:
+            OrchestratorResult with persistence tracking info
+        """
+        from ..state.profile_manager import ProfileManager, get_profile_manager
+        from ..state.manager import get_manager
+        
+        start_time = time.time()
+        
+        # Resolve profile spec
+        profile_spec = self._resolve_profile(profile)
+        
+        # Get or create ProfileManager
+        state_manager = get_manager()
+        profile_manager = state_manager.profiles
+        
+        # Try to load existing profile, or create new
+        try:
+            saved_profile = profile_manager.load_profile(profile_name)
+            profile_id = saved_profile.id
+        except ValueError:
+            # Create new profile
+            spec_dict = profile_spec.model_dump() if hasattr(profile_spec, 'model_dump') else {"profile": profile_spec.__dict__}
+            profile_id = profile_manager.save_profile(
+                name=profile_name,
+                profile_spec=spec_dict,
+                description=description,
+                tags=tags,
+            )
+        
+        # Execute the standard pipeline
+        result = self.execute(
+            profile=profile,
+            journey=journey,
+            count=count,
+            start_date=start_date,
+            execute_events=execute_events,
+            up_to_date=up_to_date,
+        )
+        
+        # Persist entities if requested
+        cohort_id = None
+        if persist_entities and result.entities:
+            from ..state.manager import persist
+            
+            # Convert entities to persistable format
+            entity_dicts = [
+                {"index": e.entity.index, **e.entity.attributes}
+                for e in result.entities
+            ]
+            
+            persist_result = persist(
+                entities={"entities": entity_dicts},
+                context=f"{profile_name} execution",
+            )
+            cohort_id = persist_result.cohort_id
+        
+        duration = time.time() - start_time
+        duration_ms = int(duration * 1000)
+        
+        # Record execution
+        execution_id = profile_manager.record_execution(
+            profile_id=profile_id,
+            cohort_id=cohort_id,
+            seed=self.seed,
+            count=result.entity_count,
+            duration_ms=duration_ms,
+        )
+        
+        # Return enriched result
+        return OrchestratorResult(
+            profile_id=result.profile_id,
+            journey_ids=result.journey_ids,
+            seed=result.seed,
+            entities=result.entities,
+            duration_seconds=duration,
+            profile_name=profile_name,
+            execution_id=execution_id,
+            cohort_id=cohort_id,
         )
     
     def _resolve_profile(

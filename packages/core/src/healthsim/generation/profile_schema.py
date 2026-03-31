@@ -66,6 +66,48 @@ class GeographyReference(BaseModel):
     datasets: list[str] | None = None  # ["acs_demographics", "cdc_places", "svi"]
 
 
+class ProviderReference(BaseModel):
+    """Reference to NetworkSim provider data.
+    
+    Used to assign real provider NPIs from the NPPES database.
+    
+    Example:
+        {"source": "networksim", "state": "TX", "specialty": "internal_medicine"}
+    """
+    source: Literal["networksim"] = "networksim"
+    state: str | None = None
+    city: str | None = None
+    zip_code: str | None = None
+    specialty: str | None = None  # Maps to taxonomy code via TAXONOMY_MAP
+    entity_type: Literal["individual", "organization"] | None = None
+    assignment: Literal["random", "nearest", "round_robin"] = "random"
+
+
+class FacilityReference(BaseModel):
+    """Reference to NetworkSim facility data.
+    
+    Used to assign real facility CCNs from CMS data.
+    
+    Example:
+        {"source": "networksim", "state": "TX", "type": "hospital"}
+    """
+    source: Literal["networksim"] = "networksim"
+    state: str | None = None
+    city: str | None = None
+    type: Literal["hospital", "snf", "hha", "hospice", "fqhc", "rhc", "asc", "other"] | None = None
+    min_beds: int | None = None
+    assignment: Literal["random", "nearest", "round_robin"] = "random"
+
+
+class NetworkSimSpec(BaseModel):
+    """NetworkSim provider and facility assignment specification."""
+    
+    primary_care_provider: ProviderReference | None = None
+    specialists: dict[str, ProviderReference] | None = None  # condition -> provider ref
+    primary_facility: FacilityReference | None = None
+    facility_types: dict[str, FacilityReference] | None = None  # type -> facility ref
+
+
 class DemographicsSpec(BaseModel):
     """Demographic attributes specification."""
 

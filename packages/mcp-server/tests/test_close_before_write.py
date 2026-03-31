@@ -353,7 +353,7 @@ class TestMCPToolsReadThenWrite:
         import healthsim_mcp as mcp_module
         from healthsim_mcp import (
             QueryInput, SaveCohortInput, ListCohortsInput,
-            DeleteScenarioInput
+            DeleteCohortInput
         )
         from unittest.mock import patch
         
@@ -386,7 +386,7 @@ class TestMCPToolsReadThenWrite:
                 assert "Scenario 2" in result
                 
                 # Write 3 (delete)
-                mcp_module.delete_cohort(DeleteScenarioInput(
+                mcp_module.delete_cohort(DeleteCohortInput(
                     name_or_id="Scenario 1",
                     confirm=True
                 ))

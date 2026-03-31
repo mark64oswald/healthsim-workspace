@@ -306,3 +306,186 @@ class TestHybridProfiles:
         
         # Should be unchanged
         assert result == spec
+
+
+
+class TestNetworkSimIntegration:
+    """Tests for NetworkSim provider/facility integration in profiles."""
+    
+    @pytest.fixture
+    def conn(self):
+        """Create connection to canonical healthsim.duckdb."""
+        import duckdb
+        from pathlib import Path
+        # Path: packages/core/tests/test_reference_profiles.py
+        # tests -> core -> packages -> healthsim-workspace (4 parents)
+        db_path = Path(__file__).parent.parent.parent.parent / "healthsim.duckdb"
+        conn = duckdb.connect(str(db_path), read_only=True)
+        yield conn
+        conn.close()
+    
+    def test_resolve_provider_reference_state(self, conn):
+        """Test resolving providers by state."""
+        from healthsim.generation.reference_profiles import resolve_provider_reference
+        
+        ref = {"state": "TX"}
+        providers = resolve_provider_reference(ref, conn, limit=10)
+        
+        assert len(providers) <= 10
+        assert len(providers) > 0
+        for p in providers:
+            assert p["state"] == "TX"
+            assert "npi" in p
+            assert len(p["npi"]) == 10  # NPI is 10 digits
+    
+    def test_resolve_provider_reference_specialty(self, conn):
+        """Test resolving providers by specialty."""
+        from healthsim.generation.reference_profiles import resolve_provider_reference
+        
+        ref = {"state": "TX", "specialty": "internal_medicine"}
+        providers = resolve_provider_reference(ref, conn, limit=10)
+        
+        # Should return providers (taxonomy filtering may vary)
+        assert len(providers) > 0
+        for p in providers:
+            assert p["state"] == "TX"
+            assert "specialty" in p
+    
+    def test_resolve_facility_reference_state(self, conn):
+        """Test resolving facilities by state."""
+        from healthsim.generation.reference_profiles import resolve_facility_reference
+        
+        ref = {"state": "TX"}
+        facilities = resolve_facility_reference(ref, conn, limit=10)
+        
+        assert len(facilities) <= 10
+        assert len(facilities) > 0
+        for f in facilities:
+            assert f["state"] == "TX"
+            assert "ccn" in f
+    
+    def test_resolve_facility_reference_type(self, conn):
+        """Test resolving facilities by type."""
+        from healthsim.generation.reference_profiles import resolve_facility_reference
+        
+        ref = {"state": "TX", "type": "hospital"}
+        facilities = resolve_facility_reference(ref, conn, limit=10)
+        
+        # Should return facilities
+        assert len(facilities) > 0
+        for f in facilities:
+            assert f["state"] == "TX"
+            # Facility type may be CMS code (01, 02) or name
+            assert "type" in f
+    
+    def test_create_hybrid_profile_with_network_providers(self, conn):
+        """Test creating hybrid profile with NetworkSim providers."""
+        from healthsim.generation.reference_profiles import create_hybrid_profile_with_network
+        
+        spec = {
+            "profile": {
+                "id": "texas-diabetic-with-pcp",
+                "generation": {"count": 50},
+                "demographics": {
+                    "source": "populationsim",
+                    "reference": {"type": "state", "code": "TX"}
+                },
+                "providers": {
+                    "source": "networksim",
+                    "reference": {"state": "TX", "specialty": "internal_medicine"},
+                    "assignment": "pcp"
+                }
+            }
+        }
+        
+        hybrid = create_hybrid_profile_with_network(spec, conn)
+        
+        # Check demographics were resolved
+        assert "_reference" in hybrid["profile"]
+        assert hybrid["profile"]["_reference"]["source"] == "populationsim"
+        
+        # Check providers were resolved
+        assert "_providers" in hybrid["profile"]
+        assert hybrid["profile"]["_providers"]["source"] == "networksim"
+        assert hybrid["profile"]["_providers"]["assignment"] == "pcp"
+        assert len(hybrid["profile"]["_providers"]["pool"]) > 0
+    
+    def test_create_hybrid_profile_with_network_facilities(self, conn):
+        """Test creating hybrid profile with NetworkSim facilities."""
+        from healthsim.generation.reference_profiles import create_hybrid_profile_with_network
+        
+        spec = {
+            "profile": {
+                "id": "texas-with-hospital",
+                "generation": {"count": 50},
+                "facilities": {
+                    "source": "networksim",
+                    "reference": {"state": "TX", "type": "hospital"},
+                    "assignment": "primary"
+                }
+            }
+        }
+        
+        hybrid = create_hybrid_profile_with_network(spec, conn)
+        
+        # Check facilities were resolved
+        assert "_facilities" in hybrid["profile"]
+        assert hybrid["profile"]["_facilities"]["source"] == "networksim"
+        assert hybrid["profile"]["_facilities"]["assignment"] == "primary"
+        assert len(hybrid["profile"]["_facilities"]["pool"]) > 0
+    
+    def test_create_hybrid_profile_with_all_references(self, conn):
+        """Test hybrid profile with demographics, providers, AND facilities."""
+        from healthsim.generation.reference_profiles import create_hybrid_profile_with_network
+        
+        spec = {
+            "profile": {
+                "id": "harris-county-full-context",
+                "generation": {"count": 100},
+                "demographics": {
+                    "source": "populationsim",
+                    "reference": {"type": "county", "fips": "48201"}
+                },
+                "providers": {
+                    "source": "networksim",
+                    "reference": {"state": "TX", "specialty": "internal_medicine"},
+                    "assignment": "pcp"
+                },
+                "facilities": {
+                    "source": "networksim",
+                    "reference": {"state": "TX", "type": "hospital", "min_beds": 100},
+                    "assignment": "primary"
+                }
+            }
+        }
+        
+        hybrid = create_hybrid_profile_with_network(spec, conn)
+        
+        # All three should be resolved
+        assert "_reference" in hybrid["profile"]  # Demographics
+        assert "_providers" in hybrid["profile"]
+        assert "_facilities" in hybrid["profile"]
+        
+        # Verify content
+        assert hybrid["profile"]["_reference"]["geography"]["code"] == "48201"
+        assert len(hybrid["profile"]["_providers"]["pool"]) > 0
+        assert len(hybrid["profile"]["_facilities"]["pool"]) > 0
+    
+    def test_no_network_reference_passthrough(self, conn):
+        """Test that specs without network refs pass through unchanged."""
+        from healthsim.generation.reference_profiles import create_hybrid_profile_with_network
+        
+        spec = {
+            "profile": {
+                "id": "manual-only",
+                "demographics": {
+                    "age": {"type": "normal", "mean": 50}
+                }
+            }
+        }
+        
+        result = create_hybrid_profile_with_network(spec, conn)
+        
+        # Should not have network metadata
+        assert "_providers" not in result["profile"]
+        assert "_facilities" not in result["profile"]

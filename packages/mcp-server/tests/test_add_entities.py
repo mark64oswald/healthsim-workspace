@@ -102,13 +102,13 @@ class TestAddEntitiesNewScenario:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, description, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, description, created_at, updated_at)
                 VALUES (?, ?, ?, ?, ?)
             """, [cohort_id, cohort_name, "Test description", now, now])
             
             # Verify cohort was created
             result = conn.execute(
-                "SELECT name FROM cohorts WHERE id = ?",
+                "SELECT name FROM cohorts WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()
             
@@ -124,13 +124,13 @@ class TestAddEntitiesNewScenario:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, cohort_name, now, now])
             
             # Verify
             result = conn.execute(
-                "SELECT name FROM cohorts WHERE id = ?",
+                "SELECT name FROM cohorts WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()
             
@@ -148,7 +148,7 @@ class TestAddEntitiesToExisting:
             cohort_id = "existing-cohort-123"
             now = datetime.utcnow()
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Existing Scenario", now, now])
             
@@ -160,7 +160,7 @@ class TestAddEntitiesToExisting:
             
             # Verify initial state
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 1
@@ -173,7 +173,7 @@ class TestAddEntitiesToExisting:
             
             # Verify new count
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 2
@@ -185,7 +185,7 @@ class TestAddEntitiesToExisting:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Multi-Type Scenario", now, now])
             
@@ -203,7 +203,7 @@ class TestAddEntitiesToExisting:
             
             # Verify both types exist
             types = conn.execute("""
-                SELECT DISTINCT entity_type FROM cohort_entities WHERE id = ?
+                SELECT DISTINCT entity_type FROM cohort_entities WHERE cohort_id = ?
             """, [cohort_id]).fetchall()
             
             type_set = {t[0] for t in types}
@@ -221,7 +221,7 @@ class TestUpsertBehavior:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Upsert Test", now, now])
             
@@ -235,7 +235,7 @@ class TestUpsertBehavior:
             # Verify insert
             result = conn.execute("""
                 SELECT entity_data FROM cohort_entities 
-                WHERE id = ? AND entity_id = ?
+                WHERE cohort_id = ? AND entity_id = ?
             """, [cohort_id, entity_id]).fetchone()
             
             assert result is not None
@@ -249,7 +249,7 @@ class TestUpsertBehavior:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Upsert Update Test", now, now])
             
@@ -264,7 +264,7 @@ class TestUpsertBehavior:
             # Check if exists
             existing = conn.execute("""
                 SELECT id FROM cohort_entities 
-                WHERE id = ? AND entity_type = ? AND entity_id = ?
+                WHERE cohort_id = ? AND entity_type = ? AND entity_id = ?
             """, [cohort_id, 'patients', entity_id]).fetchone()
             
             assert existing is not None  # Should exist
@@ -273,13 +273,13 @@ class TestUpsertBehavior:
             conn.execute("""
                 UPDATE cohort_entities 
                 SET entity_data = ?, created_at = ?
-                WHERE id = ? AND entity_type = ? AND entity_id = ?
+                WHERE cohort_id = ? AND entity_type = ? AND entity_id = ?
             """, ['{"name": "Updated"}', now, cohort_id, 'patients', entity_id])
             
             # Verify update
             result = conn.execute("""
                 SELECT entity_data FROM cohort_entities 
-                WHERE id = ? AND entity_id = ?
+                WHERE cohort_id = ? AND entity_id = ?
             """, [cohort_id, entity_id]).fetchone()
             
             data = json.loads(result[0])
@@ -292,7 +292,7 @@ class TestUpsertBehavior:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "No Delete Test", now, now])
             
@@ -305,7 +305,7 @@ class TestUpsertBehavior:
             
             # Verify 3 entities
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 3
@@ -314,12 +314,12 @@ class TestUpsertBehavior:
             conn.execute("""
                 UPDATE cohort_entities 
                 SET entity_data = ?
-                WHERE id = ? AND entity_id = ?
+                WHERE cohort_id = ? AND entity_id = ?
             """, ['{"id": 2, "updated": true}', cohort_id, "PAT-002"])
             
             # Verify still 3 entities (no deletion)
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 3
@@ -327,7 +327,7 @@ class TestUpsertBehavior:
             # Verify PAT-001 and PAT-003 still exist unchanged
             result = conn.execute("""
                 SELECT entity_id FROM cohort_entities 
-                WHERE id = ? ORDER BY entity_id
+                WHERE cohort_id = ? ORDER BY entity_id
             """, [cohort_id]).fetchall()
             
             ids = [r[0] for r in result]
@@ -344,7 +344,7 @@ class TestBatchTracking:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Batch Test", now, now])
             
@@ -357,7 +357,7 @@ class TestBatchTracking:
                 """, [i, cohort_id, f"PAT-{i:03d}", now])
             
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 50
@@ -370,7 +370,7 @@ class TestBatchTracking:
                 """, [i, cohort_id, f"PAT-{i:03d}", now])
             
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 100
@@ -384,7 +384,7 @@ class TestErrorHandling:
         with connection_manager.write_connection() as conn:
             # Try to find non-existent cohort
             result = conn.execute(
-                "SELECT name FROM cohorts WHERE id = ?",
+                "SELECT name FROM cohorts WHERE cohort_id = ?",
                 ["non-existent-id"]
             ).fetchone()
             
@@ -397,7 +397,7 @@ class TestErrorHandling:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Empty Test", now, now])
             
@@ -410,7 +410,7 @@ class TestErrorHandling:
             
             # Scenario should exist with 0 entities
             count = conn.execute(
-                "SELECT COUNT(*) FROM cohort_entities WHERE id = ?",
+                "SELECT COUNT(*) FROM cohort_entities WHERE cohort_id = ?",
                 [cohort_id]
             ).fetchone()[0]
             assert count == 0
@@ -447,7 +447,7 @@ class TestScenarioTotals:
             now = datetime.utcnow()
             
             conn.execute("""
-                INSERT INTO cohorts (id, name, created_at, updated_at)
+                INSERT INTO cohorts (cohort_id, name, created_at, updated_at)
                 VALUES (?, ?, ?, ?)
             """, [cohort_id, "Totals Test", now, now])
             
@@ -466,7 +466,7 @@ class TestScenarioTotals:
             result = conn.execute("""
                 SELECT entity_type, COUNT(*) as count 
                 FROM cohort_entities 
-                WHERE id = ? 
+                WHERE cohort_id = ? 
                 GROUP BY entity_type
             """, [cohort_id]).fetchall()
             

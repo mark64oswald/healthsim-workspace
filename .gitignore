@@ -59,21 +59,36 @@ skills/populationsim/data/**/*.csv
 !skills/populationsim/data/**/*.md
 !skills/populationsim/data/**/.gitkeep
 
-# NetworkSim data files (large, re-downloadable)
-# Ignore all CSV/ZIP files in data directories
+# Cohort data files (large, re-downloadable)
+# Raw data: NPPES, CMS, Census, AHRF — multi-GB CSV/ZIP files
+cohorts/*/data/raw/**/*.csv
+cohorts/*/data/raw/**/*.zip
+cohorts/*/data/raw/**/*.txt
+cohorts/*/data/processed/**/*.csv
+
+# Archived and cohort-specific databases
+cohorts/*/archive/**/*.duckdb
+cohorts/*/*.duckdb
+
+# Legacy paths (scenarios/ was renamed to cohorts/)
 scenarios/networksim/data/raw/**/*.csv
 scenarios/networksim/data/raw/**/*.zip
 scenarios/networksim/data/raw/**/*.txt
 scenarios/networksim/data/processed/**/*.csv
-
-# Ignore archived databases
 scenarios/networksim/archive/**/*.duckdb
 
-# Keep documentation in data directories  
+# Keep documentation and directory structure
+!cohorts/*/data/**/*.md
+!cohorts/*/data/**/.gitkeep
 !scenarios/networksim/data/**/*.md
-
-# Keep .gitkeep files to preserve directory structure
 !scenarios/networksim/data/**/.gitkeep
+
+# DuckDB databases (large, regenerable)
+# Keep healthsim.duckdb as the primary dev database
+healthsim_current.duckdb
+healthsim_current_backup.duckdb
+*.duckdb-wal
+*.duckdb-tmp
 
 # Session handoff documents
 *-HANDOFF-*.md
