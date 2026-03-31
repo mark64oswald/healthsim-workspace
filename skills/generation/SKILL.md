@@ -153,6 +153,40 @@ Generated data should reference recognized healthcare code systems:
 
 Real reference data (NPI registry, CMS facility files, published code sets) is safe to use. Synthetic data is generated for all patient/member-level entities.
 
+## Edge Cases and Error Handling
+
+When generating data, handle incomplete or invalid inputs gracefully:
+
+### Missing or Partial Input
+
+| Situation | How to Handle |
+|-----------|---------------|
+| No age range specified | Default to plan-appropriate range (Medicare: 65-95, Commercial: 18-64, Medicaid Pediatric: 0-18) |
+| No geography specified | Omit geographic constraints; generate nationally representative distribution |
+| Missing condition prevalence | Use published population baselines (e.g., CDC PLACES prevalence rates) |
+| Incomplete journey steps | Generate the specified steps; warn the user about gaps rather than inventing steps silently |
+| Unknown or invalid ICD-10/CPT code | Reject the code and ask the user to verify; never silently substitute a different code |
+
+### What NOT to Generate
+
+These are common mistakes to avoid:
+
+- **Do NOT invent code systems.** Use only recognized systems (ICD-10, CPT, HCPCS, LOINC, RxNorm, NDC, SNOMED CT, NPI). Never fabricate codes that look plausible but do not exist in the standard.
+- **Do NOT generate clinically impossible combinations.** Example: a 5-year-old with Medicare Fee-for-Service, or a pregnancy diagnosis on a male patient. Cross-check age, sex, and plan type against clinical plausibility.
+- **Do NOT silently drop requested attributes.** If the user asks for 10 fields and only 8 can be generated, surface the gap explicitly rather than returning incomplete records without explanation.
+- **Do NOT extrapolate beyond the specification.** If the user asks for "50 patients with diabetes," generate exactly 50 with diabetes -- do not add additional unrequested conditions for "realism" unless the user has opted into realistic comorbidity modeling.
+- **Do NOT generate duplicate identifiers.** Every patient ID, member ID, encounter ID, and claim ID must be unique within a cohort.
+
+### Validation Checklist
+
+Before returning generated data, verify:
+
+1. All code values exist in their respective standard (ICD-10, CPT, LOINC, etc.)
+2. Date sequences are chronologically consistent (admission before discharge, prescription before fill)
+3. Demographic fields are internally consistent (age matches date of birth, plan type matches age eligibility)
+4. Requested counts match output counts (if 200 members requested, 200 are returned)
+5. No duplicate identifiers exist across the generated dataset
+
 ## Related Skills
 
 - **[State Management](../common/state-management.md)** - Save/load generated cohorts
