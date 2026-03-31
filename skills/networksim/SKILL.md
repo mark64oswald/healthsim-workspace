@@ -56,54 +56,12 @@ NetworkSim provides provider network intelligence using real NPPES provider data
 
 ## Trigger Phrases
 
-### Provider Search
-- "Find [specialty] in [location]"
-- "Search for primary care providers in [county]"
-- "Show me cardiologists within 10 miles of [zip]"
-- "List all orthopedic surgeons in Texas"
-- "Find providers with NPI starting with [prefix]"
-
-### Facility Search
-- "Find hospitals in [county/state]"
-- "Show me 4-star hospitals in California"
-- "List nursing homes in [city]"
-- "Find trauma centers near [location]"
-- "Search for ambulatory surgery centers"
-
-### Validation & Roster
-- "Is NPI 1234567890 valid?"
-- "Validate this NPI: [number]"
-- "Create a network roster for [specialty] in [geography]"
-- "Export provider list to CSV"
-- "Generate directory of PCPs for [county]"
-
-### Density & Coverage
-- "What's the provider density in [county]?"
-- "Providers per 100K population in Texas"
-- "Compare density to HRSA benchmarks"
-- "Which specialties have gaps in [region]?"
-- "Assess geographic coverage for [state]"
-
-### Quality Filtering
-- "Show only 5-star hospitals"
-- "Find MD/DO providers only"
-- "Filter by board certification"
-- "High-quality providers in [area]"
-- "Premium tier hospitals"
-
-### Network Adequacy
-- "Assess PCP adequacy for California"
-- "Does this network meet CMS standards?"
-- "NCQA specialty coverage check"
-- "Provider-to-enrollee ratio analysis"
-- "Time/distance access assessment"
-
-### Healthcare Deserts
-- "Identify healthcare deserts in Texas"
-- "Show underserved counties"
-- "Find areas with low access + high disease burden"
-- "Critical shortage areas for primary care"
-- "Equity analysis for vulnerable populations"
+- **Provider/Facility Search**: "find [specialty] in [location]", "hospitals in [state]", "nursing homes near", "pharmacies in"
+- **Validation/Roster**: "validate NPI", "is NPI valid", "create roster", "export providers"
+- **Density/Coverage**: "providers per 100K", "density in [county]", "HRSA benchmark", "specialty gaps"
+- **Quality**: "4-star hospitals", "MD/DO only", "board certified", "high quality"
+- **Adequacy**: "CMS adequacy standards", "NCQA coverage", "provider ratio", "time/distance"
+- **Deserts/Access**: "healthcare deserts", "underserved counties", "access gaps", "shortage areas"
 
 ## Skill Inventory
 
@@ -207,88 +165,15 @@ Provider records from NPPES database:
 
 ### AdequacyAssessment
 
-Network adequacy evaluation against standards:
-
-```json
-{
-  "geography": {
-    "type": "state",
-    "code": "CA",
-    "name": "California"
-  },
-  "standard": "CMS_MA",
-  "assessment_date": "2025-01-15",
-  "metrics": {
-    "pcp_ratio": {
-      "actual": 85.3,
-      "required": 83.3,
-      "adequacy_pct": 102.4,
-      "status": "ADEQUATE"
-    },
-    "specialist_coverage": {
-      "ncqa_13_specialties": 13,
-      "covered": 13,
-      "status": "COMPLETE"
-    }
-  },
-  "overall_status": "COMPLIANT"
-}
-```
+Key fields: `geography` (type, code, name), `standard` (CMS_MA/NCQA), `metrics.pcp_ratio` (actual, required, status), `metrics.specialist_coverage` (13 specialties), `overall_status` (COMPLIANT/NON_COMPLIANT).
 
 ### HealthcareDesert
 
-Desert identification with severity scoring:
-
-```json
-{
-  "geography": {
-    "fips": "48001",
-    "county": "Anderson County",
-    "state": "Texas"
-  },
-  "desert_type": "primary_care",
-  "severity": "critical",
-  "scores": {
-    "access_gap": 0.85,
-    "health_burden": 0.72,
-    "social_vulnerability": 0.68,
-    "quality_gap": 0.45,
-    "composite": 0.73
-  },
-  "indicators": {
-    "providers_per_100k": 12.3,
-    "hrsa_benchmark": 60.0,
-    "diabetes_prevalence": 0.142,
-    "svi_percentile": 0.78
-  },
-  "intervention_priority": 1
-}
-```
+Key fields: `geography` (fips, county, state), `desert_type`, `severity` (critical/high/moderate), `scores` (access_gap, health_burden, social_vulnerability, composite 0-1), `intervention_priority` (1=highest).
 
 ### NetworkRoster
 
-Exportable provider roster:
-
-```json
-{
-  "roster_id": "ROSTER-CA-PCP-2025-001",
-  "generated_at": "2025-01-15T10:30:00Z",
-  "criteria": {
-    "specialty": "Primary Care",
-    "geography": "San Diego County, CA",
-    "quality_filter": "MD/DO only"
-  },
-  "summary": {
-    "total_providers": 2847,
-    "by_taxonomy": {
-      "207Q00000X": 1523,
-      "207R00000X": 892,
-      "363L00000X": 432
-    }
-  },
-  "export_formats": ["csv", "json", "xlsx"]
-}
-```
+Key fields: `roster_id`, `criteria` (specialty, geography, quality_filter), `summary` (total_providers, by_taxonomy), `export_formats` (csv, json, xlsx).
 
 ---
 
@@ -306,100 +191,28 @@ Exportable provider roster:
 
 **Key Columns**: npi, entity_type_code, last_name, first_name, credential, taxonomy_1-4, practice_state, practice_city, practice_zip, county_fips
 
-### Facility Data (network.facilities)
+### Additional Tables
 
-| Attribute | Value |
-|-----------|-------|
-| Source | CMS Provider of Services (POS) file |
-| Records | 77,302 |
-| Types | Hospitals (01), SNFs (05), HHAs (07), Hospice (13) |
-| Coverage | All CMS-certified healthcare facilities |
-
-### Hospital Quality (network.hospital_quality)
-
-| Attribute | Value |
-|-----------|-------|
-| Source | CMS Hospital Compare |
-| Records | 5,421 hospitals |
-| Metrics | Overall rating (1-5 stars), mortality, readmission, safety |
-
-### Physician Quality (network.physician_quality)
-
-| Attribute | Value |
-|-----------|-------|
-| Source | CMS Physician Compare |
-| Records | 1,478,309 physicians |
-| Metrics | Quality measures, Medicare participation |
-
-### AHRF County Data (network.ahrf_county)
-
-| Attribute | Value |
-|-----------|-------|
-| Source | HRSA Area Health Resources File |
-| Records | 3,235 counties |
-| Metrics | Provider counts, hospital beds, health workforce |
+| Table | Source | Records | Key Content |
+|-------|--------|---------|-------------|
+| `network.facilities` | CMS POS file | 77,302 | Hospitals (01), SNFs (05), HHAs (07), Hospice (13) |
+| `network.hospital_quality` | CMS Hospital Compare | 5,421 | Star ratings (1-5), mortality, readmission, safety |
+| `network.physician_quality` | CMS Physician Compare | 1,478,309 | Quality measures, Medicare participation |
+| `network.ahrf_county` | HRSA AHRF | 3,235 | Provider counts, hospital beds, health workforce |
 
 ---
 
 ## Regulatory Standards
 
-### CMS Medicare Advantage
+See `reference/network-adequacy.md` for full CMS MA ratios, time/distance tables, NCQA 13 essential specialties, ECP requirements, and HPSA/MUA definitions.
 
-**Provider-to-Enrollee Ratios**:
-| Specialty | Ratio | Example (10K enrollees) |
-|-----------|-------|------------------------|
-| Primary Care | 1:1,200 | 8.3 providers minimum |
-| OB/GYN | 1:2,000 | 5.0 providers |
-| Mental Health | 1:3,000 | 3.3 providers |
-| General Surgery | 1:5,000 | 2.0 providers |
+**Quick reference**:
+- CMS MA PCP ratio: 1:1,200 enrollees
+- HRSA HPSA threshold: <60 PCPs per 100K
+- NCQA requires coverage across 13 specialties
+- Time/distance varies by urban/suburban/rural designation
 
-**Time/Distance Standards**:
-| Geography | Primary Care | Specialists | Hospitals |
-|-----------|--------------|-------------|-----------|
-| Urban (>50K) | 10 miles | 15 miles | 15 miles |
-| Suburban | 20 miles | 30 miles | 30 miles |
-| Rural (<10K) | 30 miles | 60 miles | 60 miles |
-
-### NCQA 13 Essential Specialties
-
-Must have at least one contracted provider in each:
-1. Primary Care
-2. Cardiology
-3. Dermatology
-4. Endocrinology
-5. Gastroenterology
-6. General Surgery
-7. Neurology
-8. OB/GYN
-9. Ophthalmology
-10. Orthopedic Surgery
-11. Otolaryngology (ENT)
-12. Psychiatry
-13. Urology
-
-### HRSA Benchmarks
-
-| Metric | Threshold | Classification |
-|--------|-----------|----------------|
-| PCPs per 100K | <60 | Health Professional Shortage Area |
-| PCPs per 100K | 60-80 | Adequate |
-| PCPs per 100K | >80 | Well-served |
-
----
-
-## Performance Benchmarks
-
-| Query Type | Target | Actual | Status |
-|------------|--------|--------|--------|
-| Provider search | <100ms | 13.8ms | ✅ Excellent |
-| NPI validation | <50ms | 18.8ms | ✅ Excellent |
-| Provider density | <100ms | 46.9ms | ✅ Good |
-| Network adequacy | <300ms | ~200ms | ✅ Good |
-| Healthcare deserts | <500ms | ~400ms | ✅ Good |
-| Cross-product JOIN | <500ms | ~300ms | ✅ Good |
-
-**Database**: healthsim.duckdb (1.7 GB)
-**Indexes**: county_fips, taxonomy_1, practice_state
+**Database**: healthsim.duckdb (1.7 GB), indexed on county_fips, taxonomy_1, practice_state
 
 ---
 
@@ -453,25 +266,35 @@ ORDER BY per_100k ASC;
 
 ---
 
-## Development Status
+## Safety Guardrails
 
-### Phase 1: Data Infrastructure ✅
-- [x] NPPES data import (8.9M providers)
-- [x] Geographic enrichment (97.77% county FIPS)
-- [x] Quality metrics integration (CMS Hospital Compare)
-- [x] Test framework (18 tests passing)
+### Real Data Disclaimer
+NetworkSim queries **real NPPES registry data** (public CMS data). Every NPI returned is a real, registered provider. This data is public and non-PHI, but:
+- **Never present results as provider recommendations or referrals**
+- **Never imply clinical competence** from registry presence alone
+- **Never use for actual patient care decisions** -- this is a simulation/analytics tool
+- Results reflect registry status, not current accepting-patients or insurance status
 
-### Phase 2: Query Skills ✅
-- [x] 9 query skills (provider, facility, pharmacy, NPI, roster, density, coverage, quality)
-- [x] 4,069 lines documentation
+### What NetworkSim Does NOT Do
+- **No clinical advice**: Do not suggest a provider is "best" for a condition
+- **No insurance verification**: Network status queries are simulated, not real-time eligibility checks
+- **No appointment scheduling**: Provider contact info is registry data, not a booking system
+- **No synthetic NPIs in real queries**: Never mix synthetic-generated NPIs into real NPPES query results; use `synthetic/` skills only when explicitly generating test data
 
-### Phase 3: Advanced Analytics 🎯 (Current)
-- [x] Network adequacy analysis
-- [x] Healthcare deserts identification
-- [ ] Specialty distribution analysis
-- [ ] Provider demographics analysis
+### Code System References
+| System | Used For | Example |
+|--------|----------|---------|
+| NUCC Taxonomy | Provider specialty classification | `207RC0000X` = Cardiovascular Disease |
+| NPI | Provider identification (Luhn-validated) | `1234567890` |
+| County FIPS | Geographic scoping | `48201` = Harris County, TX |
+| CMS Certification Number | Facility identification | POS file facility IDs |
+| CBSA | Urban/rural classification | Metro, micro, rural designations |
 
-**Progress**: 8 of 12 sessions complete (66%)
+### Edge Cases
+- **Missing county_fips**: ~2.2% of NPPES records lack county FIPS; filter with `WHERE county_fips IS NOT NULL` for geographic queries
+- **Deactivated NPIs**: NPPES includes deactivated records; check `npi_deactivation_date IS NULL` for active providers
+- **Multi-taxonomy providers**: Providers may have up to 15 taxonomies; `taxonomy_1` is the primary but check `taxonomy_2`-`taxonomy_4` for dual-specialty searches
+- **Organization vs Individual**: `entity_type_code = 1` (individual) vs `2` (organization); filter appropriately
 
 ---
 
