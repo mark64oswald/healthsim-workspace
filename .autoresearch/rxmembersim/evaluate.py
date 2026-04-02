@@ -41,4 +41,4 @@ DOMAIN_CASES = [
 ]
 
 if __name__ == "__main__":
-    main_cli("RxMemberSim", DOMAIN_CASES)
+    main_cli("RxMemberSim", DOMAIN_CASES, domain_key="rxmembersim")

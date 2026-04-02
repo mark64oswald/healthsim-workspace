@@ -43,6 +43,8 @@ For specific trial phases, therapeutic areas, or SDTM domains, load the appropri
 - **Real codes, synthetic entities:** Use real standard code systems (ICD-10, CPT, LOINC, SNOMED CT, MedDRA, RxNorm, NDC, NPI, ATC, HCPCS) for coding accuracy, but all people, sites, and events are fictional.
 - **Do NOT generate:** Real patient identifiers, actual investigator names, real site addresses, or any data that could be confused with actual clinical trial records.
 
+**Edge cases:** If a user requests invalid visit windows, missing baseline assessments, or partial SDTM domains, flag the issue and suggest corrections. For unknown MedDRA terms, use the closest valid preferred term.
+
 ## Trigger Phrases
 
 Activate TrialSim when user mentions:

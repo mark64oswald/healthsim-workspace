@@ -55,12 +55,21 @@ Use these skills when building specifications for data generation or executing b
 
 ### 1. Build a Profile (Optional)
 
-```
-Build a profile for 200 Medicare Advantage members:
-- Age 65-85, normal distribution centered at 74
-- 40% with Type 2 diabetes
-- 30% with heart failure
-- San Diego County geography
+```json
+{
+  "profile": {
+    "generation": { "count": 200, "products": ["patientsim", "membersim"] },
+    "demographics": {
+      "age": { "type": "normal", "mean": 74, "std": 6, "min": 65, "max": 85 },
+      "gender": { "type": "categorical", "weights": { "M": 0.48, "F": 0.52 } },
+      "geography": { "county_fips": "06073" }
+    },
+    "clinical": {
+      "primary_condition": { "code": "E11.9", "prevalence": 0.40 },
+      "comorbidities": [{ "code": "I50.9", "prevalence": 0.30 }]
+    }
+  }
+}
 ```
 
 ### 2. Build a Journey (Optional)

@@ -31,4 +31,4 @@ DOMAIN_CASES = [
 ]
 
 if __name__ == "__main__":
-    main_cli("NetworkSim", DOMAIN_CASES)
+    main_cli("NetworkSim", DOMAIN_CASES, domain_key="networksim")

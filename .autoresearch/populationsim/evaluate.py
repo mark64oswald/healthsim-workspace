@@ -31,4 +31,4 @@ DOMAIN_CASES = [
 ]
 
 if __name__ == "__main__":
-    main_cli("PopulationSim", DOMAIN_CASES)
+    main_cli("PopulationSim", DOMAIN_CASES, domain_key="populationsim")

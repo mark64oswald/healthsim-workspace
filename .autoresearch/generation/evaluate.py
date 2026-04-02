@@ -21,4 +21,4 @@ DOMAIN_CASES = [
 ]
 
 if __name__ == "__main__":
-    main_cli("Generation Engine", DOMAIN_CASES)
+    main_cli("Generation Engine", DOMAIN_CASES, domain_key="generation")

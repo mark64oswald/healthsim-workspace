@@ -55,4 +55,4 @@ DOMAIN_CASES = [
 ]
 
 if __name__ == "__main__":
-    main_cli("PatientSim", DOMAIN_CASES)
+    main_cli("PatientSim", DOMAIN_CASES, domain_key="patientsim")

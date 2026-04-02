@@ -82,6 +82,9 @@ healthsim_current*.duckdb
 *.duckdb-wal
 *.duckdb-tmp
 
+# Autoresearch L3 response caches
+.autoresearch/*/l3_cache.json
+
 # Session handoff documents
 *-HANDOFF-*.md
 SESSION-SUMMARY.md
