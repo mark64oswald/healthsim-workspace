@@ -52,7 +52,7 @@ This skill reads from PopulationSim's embedded ADI data:
 
 | Level | File | Records | Source |
 |-------|------|---------|--------|
-| Block Group | `data/block_group/adi_blockgroup_2023.csv` | 242,336 | UW-Madison Neighborhood Atlas |
+| Block Group | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | UW-Madison Neighborhood Atlas |
 
 ### File Structure
 
@@ -78,7 +78,7 @@ This skill reads from PopulationSim's embedded ADI data:
    - Block group: direct lookup by 12-digit FIPS
    - Tract: aggregate block groups (first 11 digits match)
    - County: aggregate all block groups (first 5 digits match)
-2. Read `data/block_group/adi_blockgroup_2023.csv`
+2. Read `population.adi_blockgroup` (via healthsim_query_reference)
 3. Filter by FIPS prefix
 4. Exclude suppressed values
 5. Return rankings with Neighborhood Atlas source citation

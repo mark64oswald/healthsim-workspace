@@ -40,7 +40,7 @@ PopulationSim v2.0 embeds real population health data that PatientSim uses to ge
 
 ### County-Level Health Data
 
-**File:** `skills/populationsim/data/county/places_county_2024.csv`
+**File:** `population.places_county (via healthsim_query_reference)`
 
 | Column Pattern | Example | Description |
 |----------------|---------|-------------|
@@ -91,7 +91,7 @@ PopulationSim v2.0 embeds real population health data that PatientSim uses to ge
 
 ### County-Level Social Vulnerability
 
-**File:** `skills/populationsim/data/county/svi_county_2022.csv`
+**File:** `population.svi_county (via healthsim_query_reference)`
 
 | Column | Range | Description |
 |--------|-------|-------------|
@@ -116,12 +116,12 @@ PopulationSim v2.0 embeds real population health data that PatientSim uses to ge
 
 Same structure as county files, with 11-digit tract FIPS:
 
-- `skills/populationsim/data/tract/places_tract_2024.csv`
-- `skills/populationsim/data/tract/svi_tract_2022.csv`
+- `population.places_tract (via healthsim_query_reference)`
+- `population.svi_tract (via healthsim_query_reference)`
 
 ### Block Group ADI
 
-**File:** `skills/populationsim/data/block_group/adi_blockgroup_2023.csv`
+**File:** `population.adi_blockgroup (via healthsim_query_reference)`
 
 | Column | Range | Description |
 |--------|-------|-------------|
@@ -220,14 +220,14 @@ When using data-driven generation, include provenance in output:
         "data_year": 2022,
         "release_version": "2024 Release",
         "methodology": "model_based_estimate",
-        "file_reference": "populationsim/data/county/places_county_2024.csv",
+        "file_reference": "populationsim/population.places_county (via healthsim_query_reference)",
         "fields_used": ["DIABETES_CrudePrev", "OBESITY_CrudePrev"]
       },
       {
         "source": "CDC_SVI_2022",
         "data_year": 2022,
         "methodology": "direct_lookup",
-        "file_reference": "populationsim/data/county/svi_county_2022.csv",
+        "file_reference": "populationsim/population.svi_county (via healthsim_query_reference)",
         "fields_used": ["RPL_THEMES", "EP_UNINSUR"]
       }
     ],

@@ -85,7 +85,7 @@ When geography is specified, sepsis cohorts use real population health data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Relevant columns for sepsis/acute care:
   - ACCESS2_CrudePrev: Lack of insurance (delayed care → ED presentation)
   - KIDNEY_CrudePrev: CKD prevalence (sepsis risk factor)
@@ -104,7 +104,7 @@ Relevant columns for sepsis/acute care:
 ### SDOH Impact on Outcomes
 
 ```
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Impact on sepsis outcomes:
   - RPL_THEMES > 0.75: Delayed presentation, higher mortality
   - EP_UNINSUR > 20%: ED-dominant care pattern

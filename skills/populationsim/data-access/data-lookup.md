@@ -37,7 +37,7 @@ The data-lookup skill provides direct access to PopulationSim's embedded data pa
 ## Data File Reference
 
 ### CDC PLACES County Data
-**File:** `data/county/places_county_2024.csv`
+**File:** `population.places_county` (via healthsim_query_reference)
 **Key Columns:**
 | Column | Description |
 |--------|-------------|
@@ -110,7 +110,7 @@ The data-lookup skill provides direct access to PopulationSim's embedded data pa
 | SHUTUTILITY | Utility shutoff threat |
 
 ### SVI County Data
-**File:** `data/county/svi_county_2022.csv`
+**File:** `population.svi_county` (via healthsim_query_reference)
 **Key Columns:**
 | Column | Description |
 |--------|-------------|
@@ -128,14 +128,14 @@ The data-lookup skill provides direct access to PopulationSim's embedded data pa
 | EP_MINRTY | % minority |
 
 ### SVI Tract Data
-**File:** `data/tract/svi_tract_2022.csv`
+**File:** `population.svi_tract` (via healthsim_query_reference)
 **Same structure as county file plus:**
 - FIPS: 11-digit tract FIPS
 - LOCATION: Tract description
 - Full demographic variables (E_* counts, EP_* percentages)
 
 ### ADI Block Group Data
-**File:** `data/block_group/adi_blockgroup_2023.csv`
+**File:** `population.adi_blockgroup` (via healthsim_query_reference)
 **Columns:**
 | Column | Description |
 |--------|-------------|
@@ -158,8 +158,8 @@ The data-lookup skill provides direct access to PopulationSim's embedded data pa
 
 **Process:**
 1. Identify geography: county = "Harris", state = "TX"
-2. Resolve FIPS: Look up in `data/crosswalks/fips_county.csv` → 48201
-3. Read `data/county/places_county_2024.csv`
+2. Resolve FIPS: Look up in `population.svi_county` (FIPS lookup via healthsim_query_reference) → 48201
+3. Read `population.places_county` (via healthsim_query_reference)
 4. Filter: CountyFIPS = "48201"
 5. Extract: DIABETES_CrudePrev
 6. Format response with provenance
@@ -211,7 +211,7 @@ Population: 3,269,973
 
 **Process:**
 1. Resolve: Cook County, IL → FIPS 17031
-2. Read `data/county/svi_county_2022.csv`
+2. Read `population.svi_county` (via healthsim_query_reference)
 3. Filter: STCNTY = "17031"
 4. Extract all RPL_ columns
 
@@ -242,7 +242,7 @@ Population: 3,269,973
 
 **Process:**
 1. Validate tract FIPS (11 digits)
-2. Read `data/tract/svi_tract_2022.csv`
+2. Read `population.svi_tract` (via healthsim_query_reference)
 3. Filter: FIPS = "48201311500"
 4. Extract SVI themes and demographics
 
@@ -267,7 +267,7 @@ Population: 3,269,973
 
 **Process:**
 1. Validate block group FIPS (12 digits)
-2. Read `data/block_group/adi_blockgroup_2023.csv`
+2. Read `population.adi_blockgroup` (via healthsim_query_reference)
 3. Filter: FIPS = "482012104001"
 4. Extract ADI rankings
 

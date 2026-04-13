@@ -52,13 +52,13 @@ Healthcare access data comes from multiple embedded sources:
 
 | Metric | File | Key Columns |
 |--------|------|-------------|
-| Uninsured Rate | `data/county/svi_county_2022.csv` | EP_UNINSUR |
-| Uninsured Rate (tract) | `data/tract/svi_tract_2022.csv` | EP_UNINSUR, E_UNINSUR |
-| Annual Checkup | `data/county/places_county_2024.csv` | CHECKUP_CrudePrev |
-| Dental Visit | `data/county/places_county_2024.csv` | DENTAL_CrudePrev |
-| Cholesterol Screening | `data/county/places_county_2024.csv` | CHOLSCREEN_CrudePrev |
-| Colorectal Screening | `data/county/places_county_2024.csv` | COLON_SCREEN_CrudePrev |
-| Mammography | `data/county/places_county_2024.csv` | MAMMOUSE_CrudePrev |
+| Uninsured Rate | `population.svi_county` (via healthsim_query_reference) | EP_UNINSUR |
+| Uninsured Rate (tract) | `population.svi_tract` (via healthsim_query_reference) | EP_UNINSUR, E_UNINSUR |
+| Annual Checkup | `population.places_county` (via healthsim_query_reference) | CHECKUP_CrudePrev |
+| Dental Visit | `population.places_county` (via healthsim_query_reference) | DENTAL_CrudePrev |
+| Cholesterol Screening | `population.places_county` (via healthsim_query_reference) | CHOLSCREEN_CrudePrev |
+| Colorectal Screening | `population.places_county` (via healthsim_query_reference) | COLON_SCREEN_CrudePrev |
+| Mammography | `population.places_county` (via healthsim_query_reference) | MAMMOUSE_CrudePrev |
 
 ### Data Lookup Pattern
 

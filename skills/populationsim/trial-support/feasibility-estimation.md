@@ -52,10 +52,10 @@ When geography is specified, feasibility estimation uses real CDC PLACES and SVI
 
 | Data Source | File | Key Measures |
 |-------------|------|-------------|
-| CDC PLACES (County) | `data/county/places_county_2024.csv` | DIABETES_CrudePrev, OBESITY_CrudePrev, BPHIGH_CrudePrev |
-| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | All 36 health measures at tract level |
-| CDC SVI (County) | `data/county/svi_county_2022.csv` | RPL_THEMES, EP_MINRTY, EP_UNINSUR |
-| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | All SVI themes for retention modeling |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | DIABETES_CrudePrev, OBESITY_CrudePrev, BPHIGH_CrudePrev |
+| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | All 36 health measures at tract level |
+| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | RPL_THEMES, EP_MINRTY, EP_UNINSUR |
+| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | All SVI themes for retention modeling |
 
 ### Data-Driven Feasibility Pattern
 
@@ -64,7 +64,7 @@ When geography is specified, feasibility estimation uses real CDC PLACES and SVI
 diabetes_national = 0.102  # Generic
 
 # Look up actual county-level prevalence:
-from data/county/places_county_2024.csv where CountyFIPS = '48201':
+from population.places_county (via healthsim_query_reference) where CountyFIPS = '48201':
   DIABETES_CrudePrev = 12.1%  # Harris County actual rate
   OBESITY_CrudePrev = 32.8%
   BPHIGH_CrudePrev = 32.4%
@@ -83,7 +83,7 @@ Feasibility outputs include data source attribution:
     "prevalence_year": 2022,
     "svi_source": "CDC_SVI_2022",
     "geography_level": "county",
-    "file_reference": "populationsim/data/county/places_county_2024.csv"
+    "file_reference": "populationsim/population.places_county (via healthsim_query_reference)"
   }
 }
 ```

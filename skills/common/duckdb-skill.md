@@ -17,7 +17,7 @@ The HealthSim DuckDB skill provides persistent storage and query capabilities fo
 
 **Status**: Active  
 **Schema Version**: 1.2  
-**Database**: `healthsim.duckdb` (in workspace root)
+**Database**: Local `healthsim.duckdb` or MotherDuck `healthsim_ref` (via HEALTHSIM_DB_PATH)
 
 ## Trigger Phrases
 

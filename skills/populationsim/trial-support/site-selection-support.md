@@ -54,11 +54,11 @@ Site selection uses real CDC PLACES and SVI data for evidence-based recommendati
 
 | Data Source | File | Application |
 |-------------|------|-------------|
-| CDC PLACES (County) | `data/county/places_county_2024.csv` | Disease prevalence by county |
-| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | Granular prevalence for site catchment |
-| CDC SVI (County) | `data/county/svi_county_2022.csv` | Minority population %, access barriers |
-| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | SDOH factors for retention modeling |
-| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | Deprivation for recruitment challenges |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Disease prevalence by county |
+| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | Granular prevalence for site catchment |
+| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | Minority population %, access barriers |
+| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | SDOH factors for retention modeling |
+| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation for recruitment challenges |
 
 ### Data-Driven Site Scoring
 
@@ -89,7 +89,7 @@ for county in candidate_counties:
       "source": "CDC_PLACES_2024",
       "geography": "Harris County (48201)",
       "prevalence_rate": 0.121,
-      "file": "populationsim/data/county/places_county_2024.csv"
+      "file": "populationsim/population.places_county (via healthsim_query_reference)"
     }
   }
 }

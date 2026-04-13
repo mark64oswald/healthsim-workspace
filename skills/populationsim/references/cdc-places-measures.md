@@ -22,8 +22,8 @@ CDC PLACES (Population Level Analysis and Community Estimates) provides model-ba
 
 | Level | File | Records |
 |-------|------|---------|
-| County | `data/county/places_county_2024.csv` | 3,143 |
-| Tract | `data/tract/places_tract_2024.csv` | 83,522 |
+| County | `population.places_county` (via healthsim_query_reference) | 3,143 |
+| Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 |
 
 ### Column Naming Convention
 

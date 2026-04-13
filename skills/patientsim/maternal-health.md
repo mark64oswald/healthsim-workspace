@@ -91,7 +91,7 @@ When geography is specified, maternal health cohorts use real population data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Relevant columns for maternal health:
   - DIABETES_CrudePrev: Baseline diabetes (GDM risk proxy)
   - OBESITY_CrudePrev: Obesity (GDM, preeclampsia risk)
@@ -110,7 +110,7 @@ Relevant columns for maternal health:
 ### SDOH Impact on Maternal Outcomes
 
 ```
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Impact on maternal health:
   - EP_UNINSUR: Delayed prenatal care, late initiation
   - RPL_THEME1 (socioeconomic): Maternal mortality disparities

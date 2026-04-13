@@ -53,10 +53,10 @@ Enrollment projections use SVI data for SDOH-adjusted retention modeling:
 
 | Data Source | File | Application |
 |-------------|------|-------------|
-| CDC SVI (County) | `data/county/svi_county_2022.csv` | Access barriers, retention risk |
-| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | Granular SDOH for site-level adjustment |
-| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | Deprivation-based dropout risk |
-| CDC PLACES (County) | `data/county/places_county_2024.csv` | Uninsured rate, access to care |
+| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | Access barriers, retention risk |
+| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | Granular SDOH for site-level adjustment |
+| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation-based dropout risk |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Uninsured rate, access to care |
 
 ### SDOH-Adjusted Retention Model
 
@@ -90,7 +90,7 @@ adjusted_retention = base_retention * retention_modifier
       "source": "CDC_SVI_2022",
       "mean_svi": 0.62,
       "retention_modifier": 0.95,
-      "file": "populationsim/data/county/svi_county_2022.csv"
+      "file": "populationsim/population.svi_county (via healthsim_query_reference)"
     }
   }
 }

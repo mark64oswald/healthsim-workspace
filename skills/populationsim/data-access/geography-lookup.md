@@ -38,22 +38,22 @@ The geography-lookup skill resolves geographic identifiers using PopulationSim's
 ## Crosswalk Files
 
 ### State FIPS Codes
-**File:** `data/crosswalks/fips_state.csv`
+**File:** `population.svi_county` (state lookup via healthsim_query_reference)
 **Columns:** state_fips, state_name, state_abbr
 **Records:** 51 (50 states + DC)
 
 ### County FIPS Codes
-**File:** `data/crosswalks/fips_county.csv`
+**File:** `population.svi_county` (FIPS lookup via healthsim_query_reference)
 **Columns:** state_fips, state_abbr, county_fips, county_name
 **Records:** 3,144
 
 ### Tract to County Mapping
-**File:** `data/crosswalks/tract_to_county.csv`
+**File:** tract-to-county mapping (via healthsim_query)
 **Columns:** tract_fips, county_fips, state_abbr, county_name, tract_name
 **Records:** 84,120
 
 ### CBSA Definitions
-**File:** `data/crosswalks/cbsa_definitions.csv`
+**File:** CBSA crosswalk (via healthsim_query)
 **Columns:** county_fips, cbsa_code, cbsa_title, cbsa_type, csa_code, csa_title, central_outlying
 **Records:** 1,918 county-CBSA mappings (937 unique CBSAs)
 
@@ -94,7 +94,7 @@ State (2) + County (3) + Tract (6) + Block Group (1)
 **Input:** "What's the FIPS for Harris County, Texas?"
 
 **Process:**
-1. Read `data/crosswalks/fips_county.csv`
+1. Read `population.svi_county` (FIPS lookup via healthsim_query_reference)
 2. Filter: county_name = "Harris" AND state_abbr = "TX"
 3. Return county_fips
 
@@ -114,7 +114,7 @@ Harris County, Texas has FIPS code **48201**.
 **Input:** "Which county is 06073?"
 
 **Process:**
-1. Read `data/crosswalks/fips_county.csv`
+1. Read `population.svi_county` (FIPS lookup via healthsim_query_reference)
 2. Filter: county_fips = "06073"
 3. Return county_name, state_abbr
 
@@ -129,7 +129,7 @@ FIPS 06073 is **San Diego County, California**.
 
 **Process:**
 1. Extract county FIPS from tract (first 5 digits): 48201
-2. Read `data/crosswalks/fips_county.csv`
+2. Read `population.svi_county` (FIPS lookup via healthsim_query_reference)
 3. Look up county name
 
 **Response:**
@@ -144,7 +144,7 @@ The tract portion is 311500, which is tract 3115.00.
 **Input:** "List the counties in the Houston MSA"
 
 **Process:**
-1. Read `data/crosswalks/cbsa_definitions.csv`
+1. Read CBSA crosswalk (via healthsim_query)
 2. Filter: cbsa_title contains "Houston"
 3. Return all matching counties
 
@@ -172,7 +172,7 @@ Total: 9 counties
 **Input:** "What's the FIPS for Washington County?"
 
 **Process:**
-1. Read `data/crosswalks/fips_county.csv`
+1. Read `population.svi_county` (FIPS lookup via healthsim_query_reference)
 2. Filter: county_name = "Washington"
 3. Find multiple matches → request clarification
 
@@ -194,7 +194,7 @@ Which state did you mean?
 **Input:** "What state is FIPS 48?"
 
 **Process:**
-1. Read `data/crosswalks/fips_state.csv`
+1. Read `population.svi_county` (state lookup via healthsim_query_reference)
 2. Filter: state_fips = "48"
 3. Return state_name, state_abbr
 

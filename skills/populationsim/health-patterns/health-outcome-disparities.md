@@ -53,10 +53,10 @@ Disparity analysis uses embedded data with geographic stratification:
 
 | Data Type | File | Key Columns |
 |-----------|------|-------------|
-| Health Outcomes | `data/county/places_county_2024.csv` | [CONDITION]_CrudePrev |
-| Demographics | `data/tract/svi_tract_2022.csv` | EP_MINRTY, E_AFAM, E_HISP, E_ASIAN |
-| SVI by Theme | `data/tract/svi_tract_2022.csv` | RPL_THEME3 (Minority/Language) |
-| Socioeconomic | `data/tract/svi_tract_2022.csv` | EP_POV150, EP_NOHSDP |
+| Health Outcomes | `population.places_county` (via healthsim_query_reference) | [CONDITION]_CrudePrev |
+| Demographics | `population.svi_tract` (via healthsim_query_reference) | EP_MINRTY, E_AFAM, E_HISP, E_ASIAN |
+| SVI by Theme | `population.svi_tract` (via healthsim_query_reference) | RPL_THEME3 (Minority/Language) |
+| Socioeconomic | `population.svi_tract` (via healthsim_query_reference) | EP_POV150, EP_NOHSDP |
 
 ### Disparity Analysis Pattern
 

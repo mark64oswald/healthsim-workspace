@@ -48,13 +48,13 @@ Demographic data comes from embedded SVI files:
 
 | Metric | File | Columns |
 |--------|------|---------|
-| Total Population | `data/tract/svi_tract_2022.csv` | E_TOTPOP |
-| Age 65+ | `data/tract/svi_tract_2022.csv` | E_AGE65, EP_AGE65 |
-| Age Under 18 | `data/tract/svi_tract_2022.csv` | E_AGE17, EP_AGE17 |
-| Minority Status | `data/tract/svi_tract_2022.csv` | E_MINRTY, EP_MINRTY |
-| African American | `data/tract/svi_tract_2022.csv` | E_AFAM, EP_AFAM |
-| Hispanic | `data/tract/svi_tract_2022.csv` | E_HISP, EP_HISP |
-| Asian | `data/tract/svi_tract_2022.csv` | E_ASIAN, EP_ASIAN |
+| Total Population | `population.svi_tract` (via healthsim_query_reference) | E_TOTPOP |
+| Age 65+ | `population.svi_tract` (via healthsim_query_reference) | E_AGE65, EP_AGE65 |
+| Age Under 18 | `population.svi_tract` (via healthsim_query_reference) | E_AGE17, EP_AGE17 |
+| Minority Status | `population.svi_tract` (via healthsim_query_reference) | E_MINRTY, EP_MINRTY |
+| African American | `population.svi_tract` (via healthsim_query_reference) | E_AFAM, EP_AFAM |
+| Hispanic | `population.svi_tract` (via healthsim_query_reference) | E_HISP, EP_HISP |
+| Asian | `population.svi_tract` (via healthsim_query_reference) | E_ASIAN, EP_ASIAN |
 
 ### Data Lookup Pattern
 

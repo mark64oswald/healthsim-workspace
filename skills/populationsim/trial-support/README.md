@@ -156,11 +156,11 @@ Trial support skills use PopulationSim's embedded data package with 100% US cove
 
 | Source | Embedded File | Records | Application |
 |--------|---------------|---------|-------------|
-| CDC PLACES (County) | `data/county/places_county_2024.csv` | 3,143 | Disease prevalence |
-| CDC PLACES (Tract) | `data/tract/places_tract_2024.csv` | 83,522 | Site catchment analysis |
-| CDC SVI (County) | `data/county/svi_county_2022.csv` | 3,144 | Diversity, retention risk |
-| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | 84,120 | SDOH-based adjustments |
-| ADI (Block Group) | `data/block_group/adi_blockgroup_2023.csv` | 242,336 | Deprivation-based modeling |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | 3,143 | Disease prevalence |
+| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | 83,522 | Site catchment analysis |
+| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | 3,144 | Diversity, retention risk |
+| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | 84,120 | SDOH-based adjustments |
+| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | Deprivation-based modeling |
 
 ### v2.0 Benefits
 

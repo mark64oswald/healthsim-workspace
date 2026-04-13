@@ -7,13 +7,13 @@ PopulationSim v2.0 provides **embedded real-world data** for evidence-based tria
 **Step 1: Look up real population data for potential sites**
 ```
 # For site feasibility in Houston metro (Harris County, FIPS: 48201)
-Read from: skills/populationsim/data/county/places_county_2024.csv
+Read from: population.places_county (via healthsim_query_reference)
 -> DIABETES_CrudePrev: 12.1% (for diabetes trial)
 -> CHD_CrudePrev: 6.4% (for CV outcomes trial)
 -> CANCER_CrudePrev: 6.2% (for oncology trial)
 -> TotalPopulation: 4,731,145
 
-Read from: skills/populationsim/data/county/svi_county_2022.csv
+Read from: population.svi_county (via healthsim_query_reference)
 -> RPL_THEMES: 0.68 (moderate-high vulnerability)
 -> EP_MINRTY: 72.1% (supports diversity requirements)
 ```
@@ -54,11 +54,11 @@ Read from: skills/populationsim/data/county/svi_county_2022.csv
 
 | Source | File | Use in TrialSim |
 |--------|------|-----------------|
-| CDC PLACES County | `populationsim/data/county/places_county_2024.csv` | Disease prevalence for feasibility |
-| CDC PLACES Tract | `populationsim/data/tract/places_tract_2024.csv` | Catchment area analysis |
-| SVI County | `populationsim/data/county/svi_county_2022.csv` | Diversity planning, access barriers |
-| SVI Tract | `populationsim/data/tract/svi_tract_2022.csv` | Site-level vulnerability context |
-| Geography Crosswalk | `populationsim/data/crosswalks/cbsa_definitions.csv` | Metro area site clustering |
+| CDC PLACES County | `populationsim/population.places_county (via healthsim_query_reference)` | Disease prevalence for feasibility |
+| CDC PLACES Tract | `populationsim/population.places_tract (via healthsim_query_reference)` | Catchment area analysis |
+| SVI County | `populationsim/population.svi_county (via healthsim_query_reference)` | Diversity planning, access barriers |
+| SVI Tract | `populationsim/population.svi_tract (via healthsim_query_reference)` | Site-level vulnerability context |
+| Geography Crosswalk | CBSA crosswalk (via healthsim_query) | Metro area site clustering |
 
 ## Trial-Specific Applications
 

@@ -88,13 +88,13 @@ When geography is specified, ADT cohorts use real population data for demographi
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Key columns for utilization:
   - TotalPopulation: Population for scaling
   - ACCESS2_CrudePrev: Uninsured rate (affects admission patterns)
   - CHECKUP_CrudePrev: Preventive care access
 
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Key columns:
   - RPL_THEMES: Overall vulnerability (affects ED utilization)
   - EP_AGE65: Age 65+ percentage (Medicare population)

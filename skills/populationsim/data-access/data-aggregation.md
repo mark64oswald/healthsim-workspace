@@ -64,7 +64,7 @@ Aggregated Rate = Σ(Rate_i × Population_i) / Σ(Population_i)
 **Input:** "Aggregate SVI scores for all tracts in Harris County, TX"
 
 **Process:**
-1. Read `data/tract/svi_tract_2022.csv`
+1. Read `population.svi_tract` (via healthsim_query_reference)
 2. Filter: FIPS starts with "48201" (Harris County)
 3. For each RPL_ column:
    - Calculate population-weighted average
@@ -106,9 +106,9 @@ Total Population: 4,726,177 (from 786 tracts)
 **Input:** "Calculate total population and average diabetes rate for Houston MSA"
 
 **Process:**
-1. Read `data/crosswalks/cbsa_definitions.csv`
+1. Read CBSA crosswalk (via healthsim_query)
 2. Filter: cbsa_title contains "Houston" → Get 9 county FIPS
-3. Read `data/county/places_county_2024.csv` for each county
+3. Read `population.places_county` (via healthsim_query_reference) for each county
 4. Sum: TotalPopulation
 5. Weighted average: DIABETES_CrudePrev (weighted by population)
 
@@ -143,7 +143,7 @@ CBSA 26420 | 9 Counties
 **Input:** "What's the average ADI for tract 48201210400?"
 
 **Process:**
-1. Read `data/block_group/adi_blockgroup_2023.csv`
+1. Read `population.adi_blockgroup` (via healthsim_query_reference)
 2. Filter: FIPS starts with "48201210400" (11 digits)
 3. Exclude suppressed values (GQ, PH, QDI)
 4. Average ADI_NATRANK across valid block groups

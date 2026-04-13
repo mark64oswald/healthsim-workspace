@@ -87,7 +87,7 @@ When geography is specified, heart failure cohorts use real CDC PLACES data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Key columns for cardiovascular:
   - CHD_CrudePrev: Coronary heart disease prevalence
   - STROKE_CrudePrev: Stroke prevalence  

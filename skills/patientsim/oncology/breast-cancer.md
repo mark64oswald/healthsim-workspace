@@ -126,7 +126,7 @@ When geography is specified, breast cancer cohorts can reference population cont
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Cancer-related columns:
   - CANCER_CrudePrev: Any cancer prevalence (%)
   - MAMMOUSE_CrudePrev: Mammography utilization (screening context)

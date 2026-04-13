@@ -519,7 +519,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "source": "CDC_PLACES_2024",
         "data_year": 2022,
         "methodology": "direct_lookup",
-        "file_reference": "data/county/places_county_2024.csv"
+        "file_reference": "population.places_county (via healthsim_query_reference)"
       }
     },
     "urban_rural": "urban"
@@ -532,7 +532,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "source": "CDC_PLACES_2024",
         "data_year": 2022,
         "methodology": "direct_lookup",
-        "file_reference": "data/county/places_county_2024.csv"
+        "file_reference": "population.places_county (via healthsim_query_reference)"
       }
     },
     "race_ethnicity": {
@@ -543,7 +543,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "data_year": 2022,
           "release_version": "2022",
           "methodology": "survey_weighted",
-          "file_reference": "data/county/svi_county_2022.csv"
+          "file_reference": "population.svi_county (via healthsim_query_reference)"
         }
       },
       "black": {
@@ -552,7 +552,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "source": "CDC_SVI_2022",
           "data_year": 2022,
           "methodology": "survey_weighted",
-          "file_reference": "data/county/svi_county_2022.csv"
+          "file_reference": "population.svi_county (via healthsim_query_reference)"
         }
       }
     }
@@ -571,7 +571,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "data_year": 2022,
           "release_version": "2024 Release",
           "methodology": "model_based_estimate",
-          "file_reference": "data/county/places_county_2024.csv"
+          "file_reference": "population.places_county (via healthsim_query_reference)"
         }
       },
       "obesity": {
@@ -583,7 +583,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "source": "CDC_PLACES_2024",
           "data_year": 2022,
           "methodology": "model_based_estimate",
-          "file_reference": "data/county/places_county_2024.csv"
+          "file_reference": "population.places_county (via healthsim_query_reference)"
         }
       }
     },
@@ -595,7 +595,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "source": "CDC_PLACES_2024",
           "data_year": 2022,
           "methodology": "model_based_estimate",
-          "file_reference": "data/county/places_county_2024.csv"
+          "file_reference": "population.places_county (via healthsim_query_reference)"
         }
       }
     }
@@ -615,7 +615,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "data_year": 2022,
         "release_version": "2022",
         "methodology": "direct_lookup",
-        "file_reference": "data/county/svi_county_2022.csv"
+        "file_reference": "population.svi_county (via healthsim_query_reference)"
       }
     },
     "economic": {
@@ -625,7 +625,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "source": "CDC_SVI_2022",
           "data_year": 2022,
           "methodology": "survey_weighted",
-          "file_reference": "data/county/svi_county_2022.csv"
+          "file_reference": "population.svi_county (via healthsim_query_reference)"
         }
       },
       "poverty_rate": {
@@ -634,7 +634,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
           "source": "CDC_SVI_2022",
           "data_year": 2022,
           "methodology": "survey_weighted",
-          "file_reference": "data/county/svi_county_2022.csv"
+          "file_reference": "population.svi_county (via healthsim_query_reference)"
         }
       }
     }
@@ -649,7 +649,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "source": "CDC_PLACES_2024",
         "data_year": 2022,
         "methodology": "model_based_estimate",
-        "file_reference": "data/county/places_county_2024.csv"
+        "file_reference": "population.places_county (via healthsim_query_reference)"
       }
     }
   },
@@ -666,7 +666,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "release_version": "2024 Release",
         "data_year": 2022,
         "geographic_coverage": "county",
-        "file_path": "data/county/places_county_2024.csv",
+        "file_path": "population.places_county (via healthsim_query_reference)",
         "fields_used": 15
       },
       {
@@ -675,7 +675,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "release_version": "2022",
         "data_year": 2022,
         "geographic_coverage": "county",
-        "file_path": "data/county/svi_county_2022.csv",
+        "file_path": "population.svi_county (via healthsim_query_reference)",
         "fields_used": 12
       }
     ],

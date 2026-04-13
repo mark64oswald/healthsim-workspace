@@ -308,9 +308,9 @@ PopulationSim provides **embedded real-world data** (CDC PLACES, SVI, ADI) for a
 
 | Source | File | Use in MemberSim |
 |--------|------|------------------|
-| CDC PLACES County | `populationsim/data/county/places_county_2024.csv` | Utilization rates, risk adjustment |
-| SVI County | `populationsim/data/county/svi_county_2022.csv` | SDOH factors, plan selection |
-| ADI Block Group | `populationsim/data/block_group/adi_blockgroup_2023.csv` | Deprivation-based adherence |
+| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Utilization rates, risk adjustment |
+| SVI County | `population.svi_county (via healthsim_query_reference)` | SDOH factors, plan selection |
+| ADI Block Group | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation-based adherence |
 
 | PopulationSim Skill | MemberSim Application |
 |---------------------|----------------------|

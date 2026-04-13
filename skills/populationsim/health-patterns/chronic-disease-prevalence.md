@@ -54,8 +54,8 @@ This skill reads from PopulationSim's embedded CDC PLACES data:
 
 | Level | File | Records | Data Year |
 |-------|------|---------|-----------|
-| County | `data/county/places_county_2024.csv` | 3,143 | 2022 BRFSS |
-| Tract | `data/tract/places_tract_2024.csv` | 83,522 | 2022 BRFSS |
+| County | `population.places_county` (via healthsim_query_reference) | 3,143 | 2022 BRFSS |
+| Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 | 2022 BRFSS |
 
 ### Key Columns
 

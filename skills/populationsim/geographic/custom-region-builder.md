@@ -59,9 +59,9 @@ Custom regions aggregate from embedded data files:
 
 | Component Type | Health Data | SVI Data | ADI Data |
 |----------------|-------------|----------|----------|
-| County | `data/county/places_county_2024.csv` | `data/county/svi_county_2022.csv` | Aggregate from tracts |
-| Tract | `data/tract/places_tract_2024.csv` | `data/tract/svi_tract_2022.csv` | Aggregate from block groups |
-| Block Group | N/A | N/A | `data/block_group/adi_blockgroup_2023.csv` |
+| County | `population.places_county` (via healthsim_query_reference) | `population.svi_county` (via healthsim_query_reference) | Aggregate from tracts |
+| Tract | `population.places_tract` (via healthsim_query_reference) | `population.svi_tract` (via healthsim_query_reference) | Aggregate from block groups |
+| Block Group | N/A | N/A | `population.adi_blockgroup` (via healthsim_query_reference) |
 
 ### Aggregation Process
 
@@ -74,9 +74,9 @@ Custom regions aggregate from embedded data files:
 ```
 
 ### Helper Files
-- `data/crosswalks/fips_county.csv` - County name → FIPS
-- `data/crosswalks/tract_to_county.csv` - Tract → County mapping
-- `data/crosswalks/cbsa_definitions.csv` - CBSA → County list
+- `population.svi_county` (FIPS lookup via healthsim_query_reference) - County name → FIPS
+- tract-to-county mapping (via healthsim_query) - Tract → County mapping
+- CBSA crosswalk (via healthsim_query) - CBSA → County list
 
 ---
 

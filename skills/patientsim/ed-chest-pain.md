@@ -117,7 +117,7 @@ When geography is specified, ED chest pain cohorts use real population data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Relevant columns for cardiac:
   - CHD_CrudePrev: Coronary heart disease prevalence
   - STROKE_CrudePrev: Stroke prevalence

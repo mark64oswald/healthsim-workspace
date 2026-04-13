@@ -51,8 +51,8 @@ This skill reads from PopulationSim's embedded SVI data:
 
 | Level | File | Records | Key Columns |
 |-------|------|---------|-------------|
-| County | `data/county/svi_county_2022.csv` | 3,144 | STCNTY, RPL_THEMES, RPL_THEME1-4 |
-| Tract | `data/tract/svi_tract_2022.csv` | 84,120 | FIPS, RPL_THEMES, RPL_THEME1-4, EP_* |
+| County | `population.svi_county` (via healthsim_query_reference) | 3,144 | STCNTY, RPL_THEMES, RPL_THEME1-4 |
+| Tract | `population.svi_tract` (via healthsim_query_reference) | 84,120 | FIPS, RPL_THEMES, RPL_THEME1-4, EP_* |
 
 ### Key Column Reference
 

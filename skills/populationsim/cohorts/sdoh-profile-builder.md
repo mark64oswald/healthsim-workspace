@@ -49,12 +49,12 @@ SDOH profiles are built from embedded data files:
 
 | Data Type | File | Key Columns |
 |-----------|------|-------------|
-| SVI Themes | `data/county/svi_county_2022.csv` | RPL_THEMES, RPL_THEME1-4 |
-| SVI Variables | `data/tract/svi_tract_2022.csv` | EP_POV150, EP_UNINSUR, EP_MINRTY |
-| ADI Rankings | `data/block_group/adi_blockgroup_2023.csv` | ADI_NATRANK, ADI_STATERNK |
-| Food Insecurity | `data/county/places_county_2024.csv` | FOODINSECU_CrudePrev |
-| Housing Insecurity | `data/county/places_county_2024.csv` | HOUSINSECU_CrudePrev |
-| Transportation | `data/county/places_county_2024.csv` | LACKTRPT_CrudePrev |
+| SVI Themes | `population.svi_county` (via healthsim_query_reference) | RPL_THEMES, RPL_THEME1-4 |
+| SVI Variables | `population.svi_tract` (via healthsim_query_reference) | EP_POV150, EP_UNINSUR, EP_MINRTY |
+| ADI Rankings | `population.adi_blockgroup` (via healthsim_query_reference) | ADI_NATRANK, ADI_STATERNK |
+| Food Insecurity | `population.places_county` (via healthsim_query_reference) | FOODINSECU_CrudePrev |
+| Housing Insecurity | `population.places_county` (via healthsim_query_reference) | HOUSINSECU_CrudePrev |
+| Transportation | `population.places_county` (via healthsim_query_reference) | LACKTRPT_CrudePrev |
 
 ### Data Lookup Pattern
 

@@ -92,7 +92,7 @@ When geography is specified, result distributions reflect local population healt
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Key columns for lab patterns:
   - DIABETES_CrudePrev: Affects glucose, HbA1c distributions
   - KIDNEY_CrudePrev: Affects BUN, creatinine, eGFR

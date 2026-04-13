@@ -54,14 +54,14 @@ This skill reads from PopulationSim's embedded data package for **exact values**
 
 | Data Type | File | Key Columns |
 |-----------|------|-------------|
-| Health Indicators | `data/county/places_county_2024.csv` | CountyFIPS, [MEASURE]_CrudePrev |
-| SVI Scores | `data/county/svi_county_2022.csv` | STCNTY, RPL_THEMES, RPL_THEME1-4 |
-| Demographics | `data/county/svi_county_2022.csv` | E_TOTPOP, EP_POV150, EP_UNINSUR, EP_MINRTY |
+| Health Indicators | `population.places_county` (via healthsim_query_reference) | CountyFIPS, [MEASURE]_CrudePrev |
+| SVI Scores | `population.svi_county` (via healthsim_query_reference) | STCNTY, RPL_THEMES, RPL_THEME1-4 |
+| Demographics | `population.svi_county` (via healthsim_query_reference) | E_TOTPOP, EP_POV150, EP_UNINSUR, EP_MINRTY |
 
 ### Data Access Pattern
 
 ```
-1. Resolve county name → FIPS code (via data/crosswalks/fips_county.csv)
+1. Resolve county name → FIPS code (via population.svi_county (FIPS lookup))
 2. Read health indicators from places_county_2024.csv
 3. Read SVI scores and demographics from svi_county_2022.csv
 4. Assemble PopulationProfile with source citations
@@ -97,17 +97,17 @@ This skill reads from PopulationSim's embedded data package for **exact values**
 
 **Process**:
 1. **Resolve county FIPS:**
-   - Read `data/crosswalks/fips_county.csv`
+   - Read `population.svi_county` (FIPS lookup via healthsim_query_reference)
    - Filter: county_name = "San Diego" AND state_abbr = "CA"
    - Result: county_fips = "06073"
 
 2. **Pull CDC PLACES health measures:**
-   - Read `data/county/places_county_2024.csv`
+   - Read `population.places_county` (via healthsim_query_reference)
    - Filter: CountyFIPS = "06073"
    - Extract: TotalPopulation, DIABETES_CrudePrev, OBESITY_CrudePrev, BPHIGH_CrudePrev, etc.
 
 3. **Pull SVI scores and demographics:**
-   - Read `data/county/svi_county_2022.csv`
+   - Read `population.svi_county` (via healthsim_query_reference)
    - Filter: STCNTY = "06073"
    - Extract: RPL_THEMES, RPL_THEME1-4, E_TOTPOP, EP_POV150, EP_UNINSUR, EP_MINRTY
 

@@ -85,7 +85,7 @@ When geography is specified, CKD cohorts use real CDC PLACES data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 CKD-related columns:
   - KIDNEY_CrudePrev: Chronic kidney disease prevalence (%)
   - DIABETES_CrudePrev: Diabetes (primary CKD cause)

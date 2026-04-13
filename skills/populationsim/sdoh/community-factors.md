@@ -50,17 +50,17 @@ Community factor data comes from embedded SVI and CDC PLACES files:
 | Category | File | Key Columns |
 |----------|------|-------------|
 | **Housing** | | |
-| Multi-unit structures | `data/tract/svi_tract_2022.csv` | E_MUNIT, EP_MUNIT |
-| Mobile homes | `data/tract/svi_tract_2022.csv` | E_MOBILE, EP_MOBILE |
-| Crowding | `data/tract/svi_tract_2022.csv` | E_CROWD, EP_CROWD |
-| Housing cost burden | `data/tract/svi_tract_2022.csv` | E_HBURD, EP_HBURD |
+| Multi-unit structures | `population.svi_tract` (via healthsim_query_reference) | E_MUNIT, EP_MUNIT |
+| Mobile homes | `population.svi_tract` (via healthsim_query_reference) | E_MOBILE, EP_MOBILE |
+| Crowding | `population.svi_tract` (via healthsim_query_reference) | E_CROWD, EP_CROWD |
+| Housing cost burden | `population.svi_tract` (via healthsim_query_reference) | E_HBURD, EP_HBURD |
 | **Transportation** | | |
-| No vehicle | `data/tract/svi_tract_2022.csv` | E_NOVEH, EP_NOVEH |
-| Lack of transportation | `data/county/places_county_2024.csv` | LACKTRPT_CrudePrev |
+| No vehicle | `population.svi_tract` (via healthsim_query_reference) | E_NOVEH, EP_NOVEH |
+| Lack of transportation | `population.places_county` (via healthsim_query_reference) | LACKTRPT_CrudePrev |
 | **Social Needs** | | |
-| Food insecurity | `data/county/places_county_2024.csv` | FOODINSECU_CrudePrev |
-| Housing insecurity | `data/county/places_county_2024.csv` | HOUSINSECU_CrudePrev |
-| Utility shutoff threat | `data/county/places_county_2024.csv` | SHUTUTILITY_CrudePrev |
+| Food insecurity | `population.places_county` (via healthsim_query_reference) | FOODINSECU_CrudePrev |
+| Housing insecurity | `population.places_county` (via healthsim_query_reference) | HOUSINSECU_CrudePrev |
+| Utility shutoff threat | `population.places_county` (via healthsim_query_reference) | SHUTUTILITY_CrudePrev |
 
 ### Data Lookup Pattern
 

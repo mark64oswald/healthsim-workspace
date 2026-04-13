@@ -84,7 +84,7 @@ When geography is specified, behavioral health cohorts use real CDC PLACES data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Behavioral health columns:
   - DEPRESSION_CrudePrev: Depression prevalence (%)
   - BINGE_CrudePrev: Binge drinking (proxy for alcohol use)
@@ -105,7 +105,7 @@ Behavioral health columns:
 SVI factors significantly affect behavioral health outcomes:
 
 ```
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Relevant columns:
   - RPL_THEMES: Overall vulnerability
   - EP_POV150: Poverty (access barriers)

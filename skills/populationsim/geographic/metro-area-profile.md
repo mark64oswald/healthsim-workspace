@@ -57,10 +57,10 @@ Metro area profiles aggregate data from embedded files:
 
 | Data Type | File | Usage |
 |-----------|------|-------|
-| CBSA Definitions | `data/crosswalks/cbsa_definitions.csv` | Map metro to counties |
-| Health Indicators | `data/county/places_county_2024.csv` | Per-county health data |
-| SVI Scores | `data/county/svi_county_2022.csv` | Per-county vulnerability |
-| County FIPS | `data/crosswalks/fips_county.csv` | County name lookups |
+| CBSA Definitions | CBSA crosswalk (via healthsim_query) | Map metro to counties |
+| Health Indicators | `population.places_county` (via healthsim_query_reference) | Per-county health data |
+| SVI Scores | `population.svi_county` (via healthsim_query_reference) | Per-county vulnerability |
+| County FIPS | `population.svi_county` (FIPS lookup via healthsim_query_reference) | County name lookups |
 
 ### Metro Aggregation Pattern
 

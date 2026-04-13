@@ -34,7 +34,7 @@ PopulationSim v2.0 includes an **embedded data package** (148 MB) with real demo
 
 ## Data File Locations
 
-All data files are in `skills/populationsim/data/`:
+All data is in MotherDuck via the healthsim_query_reference MCP tool:
 
 ```
 data/

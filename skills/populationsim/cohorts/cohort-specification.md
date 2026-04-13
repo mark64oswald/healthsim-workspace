@@ -52,11 +52,11 @@ Cohort specifications are built from **real data** in the embedded data package:
 
 | Component | Data Source | File |
 |-----------|-------------|------|
-| Demographics | SVI tract data | `data/tract/svi_tract_2022.csv` |
-| Health Indicators | CDC PLACES | `data/county/places_county_2024.csv` |
-| SVI Scores | SVI county/tract | `data/county/svi_county_2022.csv` |
-| ADI Rankings | ADI block group | `data/block_group/adi_blockgroup_2023.csv` |
-| Metro Counties | CBSA crosswalk | `data/crosswalks/cbsa_definitions.csv` |
+| Demographics | SVI tract data | `population.svi_tract` (via healthsim_query_reference) |
+| Health Indicators | CDC PLACES | `population.places_county` (via healthsim_query_reference) |
+| SVI Scores | SVI county/tract | `population.svi_county` (via healthsim_query_reference) |
+| ADI Rankings | ADI block group | `population.adi_blockgroup` (via healthsim_query_reference) |
+| Metro Counties | CBSA crosswalk | CBSA crosswalk (via healthsim_query) |
 
 ### Data-First Specification Pattern
 

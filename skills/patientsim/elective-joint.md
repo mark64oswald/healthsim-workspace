@@ -265,13 +265,13 @@ When geography is specified, joint replacement cohorts use real population data:
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Key columns for orthopedics:
   - OBESITY_CrudePrev: Obesity rate (complication risk factor)
   - DIABETES_CrudePrev: Diabetes (wound healing, infection risk)
   - ARTHRITIS_CrudePrev: Arthritis prevalence (joint replacement candidates)
 
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Key columns:
   - EP_AGE65: Age 65+ percentage (joint replacement population)
   - RPL_THEMES: Vulnerability (affects discharge disposition)

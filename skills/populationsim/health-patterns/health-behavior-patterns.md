@@ -51,8 +51,8 @@ Health behavior data comes from CDC PLACES in the embedded data package:
 
 | Level | File | Key Columns |
 |-------|------|-------------|
-| County | `data/county/places_county_2024.csv` | CSMOKING_CrudePrev, OBESITY_CrudePrev, LPA_CrudePrev, BINGE_CrudePrev, SLEEP_CrudePrev |
-| Tract | `data/tract/places_tract_2024.csv` | Same columns as county |
+| County | `population.places_county` (via healthsim_query_reference) | CSMOKING_CrudePrev, OBESITY_CrudePrev, LPA_CrudePrev, BINGE_CrudePrev, SLEEP_CrudePrev |
+| Tract | `population.places_tract` (via healthsim_query_reference) | Same columns as county |
 
 ### Data Lookup Pattern
 

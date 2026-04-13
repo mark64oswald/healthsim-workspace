@@ -49,10 +49,10 @@ Diversity planning uses SVI and PLACES data for evidence-based demographic targe
 
 | Data Source | File | Application |
 |-------------|------|-------------|
-| CDC SVI (County) | `data/county/svi_county_2022.csv` | EP_MINRTY (minority %), demographic breakdown |
-| CDC SVI (Tract) | `data/tract/svi_tract_2022.csv` | Granular minority population for site catchment |
-| CDC PLACES (County) | `data/county/places_county_2024.csv` | Disease prevalence by geography |
-| Geography Crosswalks | `data/crosswalks/*.csv` | FIPS to metro area mapping |
+| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | EP_MINRTY (minority %), demographic breakdown |
+| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | Granular minority population for site catchment |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Disease prevalence by geography |
+| Geography Crosswalks | geography crosswalks (via healthsim_query) | FIPS to metro area mapping |
 
 ### Data-Driven Diversity Targeting
 
@@ -82,8 +82,8 @@ for county in us_counties:
       "prevalence_source": "CDC_PLACES_2024",
       "methodology": "Population-weighted minority disease burden",
       "file_references": [
-        "populationsim/data/county/svi_county_2022.csv",
-        "populationsim/data/county/places_county_2024.csv"
+        "populationsim/population.svi_county (via healthsim_query_reference)",
+        "populationsim/population.places_county (via healthsim_query_reference)"
       ]
     }
   }

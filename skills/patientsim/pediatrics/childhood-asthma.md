@@ -70,12 +70,12 @@ When geography is specified, pediatric asthma cohorts reflect local prevalence p
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Key columns:
   - CASTHMA_CrudePrev: Current asthma prevalence (all ages)
   - CSMOKING_CrudePrev: Smoking rate (environmental trigger)
 
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Key columns:
   - RPL_THEMES: Vulnerability (affects control, ED utilization)
   - EP_POV150: Poverty rate (medication access)

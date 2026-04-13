@@ -82,7 +82,7 @@ When a geography is specified, diabetes cohorts are grounded in real CDC PLACES 
 
 **County-Level Diabetes Data:**
 ```
-File: skills/populationsim/data/county/places_county_2024.csv
+Table: population.places_county (via healthsim_query_reference)
 Columns:
   - DIABETES_CrudePrev: Crude diabetes prevalence (%)
   - DIABETES_AdjPrev: Age-adjusted prevalence (%)
@@ -92,7 +92,7 @@ Columns:
 
 **Tract-Level Diabetes Data:**
 ```
-File: skills/populationsim/data/tract/places_tract_2024.csv
+Table: population.places_tract (via healthsim_query_reference)
 Same columns as county, for neighborhood-level precision
 ```
 
@@ -130,7 +130,7 @@ For diabetes patients, SVI and ADI affect:
 - **Complication rates**: Higher SVI → earlier complication onset
 
 ```
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Key columns:
   - RPL_THEMES: Overall vulnerability (0-1)
   - EP_UNINSUR: Uninsured percentage (access barriers)

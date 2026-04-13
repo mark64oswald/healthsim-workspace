@@ -59,9 +59,9 @@ This skill reads from PopulationSim's embedded tract-level data:
 
 | Data Type | File | Records | Key Columns |
 |-----------|------|---------|-------------|
-| Health Indicators | `data/tract/places_tract_2024.csv` | 83,522 | LocationID, [MEASURE]_CrudePrev |
-| SVI Full Dataset | `data/tract/svi_tract_2022.csv` | 84,120 | FIPS, RPL_THEMES, E_TOTPOP, EP_* |
-| ADI Rankings | `data/block_group/adi_blockgroup_2023.csv` | 242,336 | FIPS (12-digit), ADI_NATRANK |
+| Health Indicators | `population.places_tract` (via healthsim_query_reference) | 83,522 | LocationID, [MEASURE]_CrudePrev |
+| SVI Full Dataset | `population.svi_tract` (via healthsim_query_reference) | 84,120 | FIPS, RPL_THEMES, E_TOTPOP, EP_* |
+| ADI Rankings | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | FIPS (12-digit), ADI_NATRANK |
 
 ### Key Column Reference
 
@@ -98,7 +98,7 @@ Example: 48201311500
 
 **Process**:
 1. **Read SVI tract data:**
-   - Read `data/tract/svi_tract_2022.csv`
+   - Read `population.svi_tract` (via healthsim_query_reference)
    - Filter: STCNTY = "48201" (Harris County)
 2. **Apply SVI filter:**
    - Filter: RPL_THEMES >= 0.75
@@ -128,7 +128,7 @@ Found 187 high-vulnerability tracts in Harris County (24% of 786 total tracts)
 
 **Process**:
 1. **Read PLACES tract data:**
-   - Read `data/tract/places_tract_2024.csv`
+   - Read `population.places_tract` (via healthsim_query_reference)
    - Filter: CountyFIPS = "48201"
 2. **Calculate statistics:**
    - County mean diabetes prevalence

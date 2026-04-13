@@ -50,18 +50,18 @@ Clinical prevalence data comes from embedded CDC PLACES files:
 
 | Condition | File | Column |
 |-----------|------|--------|
-| Diabetes | `data/county/places_county_2024.csv` | DIABETES_CrudePrev |
-| Obesity | `data/county/places_county_2024.csv` | OBESITY_CrudePrev |
-| Hypertension | `data/county/places_county_2024.csv` | BPHIGH_CrudePrev |
-| High Cholesterol | `data/county/places_county_2024.csv` | HIGHCHOL_CrudePrev |
-| CHD | `data/county/places_county_2024.csv` | CHD_CrudePrev |
-| Stroke | `data/county/places_county_2024.csv` | STROKE_CrudePrev |
-| COPD | `data/county/places_county_2024.csv` | COPD_CrudePrev |
-| Asthma | `data/county/places_county_2024.csv` | CASTHMA_CrudePrev |
-| CKD | `data/county/places_county_2024.csv` | KIDNEY_CrudePrev |
-| Arthritis | `data/county/places_county_2024.csv` | ARTHRITIS_CrudePrev |
-| Depression | `data/county/places_county_2024.csv` | DEPRESSION_CrudePrev |
-| Cancer | `data/county/places_county_2024.csv` | CANCER_CrudePrev |
+| Diabetes | `population.places_county` (via healthsim_query_reference) | DIABETES_CrudePrev |
+| Obesity | `population.places_county` (via healthsim_query_reference) | OBESITY_CrudePrev |
+| Hypertension | `population.places_county` (via healthsim_query_reference) | BPHIGH_CrudePrev |
+| High Cholesterol | `population.places_county` (via healthsim_query_reference) | HIGHCHOL_CrudePrev |
+| CHD | `population.places_county` (via healthsim_query_reference) | CHD_CrudePrev |
+| Stroke | `population.places_county` (via healthsim_query_reference) | STROKE_CrudePrev |
+| COPD | `population.places_county` (via healthsim_query_reference) | COPD_CrudePrev |
+| Asthma | `population.places_county` (via healthsim_query_reference) | CASTHMA_CrudePrev |
+| CKD | `population.places_county` (via healthsim_query_reference) | KIDNEY_CrudePrev |
+| Arthritis | `population.places_county` (via healthsim_query_reference) | ARTHRITIS_CrudePrev |
+| Depression | `population.places_county` (via healthsim_query_reference) | DEPRESSION_CrudePrev |
+| Cancer | `population.places_county` (via healthsim_query_reference) | CANCER_CrudePrev |
 
 ### Data-First Clinical Profile Pattern
 

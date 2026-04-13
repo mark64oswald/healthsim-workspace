@@ -7,12 +7,12 @@ PopulationSim v2.0 provides **embedded real-world data** for realistic medicatio
 **Step 1: Look up real population data**
 ```
 # For rural Appalachian county - Pike County, KY (FIPS: 21195)
-Read from: skills/populationsim/data/county/places_county_2024.csv
+Read from: population.places_county (via healthsim_query_reference)
 -> DIABETES_CrudePrev: 16.8%
 -> BPMED_CrudePrev: 62.1% (on BP medication)
 -> ACCESS2_CrudePrev: 9.1% (uninsured)
 
-Read from: skills/populationsim/data/county/svi_county_2022.csv
+Read from: population.svi_county (via healthsim_query_reference)
 -> RPL_THEMES (overall SVI): 0.91 (very high vulnerability)
 -> EP_POV150: 38.2% (below 150% poverty)
 -> EP_NOVEH: 8.4% (no vehicle - affects pharmacy access)
@@ -50,11 +50,11 @@ Read from: skills/populationsim/data/county/svi_county_2022.csv
 
 | Source | File | Use in RxMemberSim |
 |--------|------|-------------------|
-| CDC PLACES County | `populationsim/data/county/places_county_2024.csv` | Medication class utilization (BPMED, etc.) |
-| CDC PLACES Tract | `populationsim/data/tract/places_tract_2024.csv` | Neighborhood prescribing patterns |
-| SVI County | `populationsim/data/county/svi_county_2022.csv` | Adherence modeling, generic preference |
-| SVI Tract | `populationsim/data/tract/svi_tract_2022.csv` | Pharmacy access patterns |
-| ADI Block Group | `populationsim/data/block_group/adi_blockgroup_2023.csv` | Deprivation -> adherence correlation |
+| CDC PLACES County | `populationsim/population.places_county (via healthsim_query_reference)` | Medication class utilization (BPMED, etc.) |
+| CDC PLACES Tract | `populationsim/population.places_tract (via healthsim_query_reference)` | Neighborhood prescribing patterns |
+| SVI County | `populationsim/population.svi_county (via healthsim_query_reference)` | Adherence modeling, generic preference |
+| SVI Tract | `populationsim/population.svi_tract (via healthsim_query_reference)` | Pharmacy access patterns |
+| ADI Block Group | `populationsim/population.adi_blockgroup (via healthsim_query_reference)` | Deprivation -> adherence correlation |
 
 ## SDOH Impact on Pharmacy Utilization
 

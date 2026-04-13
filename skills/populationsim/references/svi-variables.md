@@ -22,8 +22,8 @@ The Social Vulnerability Index (SVI) uses 16 U.S. Census variables to identify c
 
 | Level | File | Records |
 |-------|------|---------|
-| County | `data/county/svi_county_2022.csv` | 3,144 |
-| Tract | `data/tract/svi_tract_2022.csv` | 84,120 |
+| County | `population.svi_county` (via healthsim_query_reference) | 3,144 |
+| Tract | `population.svi_tract` (via healthsim_query_reference) | 84,120 |
 
 ### Column Naming Convention
 

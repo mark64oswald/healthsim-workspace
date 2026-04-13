@@ -17,15 +17,15 @@ PopulationSim v2.0 includes an embedded data package (148 MB) with real-world de
 
 | Dataset | Level | File | Records | Size | Source |
 |---------|-------|------|---------|------|--------|
-| CDC PLACES 2024 | County | `data/county/places_county_2024.csv` | 3,143 | 4.8 MB | CDC |
-| CDC PLACES 2024 | Tract | `data/tract/places_tract_2024.csv` | 83,522 | 67 MB | CDC |
-| CDC SVI 2022 | County | `data/county/svi_county_2022.csv` | 3,144 | 0.4 MB | CDC/ATSDR |
-| CDC SVI 2022 | Tract | `data/tract/svi_tract_2022.csv` | 84,120 | 61 MB | CDC/ATSDR |
-| ADI 2023 | Block Group | `data/block_group/adi_blockgroup_2023.csv` | 242,336 | 12 MB | UW-Madison |
-| State FIPS | Crosswalk | `data/crosswalks/fips_state.csv` | 51 | <1 KB | Census |
-| County FIPS | Crosswalk | `data/crosswalks/fips_county.csv` | 3,144 | 0.2 MB | Census |
-| Tract-to-County | Crosswalk | `data/crosswalks/tract_to_county.csv` | 84,120 | 4 MB | Census |
-| CBSA Definitions | Crosswalk | `data/crosswalks/cbsa_definitions.csv` | 1,918 | 0.2 MB | OMB/Census |
+| CDC PLACES 2024 | County | `population.places_county` (via healthsim_query_reference) | 3,143 | 4.8 MB | CDC |
+| CDC PLACES 2024 | Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 | 67 MB | CDC |
+| CDC SVI 2022 | County | `population.svi_county` (via healthsim_query_reference) | 3,144 | 0.4 MB | CDC/ATSDR |
+| CDC SVI 2022 | Tract | `population.svi_tract` (via healthsim_query_reference) | 84,120 | 61 MB | CDC/ATSDR |
+| ADI 2023 | Block Group | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | 12 MB | UW-Madison |
+| State FIPS | Crosswalk | `population.svi_county` (state lookup via healthsim_query_reference) | 51 | <1 KB | Census |
+| County FIPS | Crosswalk | `population.svi_county` (FIPS lookup via healthsim_query_reference) | 3,144 | 0.2 MB | Census |
+| Tract-to-County | Crosswalk | tract-to-county mapping (via healthsim_query) | 84,120 | 4 MB | Census |
+| CBSA Definitions | Crosswalk | CBSA crosswalk (via healthsim_query) | 1,918 | 0.2 MB | OMB/Census |
 
 **Total Size:** 148 MB
 
@@ -42,8 +42,8 @@ Model-based estimates for 40 health measures at county and census tract levels u
 - **Geography Base:** 2020 Census boundaries
 
 ### Files
-- County: `data/county/places_county_2024.csv`
-- Tract: `data/tract/places_tract_2024.csv`
+- County: `population.places_county` (via healthsim_query_reference)
+- Tract: `population.places_tract` (via healthsim_query_reference)
 
 ### Key Columns
 | Column Pattern | Description | Example |
@@ -87,8 +87,8 @@ Social Vulnerability Index ranking 16 Census variables across 4 themes to identi
 - **Geography Base:** 2020 Census boundaries
 
 ### Files
-- County: `data/county/svi_county_2022.csv`
-- Tract: `data/tract/svi_tract_2022.csv`
+- County: `population.svi_county` (via healthsim_query_reference)
+- Tract: `population.svi_tract` (via healthsim_query_reference)
 
 ### Key Columns
 | Column Pattern | Description | Example |
@@ -127,7 +127,7 @@ Area Deprivation Index measuring neighborhood socioeconomic disadvantage at bloc
 - **Geography Base:** 2020 Census boundaries
 
 ### File
-- `data/block_group/adi_blockgroup_2023.csv`
+- `population.adi_blockgroup` (via healthsim_query_reference)
 
 ### Columns
 | Column | Description | Values |
@@ -156,22 +156,22 @@ https://www.neighborhoodatlas.medicine.wisc.edu/
 ## Geography Crosswalks
 
 ### State FIPS
-- **File:** `data/crosswalks/fips_state.csv`
+- **File:** `population.svi_county` (state lookup via healthsim_query_reference)
 - **Columns:** state_fips, state_name, state_abbr
 - **Records:** 51
 
 ### County FIPS
-- **File:** `data/crosswalks/fips_county.csv`
+- **File:** `population.svi_county` (FIPS lookup via healthsim_query_reference)
 - **Columns:** state_fips, state_abbr, county_fips, county_name
 - **Records:** 3,144
 
 ### Tract to County
-- **File:** `data/crosswalks/tract_to_county.csv`
+- **File:** tract-to-county mapping (via healthsim_query)
 - **Columns:** tract_fips, county_fips, state_abbr, county_name, tract_name
 - **Records:** 84,120
 
 ### CBSA Definitions
-- **File:** `data/crosswalks/cbsa_definitions.csv`
+- **File:** CBSA crosswalk (via healthsim_query)
 - **Columns:** county_fips, cbsa_code, cbsa_title, cbsa_type, central_outlying
 - **Records:** 1,918 (county-CBSA mappings for 937 unique CBSAs)
 - **Source:** OMB Bulletin No. 23-01 (July 2023)

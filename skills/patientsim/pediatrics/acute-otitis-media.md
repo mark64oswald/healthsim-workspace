@@ -70,7 +70,7 @@ When geography is specified, AOM cohorts reflect local demographic and healthcar
 ### Embedded Data Lookup
 
 ```
-File: skills/populationsim/data/county/svi_county_2022.csv
+Table: population.svi_county (via healthsim_query_reference)
 Key columns for pediatric patterns:
   - EP_AGE17: Percentage under 18 (pediatric population)
   - EP_UNINSUR: Uninsured rate (access to care)

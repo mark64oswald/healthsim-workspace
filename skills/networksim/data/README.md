@@ -255,7 +255,7 @@ pytest cohorts/networksim/tests/test_data_quality.py -v
 - [DuckDB Architecture](../../../docs/healthsim-duckdb-architecture.html) - Database design
 - [Query Skills](../query/README.md) - Provider search skills
 - [Analytics Skills](../analytics/README.md) - Adequacy and desert analysis
-- [PopulationSim Data](../../populationsim/data/README.md) - Demographics data
+- [PopulationSim Data](../../populationsim/data-access/README.md) - Demographics data
 
 ---
 
