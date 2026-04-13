@@ -1,18 +1,6 @@
 ---
-name: Generative Framework
-description: Conversation-driven specification and execution of healthcare data generation at scale
-triggers:
-  - build profile
-  - create profile
-  - generate cohort
-  - build journey
-  - create journey
-  - generate journey
-  - batch generate
-  - quick generate
-  - distribution
-  - specify
-  - at scale
+name: generation
+description: Conversation-driven specification and execution of healthcare data generation at scale. Use when building profiles, generating cohorts, creating journeys, batch generation, specifying distributions, or any at-scale data generation task.
 ---
 
 # Generative Framework Skills

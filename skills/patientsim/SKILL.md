@@ -1,5 +1,5 @@
 ---
-name: healthsim-patientsim
+name: patientsim
 description: "Generate realistic clinical patient data including demographics, encounters, diagnoses, medications, labs, and vitals. Use when user requests: (1) patient records or clinical data, (2) EMR test data, (3) specific clinical cohorts like diabetes or heart failure, (4) HL7v2 or FHIR patient resources."
 ---
 

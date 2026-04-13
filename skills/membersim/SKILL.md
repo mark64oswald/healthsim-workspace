@@ -1,5 +1,5 @@
 ---
-name: healthsim-membersim
+name: membersim
 description: "MemberSim generates realistic synthetic claims and payer data for testing claims processing systems, payment integrity, and benefits administration."
 ---
 

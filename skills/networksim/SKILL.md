@@ -1,5 +1,5 @@
 ---
-name: healthsim-networksim
+name: networksim
 description: >
   NetworkSim provides provider network intelligence using real NPPES data (8.9M providers).
   Use this skill for ANY request involving: (1) provider search by specialty or location,

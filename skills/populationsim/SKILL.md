@@ -1,5 +1,5 @@
 ---
-name: healthsim-populationsim
+name: populationsim
 description: >
   PopulationSim provides population-level intelligence using public data sources.
   Use this skill for ANY request involving: (1) population demographics or profiles,
