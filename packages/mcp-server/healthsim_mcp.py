@@ -122,13 +122,23 @@ ALLOWED_ENTITY_TYPES = SCENARIO_ENTITY_TYPES | RELATIONSHIP_ENTITY_TYPES
 # =============================================================================
 
 # Allow override via environment variable
-DB_PATH = Path(os.environ.get("HEALTHSIM_DB_PATH", str(DEFAULT_DB_PATH)))
+# Supports local file paths OR MotherDuck connection strings (md:database_name)
+_db_env = os.environ.get("HEALTHSIM_DB_PATH", str(DEFAULT_DB_PATH))
+IS_MOTHERDUCK = _db_env.startswith("md:")
+
+if IS_MOTHERDUCK:
+    DB_PATH = _db_env  # MotherDuck connection string, not a file path
+else:
+    DB_PATH = Path(_db_env)
 
 # Log startup configuration (to stderr so it doesn't interfere with MCP protocol)
 print(f"HealthSim MCP Server starting...", file=sys.stderr)
 print(f"  Database: {DB_PATH}", file=sys.stderr)
-print(f"  Connection mode: dual (read-only persistent + on-demand write)", file=sys.stderr)
-print(f"  DB exists: {DB_PATH.exists()}", file=sys.stderr)
+if IS_MOTHERDUCK:
+    print(f"  Connection mode: MotherDuck (cloud)", file=sys.stderr)
+else:
+    print(f"  Connection mode: dual (read-only persistent + on-demand write)", file=sys.stderr)
+    print(f"  DB exists: {DB_PATH.exists()}", file=sys.stderr)
 
 
 # =============================================================================
@@ -138,54 +148,50 @@ print(f"  DB exists: {DB_PATH.exists()}", file=sys.stderr)
 class ConnectionManager:
     """
     Manages DuckDB connections using close-before-write pattern.
-    
-    DuckDB Constraint: Cannot have simultaneous connections with different
-    read_only configurations to the same database file, even in the same process.
-    
-    Solution:
-    - Read operations: Use persistent read-only connection (shared lock)
-    - Write operations: Close read connection first, open read-write connection,
-      perform write, close write connection. Read connection reopens lazily.
-    
-    This allows:
-    - Fast repeated reads (connection reuse)
-    - Reliable writes (no configuration conflicts)
-    - External process access during reads (shared lock)
+
+    For local files:
+      DuckDB Constraint: Cannot have simultaneous connections with different
+      read_only configurations to the same database file, even in the same process.
+      Solution: read-only persistent + close-before-write for writes.
+
+    For MotherDuck:
+      Single persistent connection (MotherDuck handles concurrency server-side).
     """
-    
-    def __init__(self, db_path: Path):
+
+    def __init__(self, db_path, is_motherduck: bool = False):
         self.db_path = db_path
+        self.is_motherduck = is_motherduck
         self._read_conn: Optional[duckdb.DuckDBPyConnection] = None
         self._read_manager: Optional[StateManager] = None
-    
+
     def get_read_connection(self) -> duckdb.DuckDBPyConnection:
         """
-        Get persistent read-only connection.
-        
-        Uses shared lock - allows concurrent readers from other processes.
-        Connection is reused across all read operations.
-        Will be automatically reopened after write operations.
-        
-        Includes retry logic in case a previous write lock hasn't fully released.
+        Get persistent read connection.
+
+        Local: read-only with shared lock and retry logic.
+        MotherDuck: single persistent connection (no read_only flag).
         """
         import time
-        
+
         if self._read_conn is None:
-            max_retries = 3
-            retry_delay = 0.1  # 100ms between retries
-            
-            for attempt in range(max_retries):
-                try:
-                    self._read_conn = duckdb.connect(str(self.db_path), read_only=True)
-                    print(f"  Opened read-only connection to {self.db_path}", file=sys.stderr)
-                    break
-                except Exception as e:
-                    if attempt < max_retries - 1 and "lock" in str(e).lower():
-                        print(f"  Read connection attempt {attempt + 1} failed (lock), retrying...", file=sys.stderr)
-                        time.sleep(retry_delay)
-                        retry_delay *= 2  # Exponential backoff
-                    else:
-                        raise
+            if self.is_motherduck:
+                self._read_conn = duckdb.connect(self.db_path)
+                print(f"  Opened MotherDuck connection", file=sys.stderr)
+            else:
+                max_retries = 3
+                retry_delay = 0.1
+                for attempt in range(max_retries):
+                    try:
+                        self._read_conn = duckdb.connect(str(self.db_path), read_only=True)
+                        print(f"  Opened read-only connection to {self.db_path}", file=sys.stderr)
+                        break
+                    except Exception as e:
+                        if attempt < max_retries - 1 and "lock" in str(e).lower():
+                            print(f"  Read connection attempt {attempt + 1} failed (lock), retrying...", file=sys.stderr)
+                            time.sleep(retry_delay)
+                            retry_delay *= 2
+                        else:
+                            raise
         return self._read_conn
     
     def get_read_manager(self) -> StateManager:
@@ -211,42 +217,32 @@ class ConnectionManager:
     def write_connection(self):
         """
         Context manager for write operations.
-        
-        IMPORTANT: Closes read connection first to avoid DuckDB's constraint
-        against mixing read_only=True and read_only=False connections to the
-        same database file.
-        
-        The read connection will be lazily reopened on the next read operation.
-        
-        Usage:
-            with manager.write_connection() as conn:
-                conn.execute("INSERT INTO ...")
+
+        Local: close-before-write pattern to avoid DuckDB lock conflicts.
+        MotherDuck: reuses the persistent connection (server-side concurrency).
         """
-        import time
-        
-        # Close read connection first - DuckDB doesn't allow mixed configurations
-        self._close_read_connection()
-        
-        # Small delay to ensure read connection is fully released
-        time.sleep(0.05)
-        
-        conn = duckdb.connect(str(self.db_path))  # read_only=False (default)
-        print(f"  Opened read-write connection for write operation", file=sys.stderr)
-        try:
-            yield conn
-        finally:
-            # Explicit checkpoint to ensure all changes are flushed to disk
-            # This helps prevent lock issues when reopening read connection
-            try:
-                conn.execute("CHECKPOINT")
-                print(f"  Checkpointed database", file=sys.stderr)
-            except Exception as e:
-                print(f"  Checkpoint warning: {e}", file=sys.stderr)
-            
-            conn.close()
-            print(f"  Closed read-write connection (write complete)", file=sys.stderr)
-            # Small delay to ensure write lock is fully released
+        if self.is_motherduck:
+            # MotherDuck: just yield the persistent connection
+            yield self.get_read_connection()
+        else:
+            import time
+
+            self._close_read_connection()
             time.sleep(0.05)
+
+            conn = duckdb.connect(str(self.db_path))
+            print(f"  Opened read-write connection for write operation", file=sys.stderr)
+            try:
+                yield conn
+            finally:
+                try:
+                    conn.execute("CHECKPOINT")
+                    print(f"  Checkpointed database", file=sys.stderr)
+                except Exception as e:
+                    print(f"  Checkpoint warning: {e}", file=sys.stderr)
+                conn.close()
+                print(f"  Closed read-write connection (write complete)", file=sys.stderr)
+                time.sleep(0.05)
     
     @contextmanager
     def write_manager(self):
@@ -289,7 +285,7 @@ def _get_manager() -> ConnectionManager:
     """Get or create the connection manager."""
     global _manager
     if _manager is None:
-        _manager = ConnectionManager(DB_PATH)
+        _manager = ConnectionManager(DB_PATH, is_motherduck=IS_MOTHERDUCK)
     return _manager
 
 
