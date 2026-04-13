@@ -14,7 +14,7 @@ version: "2.0"
 
 This document describes how PopulationSim demographic and SDOH data flows into PatientSim to generate clinically realistic synthetic patients.
 
-**Version 2.0 Update:** This integration now uses PopulationSim's embedded data package with real CDC PLACES, SVI, and ADI data, providing 100% US geographic coverage with provenance tracking.
+**Version 2.0 Update:** This integration now uses PopulationSim's reference data (via MCP) with real CDC PLACES, SVI, and ADI data, providing 100% US geographic coverage with provenance tracking.
 
 ---
 
@@ -22,13 +22,13 @@ This document describes how PopulationSim demographic and SDOH data flows into P
 
 PatientSim accesses these files directly for data-driven generation:
 
-| Data Source | File Path | Records | Key Columns |
-|-------------|-----------|---------|-------------|
-| CDC PLACES (County) | `population.places_county (via healthsim_query_reference)` | 3,144 | CountyFIPS, DIABETES_CrudePrev, OBESITY_CrudePrev, etc. |
-| CDC PLACES (Tract) | `population.places_tract (via healthsim_query_reference)` | 83,522 | TractFIPS, all health measures |
-| CDC SVI (County) | `population.svi_county (via healthsim_query_reference)` | 3,144 | FIPS, RPL_THEMES, EP_UNINSUR, etc. |
-| CDC SVI (Tract) | `population.svi_tract (via healthsim_query_reference)` | 84,120 | FIPS, all SVI themes |
-| ADI (Block Group) | `population.adi_blockgroup (via healthsim_query_reference)` | 242,335 | FIPS, ADI_NATRANK, ADI_STAESSION |
+| Data Source         | Table Path                                                  | Records | Key Columns                                             |
+| ------------------- | ----------------------------------------------------------- | ------- | ------------------------------------------------------- |
+| CDC PLACES (County) | `population.places_county (via healthsim_query_reference)`  | 3,144   | CountyFIPS, DIABETES_CrudePrev, OBESITY_CrudePrev, etc. |
+| CDC PLACES (Tract)  | `population.places_tract (via healthsim_query_reference)`   | 83,522  | TractFIPS, all health measures                          |
+| CDC SVI (County)    | `population.svi_county (via healthsim_query_reference)`     | 3,144   | FIPS, RPL_THEMES, EP_UNINSUR, etc.                      |
+| CDC SVI (Tract)     | `population.svi_tract (via healthsim_query_reference)`      | 84,120  | FIPS, all SVI themes                                    |
+| ADI (Block Group)   | `population.adi_blockgroup (via healthsim_query_reference)` | 242,335 | FIPS, ADI_NATRANK, ADI_STAESSION                        |
 
 ---
 

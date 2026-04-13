@@ -53,14 +53,14 @@ The metro-area-profile skill generates PopulationProfile objects for Metropolita
 
 ## Data Sources (Embedded v2.0)
 
-Metro area profiles aggregate data from embedded files:
+Metro area profiles aggregate data from reference data:
 
-| Data Type | File | Usage |
-|-----------|------|-------|
-| CBSA Definitions | CBSA crosswalk (via healthsim_query) | Map metro to counties |
-| Health Indicators | `population.places_county` (via healthsim_query_reference) | Per-county health data |
-| SVI Scores | `population.svi_county` (via healthsim_query_reference) | Per-county vulnerability |
-| County FIPS | `population.svi_county` (FIPS lookup via healthsim_query_reference) | County name lookups |
+| Data Type         | Table                                                               | Usage                    |
+| ----------------- | ------------------------------------------------------------------- | ------------------------ |
+| CBSA Definitions  | CBSA crosswalk (via healthsim_query)                                | Map metro to counties    |
+| Health Indicators | `population.places_county` (via healthsim_query_reference)          | Per-county health data   |
+| SVI Scores        | `population.svi_county` (via healthsim_query_reference)             | Per-county vulnerability |
+| County FIPS       | `population.svi_county` (FIPS lookup via healthsim_query_reference) | County name lookups      |
 
 ### Metro Aggregation Pattern
 

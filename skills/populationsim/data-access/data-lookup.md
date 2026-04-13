@@ -1,7 +1,7 @@
 ---
 name: data-lookup
 description: >
-  Look up specific data values from PopulationSim's embedded data package.
+  Look up specific data values from PopulationSim's reference data (via MCP).
   Use for direct queries like "what is the diabetes rate in X county",
   "show me SVI for tract Y", or "ADI for block group Z".
   Triggers: "what is the", "look up", "exact", "from CDC PLACES", "from SVI"
@@ -11,9 +11,9 @@ description: >
 
 ## Overview
 
-The data-lookup skill provides direct access to PopulationSim's embedded data package. Use this skill when you need exact values for specific geographies rather than synthesized estimates.
+The data-lookup skill provides direct access to PopulationSim's reference data (via MCP). Use this skill when you need exact values for specific geographies rather than synthesized estimates.
 
-**Data-First Philosophy**: When data exists in the embedded files, return the exact value with source citation. Only synthesize when data is unavailable.
+**Data-First Philosophy**: When data exists in the reference data, return the exact value with source citation. Only synthesize when data is unavailable.
 
 ## Trigger Phrases
 

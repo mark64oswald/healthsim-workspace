@@ -3,7 +3,7 @@ name: site-selection-support
 description: >
   Support clinical trial site selection with population-based analysis of
   eligible patient density, demographic diversity, and geographic accessibility.
-  Uses PopulationSim v2.0 embedded CDC PLACES and SVI data for evidence-based
+  Uses PopulationSim v2.0 CDC PLACES reference data and SVI data for evidence-based
   site recommendations. Triggers: "site selection", "where to conduct trial",
   "best locations for trial", "site recommendations", "trial site analysis".
 version: "2.0"
@@ -52,13 +52,13 @@ The site-selection-support skill provides data-driven recommendations for clinic
 
 Site selection uses real CDC PLACES and SVI data for evidence-based recommendations:
 
-| Data Source | File | Application |
-|-------------|------|-------------|
-| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Disease prevalence by county |
-| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | Granular prevalence for site catchment |
-| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | Minority population %, access barriers |
-| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | SDOH factors for retention modeling |
-| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation for recruitment challenges |
+| Data Source         | Table                                                       | Application                            |
+| ------------------- | ----------------------------------------------------------- | -------------------------------------- |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference)  | Disease prevalence by county           |
+| CDC PLACES (Tract)  | `population.places_tract` (via healthsim_query_reference)   | Granular prevalence for site catchment |
+| CDC SVI (County)    | `population.svi_county` (via healthsim_query_reference)     | Minority population %, access barriers |
+| CDC SVI (Tract)     | `population.svi_tract` (via healthsim_query_reference)      | SDOH factors for retention modeling    |
+| ADI (Block Group)   | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation for recruitment challenges |
 
 ### Data-Driven Site Scoring
 

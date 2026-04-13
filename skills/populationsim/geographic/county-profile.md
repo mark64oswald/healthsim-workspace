@@ -50,13 +50,13 @@ The county-profile skill generates comprehensive PopulationProfile objects for U
 
 ## Data Sources (Embedded v2.0)
 
-This skill reads from PopulationSim's embedded data package for **exact values**:
+This skill reads from PopulationSim's reference data (via MCP) for **exact values**:
 
-| Data Type | File | Key Columns |
-|-----------|------|-------------|
-| Health Indicators | `population.places_county` (via healthsim_query_reference) | CountyFIPS, [MEASURE]_CrudePrev |
-| SVI Scores | `population.svi_county` (via healthsim_query_reference) | STCNTY, RPL_THEMES, RPL_THEME1-4 |
-| Demographics | `population.svi_county` (via healthsim_query_reference) | E_TOTPOP, EP_POV150, EP_UNINSUR, EP_MINRTY |
+| Data Type         | Table                                                      | Key Columns                                |
+| ----------------- | ---------------------------------------------------------- | ------------------------------------------ |
+| Health Indicators | `population.places_county` (via healthsim_query_reference) | CountyFIPS, [MEASURE]_CrudePrev            |
+| SVI Scores        | `population.svi_county` (via healthsim_query_reference)    | STCNTY, RPL_THEMES, RPL_THEME1-4           |
+| Demographics      | `population.svi_county` (via healthsim_query_reference)    | E_TOTPOP, EP_POV150, EP_UNINSUR, EP_MINRTY |
 
 ### Data Access Pattern
 
@@ -113,7 +113,7 @@ This skill reads from PopulationSim's embedded data package for **exact values**
 
 4. **Assemble PopulationProfile with provenance**
 
-**Output**: Complete PopulationProfile with exact values from embedded data
+**Output**: Complete PopulationProfile with exact values from reference data
 
 ### Pattern 2: County Comparison
 
@@ -386,7 +386,7 @@ This skill reads from PopulationSim's embedded data package for **exact values**
 
 **Cuyahoga County, OH (FIPS 39035) - Cardiovascular Health Profile**
 
-**Demographics Context** (from embedded data):
+**Demographics Context** (from reference data):
 - Population: 1,233,088
 - SVI Overall: 0.479 (Moderate vulnerability)
 

@@ -47,12 +47,12 @@ The health-behavior-patterns skill analyzes modifiable health risk behaviors acr
 
 ## Data Sources (Embedded v2.0)
 
-Health behavior data comes from CDC PLACES in the embedded data package:
+Health behavior data comes from CDC PLACES in the reference data (via MCP):
 
-| Level | File | Key Columns |
-|-------|------|-------------|
+| Level  | Table                                                      | Key Columns                                                                            |
+| ------ | ---------------------------------------------------------- | -------------------------------------------------------------------------------------- |
 | County | `population.places_county` (via healthsim_query_reference) | CSMOKING_CrudePrev, OBESITY_CrudePrev, LPA_CrudePrev, BINGE_CrudePrev, SLEEP_CrudePrev |
-| Tract | `population.places_tract` (via healthsim_query_reference) | Same columns as county |
+| Tract  | `population.places_tract` (via healthsim_query_reference)  | Same columns as county                                                                 |
 
 ### Data Lookup Pattern
 

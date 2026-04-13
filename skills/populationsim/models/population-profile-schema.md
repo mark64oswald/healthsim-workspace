@@ -269,7 +269,7 @@ PopulationSim v2.0 follows a "data-first" philosophy where generated values are 
         "schema_version": { "type": "string", "const": "2.0" },
         "data_package_version": { 
           "type": "string",
-          "description": "PopulationSim embedded data package version"
+          "description": "PopulationSim reference data (via MCP) version"
         },
         "data_sources_summary": {
           "type": "array",

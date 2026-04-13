@@ -2,7 +2,7 @@
 name: patientsim-data-integration
 description: |
   Foundation skill for data-driven patient generation using PopulationSim v2.0 
-  embedded data. Provides lookup patterns, provenance tracking, and SDOH integration.
+  reference data. Provides lookup patterns, provenance tracking, and SDOH integration.
   Triggers: data-driven patient, geography-based, real demographics, population data
 ---
 

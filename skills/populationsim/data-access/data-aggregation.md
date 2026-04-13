@@ -279,7 +279,7 @@ Some CBSAs span multiple states (e.g., Philadelphia-Camden-Wilmington). Aggregat
 
 **User:** "Aggregate diabetes and obesity rates for a hospital service area covering these ZIP codes: 77001-77099"
 
-**Claude:** I'll need to convert ZIP codes to census tracts first. However, our embedded data doesn't include ZIP-to-tract crosswalks.
+**Claude:** I'll need to convert ZIP codes to census tracts first. However, our reference data doesn't include ZIP-to-tract crosswalks.
 
 **Alternative approach:** If you can specify the counties or census tracts in your service area, I can aggregate from:
 - County-level PLACES data (for county-based service areas)

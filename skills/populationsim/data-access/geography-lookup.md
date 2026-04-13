@@ -11,7 +11,7 @@ description: >
 
 ## Overview
 
-The geography-lookup skill resolves geographic identifiers using PopulationSim's embedded crosswalk files. Use this when you need to:
+The geography-lookup skill resolves geographic identifiers using PopulationSim's crosswalk reference data. Use this when you need to:
 - Convert county names to FIPS codes (and vice versa)
 - Identify which county a tract belongs to
 - List counties in a metropolitan area (CBSA)

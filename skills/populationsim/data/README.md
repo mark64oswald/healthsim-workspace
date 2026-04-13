@@ -1,6 +1,6 @@
 # PopulationSim Data Package
 
-This directory contains embedded reference datasets for PopulationSim v2.0, providing real demographic, health, and social vulnerability data for 100% US coverage.
+This directory contains reference datasets for PopulationSim v2.0, providing real demographic, health, and social vulnerability data for 100% US coverage.
 
 ## Overview
 

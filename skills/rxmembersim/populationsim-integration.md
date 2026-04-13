@@ -1,6 +1,6 @@
 # PopulationSim Integration for RxMemberSim
 
-PopulationSim v2.0 provides **embedded real-world data** for realistic medication utilization modeling. When a geography is specified, RxMemberSim uses actual CDC PLACES, SVI, and ADI data to ground prescribing patterns, adherence behaviors, and formulary utilization.
+PopulationSim v2.0 provides **real-world reference data** for realistic medication utilization modeling. When a geography is specified, RxMemberSim uses actual CDC PLACES, SVI, and ADI data to ground prescribing patterns, adherence behaviors, and formulary utilization.
 
 ## Data-Driven Generation Pattern
 
@@ -46,15 +46,15 @@ Read from: population.svi_county (via healthsim_query_reference)
 - Transportation barriers -> more mail-order, 90-day fills
 - Lower adherence rates (MPR ~0.70 vs 0.80 baseline)
 
-## Embedded Data Sources for Rx Patterns
+## Reference Data Sources for Rx Patterns
 
-| Source | File | Use in RxMemberSim |
-|--------|------|-------------------|
-| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Medication class utilization (BPMED, etc.) |
-| CDC PLACES Tract | `population.places_tract (via healthsim_query_reference)` | Neighborhood prescribing patterns |
-| SVI County | `population.svi_county (via healthsim_query_reference)` | Adherence modeling, generic preference |
-| SVI Tract | `population.svi_tract (via healthsim_query_reference)` | Pharmacy access patterns |
-| ADI Block Group | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation -> adherence correlation |
+| Source            | Table                                                       | Use in RxMemberSim                         |
+| ----------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| CDC PLACES County | `population.places_county (via healthsim_query_reference)`  | Medication class utilization (BPMED, etc.) |
+| CDC PLACES Tract  | `population.places_tract (via healthsim_query_reference)`   | Neighborhood prescribing patterns          |
+| SVI County        | `population.svi_county (via healthsim_query_reference)`     | Adherence modeling, generic preference     |
+| SVI Tract         | `population.svi_tract (via healthsim_query_reference)`      | Pharmacy access patterns                   |
+| ADI Block Group   | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation -> adherence correlation       |
 
 ## SDOH Impact on Pharmacy Utilization
 

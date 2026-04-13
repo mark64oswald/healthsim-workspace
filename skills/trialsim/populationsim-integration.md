@@ -1,6 +1,6 @@
 # PopulationSim Integration for TrialSim
 
-PopulationSim v2.0 provides **embedded real-world data** for evidence-based trial planning, site selection, and diversity compliance. When geographies are specified, TrialSim uses actual CDC PLACES, SVI, and ADI data to ground feasibility estimates and enrollment projections.
+PopulationSim v2.0 provides **real-world reference data** for evidence-based trial planning, site selection, and diversity compliance. When geographies are specified, TrialSim uses actual CDC PLACES, SVI, and ADI data to ground feasibility estimates and enrollment projections.
 
 ## Data-Driven Trial Planning Pattern
 
@@ -50,15 +50,15 @@ Read from: population.svi_county (via healthsim_query_reference)
 - Diversity enrollment reflecting actual demographics
 - Screening-to-randomization rates adjusted for SVI (access barriers)
 
-## Embedded Data Sources for Trial Planning
+## Reference Data Sources for Trial Planning
 
-| Source | File | Use in TrialSim |
-|--------|------|-----------------|
-| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Disease prevalence for feasibility |
-| CDC PLACES Tract | `population.places_tract (via healthsim_query_reference)` | Catchment area analysis |
-| SVI County | `population.svi_county (via healthsim_query_reference)` | Diversity planning, access barriers |
-| SVI Tract | `population.svi_tract (via healthsim_query_reference)` | Site-level vulnerability context |
-| Geography Crosswalk | CBSA crosswalk (via healthsim_query) | Metro area site clustering |
+| Source              | Table                                                      | Use in TrialSim                     |
+| ------------------- | ---------------------------------------------------------- | ----------------------------------- |
+| CDC PLACES County   | `population.places_county (via healthsim_query_reference)` | Disease prevalence for feasibility  |
+| CDC PLACES Tract    | `population.places_tract (via healthsim_query_reference)`  | Catchment area analysis             |
+| SVI County          | `population.svi_county (via healthsim_query_reference)`    | Diversity planning, access barriers |
+| SVI Tract           | `population.svi_tract (via healthsim_query_reference)`     | Site-level vulnerability context    |
+| Geography Crosswalk | CBSA crosswalk (via healthsim_query)                       | Metro area site clustering          |
 
 ## Trial-Specific Applications
 

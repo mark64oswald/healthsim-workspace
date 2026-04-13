@@ -199,9 +199,9 @@ Trial subjects are patients with additional trial-specific data:
 
 ### Cross-Product: PopulationSim Integration
 
-PopulationSim provides embedded real-world data (CDC PLACES, SVI, ADI) for evidence-based trial planning, site selection, and FDA diversity compliance. When geographies are specified, TrialSim grounds feasibility estimates and enrollment projections in actual prevalence and demographic data.
+PopulationSim provides real-world reference data (CDC PLACES, SVI, ADI) for evidence-based trial planning, site selection, and FDA diversity compliance. When geographies are specified, TrialSim grounds feasibility estimates and enrollment projections in actual prevalence and demographic data.
 
-See [populationsim-integration.md](populationsim-integration.md) for detailed data-driven planning patterns, embedded data sources, and site selection examples.
+See [populationsim-integration.md](populationsim-integration.md) for detailed data-driven planning patterns, reference data sources, and site selection examples.
 
 ## Development Status
 

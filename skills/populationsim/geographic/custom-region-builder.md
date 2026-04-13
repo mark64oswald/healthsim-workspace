@@ -55,13 +55,13 @@ The custom-region-builder skill creates PopulationProfile objects for user-defin
 
 ## Data Sources (Embedded v2.0)
 
-Custom regions aggregate from embedded data files:
+Custom regions aggregate from reference data files:
 
-| Component Type | Health Data | SVI Data | ADI Data |
-|----------------|-------------|----------|----------|
-| County | `population.places_county` (via healthsim_query_reference) | `population.svi_county` (via healthsim_query_reference) | Aggregate from tracts |
-| Tract | `population.places_tract` (via healthsim_query_reference) | `population.svi_tract` (via healthsim_query_reference) | Aggregate from block groups |
-| Block Group | N/A | N/A | `population.adi_blockgroup` (via healthsim_query_reference) |
+| Component Type | Health Data                                                | SVI Data                                                | ADI Data                                                    |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------- |
+| County         | `population.places_county` (via healthsim_query_reference) | `population.svi_county` (via healthsim_query_reference) | Aggregate from tracts                                       |
+| Tract          | `population.places_tract` (via healthsim_query_reference)  | `population.svi_tract` (via healthsim_query_reference)  | Aggregate from block groups                                 |
+| Block Group    | N/A                                                        | N/A                                                     | `population.adi_blockgroup` (via healthsim_query_reference) |
 
 ### Aggregation Process
 

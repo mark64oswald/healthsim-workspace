@@ -45,16 +45,16 @@ The sdoh-profile-builder skill creates comprehensive SDOH profiles for cohorts b
 
 ## Data Sources (Embedded v2.0)
 
-SDOH profiles are built from embedded data files:
+SDOH profiles are built from reference data files:
 
-| Data Type | File | Key Columns |
-|-----------|------|-------------|
-| SVI Themes | `population.svi_county` (via healthsim_query_reference) | RPL_THEMES, RPL_THEME1-4 |
-| SVI Variables | `population.svi_tract` (via healthsim_query_reference) | EP_POV150, EP_UNINSUR, EP_MINRTY |
-| ADI Rankings | `population.adi_blockgroup` (via healthsim_query_reference) | ADI_NATRANK, ADI_STATERNK |
-| Food Insecurity | `population.places_county` (via healthsim_query_reference) | FOODINSECU_CrudePrev |
-| Housing Insecurity | `population.places_county` (via healthsim_query_reference) | HOUSINSECU_CrudePrev |
-| Transportation | `population.places_county` (via healthsim_query_reference) | LACKTRPT_CrudePrev |
+| Data Type          | Table                                                       | Key Columns                      |
+| ------------------ | ----------------------------------------------------------- | -------------------------------- |
+| SVI Themes         | `population.svi_county` (via healthsim_query_reference)     | RPL_THEMES, RPL_THEME1-4         |
+| SVI Variables      | `population.svi_tract` (via healthsim_query_reference)      | EP_POV150, EP_UNINSUR, EP_MINRTY |
+| ADI Rankings       | `population.adi_blockgroup` (via healthsim_query_reference) | ADI_NATRANK, ADI_STATERNK        |
+| Food Insecurity    | `population.places_county` (via healthsim_query_reference)  | FOODINSECU_CrudePrev             |
+| Housing Insecurity | `population.places_county` (via healthsim_query_reference)  | HOUSINSECU_CrudePrev             |
+| Transportation     | `population.places_county` (via healthsim_query_reference)  | LACKTRPT_CrudePrev               |
 
 ### Data Lookup Pattern
 

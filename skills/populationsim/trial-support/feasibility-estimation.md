@@ -4,7 +4,7 @@ description: >
   Estimate eligible patient populations for clinical trial protocols based on
   inclusion/exclusion criteria. Uses disease prevalence, demographics, and
   clinical characteristics to model the eligibility funnel. Supports PopulationSim
-  v2.0 embedded data for real CDC PLACES prevalence rates. Triggers: "feasibility",
+  v2.0 reference data for real CDC PLACES prevalence rates. Triggers: "feasibility",
   "eligible population", "how many patients qualify", "protocol feasibility".
 version: "2.0"
 ---
@@ -50,12 +50,12 @@ The feasibility-estimation skill calculates eligible patient populations for cli
 
 When geography is specified, feasibility estimation uses real CDC PLACES and SVI data:
 
-| Data Source | File | Key Measures |
-|-------------|------|-------------|
+| Data Source         | Table                                                      | Key Measures                                            |
+| ------------------- | ---------------------------------------------------------- | ------------------------------------------------------- |
 | CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | DIABETES_CrudePrev, OBESITY_CrudePrev, BPHIGH_CrudePrev |
-| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | All 36 health measures at tract level |
-| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | RPL_THEMES, EP_MINRTY, EP_UNINSUR |
-| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | All SVI themes for retention modeling |
+| CDC PLACES (Tract)  | `population.places_tract` (via healthsim_query_reference)  | All 36 health measures at tract level                   |
+| CDC SVI (County)    | `population.svi_county` (via healthsim_query_reference)    | RPL_THEMES, EP_MINRTY, EP_UNINSUR                       |
+| CDC SVI (Tract)     | `population.svi_tract` (via healthsim_query_reference)     | All SVI themes for retention modeling                   |
 
 ### Data-Driven Feasibility Pattern
 

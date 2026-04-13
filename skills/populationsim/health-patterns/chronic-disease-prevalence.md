@@ -50,12 +50,12 @@ The chronic-disease-prevalence skill analyzes disease prevalence rates across ge
 
 ## Data Sources (Embedded v2.0)
 
-This skill reads from PopulationSim's embedded CDC PLACES data:
+This skill reads from PopulationSim's CDC PLACES reference data:
 
-| Level | File | Records | Data Year |
-|-------|------|---------|-----------|
-| County | `population.places_county` (via healthsim_query_reference) | 3,143 | 2022 BRFSS |
-| Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 | 2022 BRFSS |
+| Level  | Table                                                      | Records | Data Year  |
+| ------ | ---------------------------------------------------------- | ------- | ---------- |
+| County | `population.places_county` (via healthsim_query_reference) | 3,143   | 2022 BRFSS |
+| Tract  | `population.places_tract` (via healthsim_query_reference)  | 83,522  | 2022 BRFSS |
 
 ### Key Columns
 
@@ -78,7 +78,7 @@ The PLACES files use a **wide format** with columns for each measure:
 
 ## Available Conditions
 
-### CDC PLACES Health Outcomes (from embedded data)
+### CDC PLACES Health Outcomes (from reference data)
 
 | Condition | Column Prefix | National Avg |
 |-----------|---------------|--------------|

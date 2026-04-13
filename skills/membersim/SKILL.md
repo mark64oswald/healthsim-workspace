@@ -306,11 +306,11 @@ PopulationSim provides **real-world reference data** (CDC PLACES, SVI, ADI) for 
 
 **Pattern:** (1) Look up county/tract data by FIPS code, (2) apply prevalence rates to member generation, (3) include data provenance in output.
 
-| Source | File | Use in MemberSim |
-|--------|------|------------------|
-| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Utilization rates, risk adjustment |
-| SVI County | `population.svi_county (via healthsim_query_reference)` | SDOH factors, plan selection |
-| ADI Block Group | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation-based adherence |
+| Source            | Table                                                       | Use in MemberSim                   |
+| ----------------- | ----------------------------------------------------------- | ---------------------------------- |
+| CDC PLACES County | `population.places_county (via healthsim_query_reference)`  | Utilization rates, risk adjustment |
+| SVI County        | `population.svi_county (via healthsim_query_reference)`     | SDOH factors, plan selection       |
+| ADI Block Group   | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation-based adherence        |
 
 | PopulationSim Skill | MemberSim Application |
 |---------------------|----------------------|

@@ -1,7 +1,7 @@
 ---
 name: data-sources
 description: >
-  Consolidated reference for all PopulationSim v2.0 embedded data sources
+  Consolidated reference for all PopulationSim v2.0 reference data sources
   including file locations, schemas, vintages, and citation requirements.
 ---
 
@@ -9,23 +9,23 @@ description: >
 
 ## Overview
 
-PopulationSim v2.0 includes an embedded data package (148 MB) with real-world demographic, health, and SDOH data covering 100% of US geography. This reference documents all data sources, their structure, and proper citation.
+PopulationSim v2.0 includes an reference data (via MCP) (148 MB) with real-world demographic, health, and SDOH data covering 100% of US geography. This reference documents all data sources, their structure, and proper citation.
 
 ---
 
 ## Data Package Summary
 
-| Dataset | Level | File | Records | Size | Source |
-|---------|-------|------|---------|------|--------|
-| CDC PLACES 2024 | County | `population.places_county` (via healthsim_query_reference) | 3,143 | 4.8 MB | CDC |
-| CDC PLACES 2024 | Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 | 67 MB | CDC |
-| CDC SVI 2022 | County | `population.svi_county` (via healthsim_query_reference) | 3,144 | 0.4 MB | CDC/ATSDR |
-| CDC SVI 2022 | Tract | `population.svi_tract` (via healthsim_query_reference) | 84,120 | 61 MB | CDC/ATSDR |
-| ADI 2023 | Block Group | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | 12 MB | UW-Madison |
-| State FIPS | Crosswalk | `population.svi_county` (state lookup via healthsim_query_reference) | 51 | <1 KB | Census |
-| County FIPS | Crosswalk | `population.svi_county` (FIPS lookup via healthsim_query_reference) | 3,144 | 0.2 MB | Census |
-| Tract-to-County | Crosswalk | tract-to-county mapping (via healthsim_query) | 84,120 | 4 MB | Census |
-| CBSA Definitions | Crosswalk | CBSA crosswalk (via healthsim_query) | 1,918 | 0.2 MB | OMB/Census |
+| Dataset          | Level       | Table                                                                | Records | Size   | Source     |
+| ---------------- | ----------- | -------------------------------------------------------------------- | ------- | ------ | ---------- |
+| CDC PLACES 2024  | County      | `population.places_county` (via healthsim_query_reference)           | 3,143   | 4.8 MB | CDC        |
+| CDC PLACES 2024  | Tract       | `population.places_tract` (via healthsim_query_reference)            | 83,522  | 67 MB  | CDC        |
+| CDC SVI 2022     | County      | `population.svi_county` (via healthsim_query_reference)              | 3,144   | 0.4 MB | CDC/ATSDR  |
+| CDC SVI 2022     | Tract       | `population.svi_tract` (via healthsim_query_reference)               | 84,120  | 61 MB  | CDC/ATSDR  |
+| ADI 2023         | Block Group | `population.adi_blockgroup` (via healthsim_query_reference)          | 242,336 | 12 MB  | UW-Madison |
+| State FIPS       | Crosswalk   | `population.svi_county` (state lookup via healthsim_query_reference) | 51      | <1 KB  | Census     |
+| County FIPS      | Crosswalk   | `population.svi_county` (FIPS lookup via healthsim_query_reference)  | 3,144   | 0.2 MB | Census     |
+| Tract-to-County  | Crosswalk   | tract-to-county mapping (via healthsim_query)                        | 84,120  | 4 MB   | Census     |
+| CBSA Definitions | Crosswalk   | CBSA crosswalk (via healthsim_query)                                 | 1,918   | 0.2 MB | OMB/Census |
 
 **Total Size:** 148 MB
 
@@ -180,7 +180,7 @@ https://www.neighborhoodatlas.medicine.wisc.edu/
 
 ## Data Provenance Requirements
 
-**All responses using embedded data must include:**
+**All responses using reference data must include:**
 1. Source name (CDC PLACES, CDC SVI, ADI)
 2. Data vintage (year)
 3. Geography identifier (FIPS code)

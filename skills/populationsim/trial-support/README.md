@@ -3,7 +3,7 @@ name: populationsim-trial-support
 description: >
   Trial support skills for clinical trial feasibility and planning. Provides
   population-level insights for site selection, enrollment projection, and
-  diversity planning. Uses v2.0 embedded CDC PLACES and SVI data for evidence-based
+  diversity planning. Uses v2.0 CDC PLACES reference data and SVI data for evidence-based
   trial planning. Complements TrialSim's subject-level generation.
 version: "2.0"
 ---
@@ -152,15 +152,15 @@ Screen-to-enroll: 35%
 
 ## Data Sources (Embedded v2.0)
 
-Trial support skills use PopulationSim's embedded data package with 100% US coverage:
+Trial support skills use PopulationSim's reference data (via MCP) with 100% US coverage:
 
-| Source | Embedded File | Records | Application |
-|--------|---------------|---------|-------------|
-| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | 3,143 | Disease prevalence |
-| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | 83,522 | Site catchment analysis |
-| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | 3,144 | Diversity, retention risk |
-| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | 84,120 | SDOH-based adjustments |
-| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | Deprivation-based modeling |
+| Source              | Embedded Table                                              | Records | Application                |
+| ------------------- | ----------------------------------------------------------- | ------- | -------------------------- |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference)  | 3,143   | Disease prevalence         |
+| CDC PLACES (Tract)  | `population.places_tract` (via healthsim_query_reference)   | 83,522  | Site catchment analysis    |
+| CDC SVI (County)    | `population.svi_county` (via healthsim_query_reference)     | 3,144   | Diversity, retention risk  |
+| CDC SVI (Tract)     | `population.svi_tract` (via healthsim_query_reference)      | 84,120  | SDOH-based adjustments     |
+| ADI (Block Group)   | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | Deprivation-based modeling |
 
 ### v2.0 Benefits
 

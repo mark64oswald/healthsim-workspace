@@ -20,10 +20,10 @@ CDC PLACES (Population Level Analysis and Community Estimates) provides model-ba
 
 ## Embedded Data Files (v2.0)
 
-| Level | File | Records |
-|-------|------|---------|
-| County | `population.places_county` (via healthsim_query_reference) | 3,143 |
-| Tract | `population.places_tract` (via healthsim_query_reference) | 83,522 |
+| Level  | Table                                                      | Records |
+| ------ | ---------------------------------------------------------- | ------- |
+| County | `population.places_county` (via healthsim_query_reference) | 3,143   |
+| Tract  | `population.places_tract` (via healthsim_query_reference)  | 83,522  |
 
 ### Column Naming Convention
 

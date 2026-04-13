@@ -48,20 +48,20 @@ The cohort-specification skill creates complete CohortSpecification objects that
 
 ## Data Sources (Embedded v2.0)
 
-Cohort specifications are built from **real data** in the embedded data package:
+Cohort specifications are built from **real data** in the reference data (via MCP):
 
-| Component | Data Source | File |
-|-----------|-------------|------|
-| Demographics | SVI tract data | `population.svi_tract` (via healthsim_query_reference) |
-| Health Indicators | CDC PLACES | `population.places_county` (via healthsim_query_reference) |
-| SVI Scores | SVI county/tract | `population.svi_county` (via healthsim_query_reference) |
-| ADI Rankings | ADI block group | `population.adi_blockgroup` (via healthsim_query_reference) |
-| Metro Counties | CBSA crosswalk | CBSA crosswalk (via healthsim_query) |
+| Component         | Data Source      | Table                                                       |
+| ----------------- | ---------------- | ----------------------------------------------------------- |
+| Demographics      | SVI tract data   | `population.svi_tract` (via healthsim_query_reference)      |
+| Health Indicators | CDC PLACES       | `population.places_county` (via healthsim_query_reference)  |
+| SVI Scores        | SVI county/tract | `population.svi_county` (via healthsim_query_reference)     |
+| ADI Rankings      | ADI block group  | `population.adi_blockgroup` (via healthsim_query_reference) |
+| Metro Counties    | CBSA crosswalk   | CBSA crosswalk (via healthsim_query)                        |
 
 ### Data-First Specification Pattern
 
 When building a CohortSpecification:
-1. **Look up actual values** from embedded data files
+1. **Look up actual values** from reference data files
 2. **Use real prevalence rates** from CDC PLACES
 3. **Use real demographic distributions** from SVI tract data
 4. **Use real SVI/ADI scores** for SDOH profile

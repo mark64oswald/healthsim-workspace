@@ -45,21 +45,21 @@ The community-factors skill analyzes neighborhood and community-level factors th
 
 ## Data Sources (Embedded v2.0)
 
-Community factor data comes from embedded SVI and CDC PLACES files:
+Community factor data comes from SVI and CDC PLACES reference data:
 
-| Category | File | Key Columns |
-|----------|------|-------------|
-| **Housing** | | |
-| Multi-unit structures | `population.svi_tract` (via healthsim_query_reference) | E_MUNIT, EP_MUNIT |
-| Mobile homes | `population.svi_tract` (via healthsim_query_reference) | E_MOBILE, EP_MOBILE |
-| Crowding | `population.svi_tract` (via healthsim_query_reference) | E_CROWD, EP_CROWD |
-| Housing cost burden | `population.svi_tract` (via healthsim_query_reference) | E_HBURD, EP_HBURD |
-| **Transportation** | | |
-| No vehicle | `population.svi_tract` (via healthsim_query_reference) | E_NOVEH, EP_NOVEH |
-| Lack of transportation | `population.places_county` (via healthsim_query_reference) | LACKTRPT_CrudePrev |
-| **Social Needs** | | |
-| Food insecurity | `population.places_county` (via healthsim_query_reference) | FOODINSECU_CrudePrev |
-| Housing insecurity | `population.places_county` (via healthsim_query_reference) | HOUSINSECU_CrudePrev |
+| Category               | Table                                                      | Key Columns           |
+| ---------------------- | ---------------------------------------------------------- | --------------------- |
+| **Housing**            |
+| Multi-unit structures  | `population.svi_tract` (via healthsim_query_reference)     | E_MUNIT, EP_MUNIT     |
+| Mobile homes           | `population.svi_tract` (via healthsim_query_reference)     | E_MOBILE, EP_MOBILE   |
+| Crowding               | `population.svi_tract` (via healthsim_query_reference)     | E_CROWD, EP_CROWD     |
+| Housing cost burden    | `population.svi_tract` (via healthsim_query_reference)     | E_HBURD, EP_HBURD     |
+| **Transportation**     |
+| No vehicle             | `population.svi_tract` (via healthsim_query_reference)     | E_NOVEH, EP_NOVEH     |
+| Lack of transportation | `population.places_county` (via healthsim_query_reference) | LACKTRPT_CrudePrev    |
+| **Social Needs**       |
+| Food insecurity        | `population.places_county` (via healthsim_query_reference) | FOODINSECU_CrudePrev  |
+| Housing insecurity     | `population.places_county` (via healthsim_query_reference) | HOUSINSECU_CrudePrev  |
 | Utility shutoff threat | `population.places_county` (via healthsim_query_reference) | SHUTUTILITY_CrudePrev |
 
 ### Data Lookup Pattern

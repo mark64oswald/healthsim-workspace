@@ -1,7 +1,7 @@
 ---
 name: populationsim-data-access
 description: >
-  Skills for directly accessing PopulationSim's embedded data package.
+  Skills for directly accessing PopulationSim's reference data (via MCP).
   Use these skills when you need to look up specific values, resolve
   geography codes, or aggregate data across geographic levels.
   Triggers: "look up", "exact value", "FIPS code", "aggregate tracts"
@@ -11,7 +11,7 @@ description: >
 
 ## Overview
 
-PopulationSim v2.0 includes an **embedded data package** (148 MB) with real demographic, health, and SDOH data covering 100% of US geography. These skills provide direct access patterns for reading and aggregating this data.
+PopulationSim v2.0 includes an **reference data (via MCP)** (148 MB) with real demographic, health, and SDOH data covering 100% of US geography. These skills provide direct access patterns for reading and aggregating this data.
 
 **Key Principle**: Every response that includes data from these files must cite the source and vintage.
 

@@ -48,10 +48,10 @@ The adi-analysis skill provides detailed analysis of the Area Deprivation Index 
 
 ## Data Sources (Embedded v2.0)
 
-This skill reads from PopulationSim's embedded ADI data:
+This skill reads from PopulationSim's ADI reference data:
 
-| Level | File | Records | Source |
-|-------|------|---------|--------|
+| Level       | Table                                                       | Records | Source                        |
+| ----------- | ----------------------------------------------------------- | ------- | ----------------------------- |
 | Block Group | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | UW-Madison Neighborhood Atlas |
 
 ### File Structure

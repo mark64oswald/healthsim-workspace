@@ -49,14 +49,14 @@ The health-outcome-disparities skill analyzes differences in health outcomes acr
 
 ## Data Sources (Embedded v2.0)
 
-Disparity analysis uses embedded data with geographic stratification:
+Disparity analysis uses reference data with geographic stratification:
 
-| Data Type | File | Key Columns |
-|-----------|------|-------------|
-| Health Outcomes | `population.places_county` (via healthsim_query_reference) | [CONDITION]_CrudePrev |
-| Demographics | `population.svi_tract` (via healthsim_query_reference) | EP_MINRTY, E_AFAM, E_HISP, E_ASIAN |
-| SVI by Theme | `population.svi_tract` (via healthsim_query_reference) | RPL_THEME3 (Minority/Language) |
-| Socioeconomic | `population.svi_tract` (via healthsim_query_reference) | EP_POV150, EP_NOHSDP |
+| Data Type       | Table                                                      | Key Columns                        |
+| --------------- | ---------------------------------------------------------- | ---------------------------------- |
+| Health Outcomes | `population.places_county` (via healthsim_query_reference) | [CONDITION]_CrudePrev              |
+| Demographics    | `population.svi_tract` (via healthsim_query_reference)     | EP_MINRTY, E_AFAM, E_HISP, E_ASIAN |
+| SVI by Theme    | `population.svi_tract` (via healthsim_query_reference)     | RPL_THEME3 (Minority/Language)     |
+| Socioeconomic   | `population.svi_tract` (via healthsim_query_reference)     | EP_POV150, EP_NOHSDP               |
 
 ### Disparity Analysis Pattern
 
@@ -68,7 +68,7 @@ Disparity analysis uses embedded data with geographic stratification:
 5. Return with source citations
 ```
 
-**Note**: Race-specific health data requires BRFSS microdata or stratified estimates not in embedded package. Use SVI demographic composition as proxy for geographic disparity analysis.
+**Note**: Race-specific health data requires BRFSS microdata or stratified estimates not in the reference dataset. Use SVI demographic composition as proxy for geographic disparity analysis.
 
 ---
 

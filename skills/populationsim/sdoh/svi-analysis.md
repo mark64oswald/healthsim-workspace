@@ -47,12 +47,12 @@ The svi-analysis skill provides detailed analysis of CDC/ATSDR Social Vulnerabil
 
 ## Data Sources (Embedded v2.0)
 
-This skill reads from PopulationSim's embedded SVI data:
+This skill reads from PopulationSim's SVI reference data:
 
-| Level | File | Records | Key Columns |
-|-------|------|---------|-------------|
-| County | `population.svi_county` (via healthsim_query_reference) | 3,144 | STCNTY, RPL_THEMES, RPL_THEME1-4 |
-| Tract | `population.svi_tract` (via healthsim_query_reference) | 84,120 | FIPS, RPL_THEMES, RPL_THEME1-4, EP_* |
+| Level  | Table                                                   | Records | Key Columns                          |
+| ------ | ------------------------------------------------------- | ------- | ------------------------------------ |
+| County | `population.svi_county` (via healthsim_query_reference) | 3,144   | STCNTY, RPL_THEMES, RPL_THEME1-4     |
+| Tract  | `population.svi_tract` (via healthsim_query_reference)  | 84,120  | FIPS, RPL_THEMES, RPL_THEME1-4, EP_* |
 
 ### Key Column Reference
 

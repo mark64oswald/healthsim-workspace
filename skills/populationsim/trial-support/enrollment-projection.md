@@ -2,7 +2,7 @@
 name: enrollment-projection
 description: >
   Project clinical trial enrollment timelines based on site network, eligible
-  population, and historical recruitment rates. Uses PopulationSim v2.0 embedded
+  population, and historical recruitment rates. Uses PopulationSim v2.0
   data for SDOH-adjusted retention modeling. Triggers: "enrollment projection",
   "recruitment timeline", "enrollment rate", "how long to enroll", "enrollment forecast".
 version: "2.0"
@@ -51,12 +51,12 @@ The enrollment-projection skill models clinical trial enrollment timelines by co
 
 Enrollment projections use SVI data for SDOH-adjusted retention modeling:
 
-| Data Source | File | Application |
-|-------------|------|-------------|
-| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | Access barriers, retention risk |
-| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | Granular SDOH for site-level adjustment |
-| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation-based dropout risk |
-| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Uninsured rate, access to care |
+| Data Source         | Table                                                       | Application                             |
+| ------------------- | ----------------------------------------------------------- | --------------------------------------- |
+| CDC SVI (County)    | `population.svi_county` (via healthsim_query_reference)     | Access barriers, retention risk         |
+| CDC SVI (Tract)     | `population.svi_tract` (via healthsim_query_reference)      | Granular SDOH for site-level adjustment |
+| ADI (Block Group)   | `population.adi_blockgroup` (via healthsim_query_reference) | Deprivation-based dropout risk          |
+| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference)  | Uninsured rate, access to care          |
 
 ### SDOH-Adjusted Retention Model
 

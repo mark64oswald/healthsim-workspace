@@ -44,17 +44,17 @@ The demographic-distribution skill creates accurate demographic profiles for coh
 
 ## Data Sources (Embedded v2.0)
 
-Demographic data comes from embedded SVI files:
+Demographic data comes from SVI reference data:
 
-| Metric | File | Columns |
-|--------|------|---------|
-| Total Population | `population.svi_tract` (via healthsim_query_reference) | E_TOTPOP |
-| Age 65+ | `population.svi_tract` (via healthsim_query_reference) | E_AGE65, EP_AGE65 |
-| Age Under 18 | `population.svi_tract` (via healthsim_query_reference) | E_AGE17, EP_AGE17 |
-| Minority Status | `population.svi_tract` (via healthsim_query_reference) | E_MINRTY, EP_MINRTY |
-| African American | `population.svi_tract` (via healthsim_query_reference) | E_AFAM, EP_AFAM |
-| Hispanic | `population.svi_tract` (via healthsim_query_reference) | E_HISP, EP_HISP |
-| Asian | `population.svi_tract` (via healthsim_query_reference) | E_ASIAN, EP_ASIAN |
+| Metric           | Table                                                  | Columns             |
+| ---------------- | ------------------------------------------------------ | ------------------- |
+| Total Population | `population.svi_tract` (via healthsim_query_reference) | E_TOTPOP            |
+| Age 65+          | `population.svi_tract` (via healthsim_query_reference) | E_AGE65, EP_AGE65   |
+| Age Under 18     | `population.svi_tract` (via healthsim_query_reference) | E_AGE17, EP_AGE17   |
+| Minority Status  | `population.svi_tract` (via healthsim_query_reference) | E_MINRTY, EP_MINRTY |
+| African American | `population.svi_tract` (via healthsim_query_reference) | E_AFAM, EP_AFAM     |
+| Hispanic         | `population.svi_tract` (via healthsim_query_reference) | E_HISP, EP_HISP     |
+| Asian            | `population.svi_tract` (via healthsim_query_reference) | E_ASIAN, EP_ASIAN   |
 
 ### Data Lookup Pattern
 
@@ -67,7 +67,7 @@ Demographic data comes from embedded SVI files:
 6. Return distributions with source citation
 ```
 
-**Note**: Detailed age breakdowns (5-year groups) require ACS S0101 not in embedded package. SVI provides key demographic segments.
+**Note**: Detailed age breakdowns (5-year groups) require ACS S0101 not in the reference dataset. SVI provides key demographic segments.
 
 ---
 

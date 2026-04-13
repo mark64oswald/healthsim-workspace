@@ -46,16 +46,16 @@ The economic-indicators skill provides detailed analysis of economic factors tha
 
 ## Data Sources (Embedded v2.0)
 
-Economic indicators are available in embedded SVI data:
+Economic indicators are available in SVI reference data:
 
-| Indicator | File | Column |
-|-----------|------|--------|
-| Below 150% Poverty (%) | `population.svi_county` (via healthsim_query_reference) | EP_POV150 |
-| Below 150% Poverty (count) | `population.svi_tract` (via healthsim_query_reference) | E_POV150 |
-| Unemployment (%) | `population.svi_tract` (via healthsim_query_reference) | EP_UNEMP |
-| Unemployment (count) | `population.svi_tract` (via healthsim_query_reference) | E_UNEMP |
-| Housing Cost Burden (%) | `population.svi_tract` (via healthsim_query_reference) | EP_HBURD |
-| No Health Insurance (%) | `population.svi_tract` (via healthsim_query_reference) | EP_UNINSUR |
+| Indicator                  | Table                                                   | Column     |
+| -------------------------- | ------------------------------------------------------- | ---------- |
+| Below 150% Poverty (%)     | `population.svi_county` (via healthsim_query_reference) | EP_POV150  |
+| Below 150% Poverty (count) | `population.svi_tract` (via healthsim_query_reference)  | E_POV150   |
+| Unemployment (%)           | `population.svi_tract` (via healthsim_query_reference)  | EP_UNEMP   |
+| Unemployment (count)       | `population.svi_tract` (via healthsim_query_reference)  | E_UNEMP    |
+| Housing Cost Burden (%)    | `population.svi_tract` (via healthsim_query_reference)  | EP_HBURD   |
+| No Health Insurance (%)    | `population.svi_tract` (via healthsim_query_reference)  | EP_UNINSUR |
 
 ### ADI Economic Context
 The Area Deprivation Index (`population.adi_blockgroup` (via healthsim_query_reference)) incorporates:
@@ -74,7 +74,7 @@ The Area Deprivation Index (`population.adi_blockgroup` (via healthsim_query_ref
 5. Return with source citations
 ```
 
-**Note**: Detailed income distributions require ACS microdata not in embedded package. SVI provides key economic indicators for SDOH profiling.
+**Note**: Detailed income distributions require ACS microdata not in the reference dataset. SVI provides key economic indicators for SDOH profiling.
 
 ---
 

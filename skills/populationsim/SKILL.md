@@ -237,14 +237,14 @@ Generation input for other HealthSim products:
 
 Reference data (100% US coverage) accessible via healthsim MCP tools:
 
-| Source | File | Records | Data Year |
-|--------|------|---------|-----------|
-| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | 3,143 | 2022 BRFSS |
-| CDC PLACES (Tract) | `population.places_tract` (via healthsim_query_reference) | 83,522 | 2022 BRFSS |
-| SVI (County) | `population.svi_county` (via healthsim_query_reference) | 3,144 | 2018-2022 ACS |
-| SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | 84,120 | 2018-2022 ACS |
-| ADI (Block Group) | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | 2019-2023 ACS |
-| Geography Crosswalks | geography crosswalks (via healthsim_query) | Various | 2023 Census |
+| Source               | Table                                                       | Records | Data Year     |
+| -------------------- | ----------------------------------------------------------- | ------- | ------------- |
+| CDC PLACES (County)  | `population.places_county` (via healthsim_query_reference)  | 3,143   | 2022 BRFSS    |
+| CDC PLACES (Tract)   | `population.places_tract` (via healthsim_query_reference)   | 83,522  | 2022 BRFSS    |
+| SVI (County)         | `population.svi_county` (via healthsim_query_reference)     | 3,144   | 2018-2022 ACS |
+| SVI (Tract)          | `population.svi_tract` (via healthsim_query_reference)      | 84,120  | 2018-2022 ACS |
+| ADI (Block Group)    | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | 2019-2023 ACS |
+| Geography Crosswalks | geography crosswalks (via healthsim_query)                  | Various | 2023 Census   |
 
 ### DuckDB Reference Tables
 

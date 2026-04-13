@@ -46,22 +46,22 @@ The clinical-prevalence-profile skill creates comprehensive clinical profiles fo
 
 ## Data Sources (Embedded v2.0)
 
-Clinical prevalence data comes from embedded CDC PLACES files:
+Clinical prevalence data comes from CDC PLACES reference data files:
 
-| Condition | File | Column |
-|-----------|------|--------|
-| Diabetes | `population.places_county` (via healthsim_query_reference) | DIABETES_CrudePrev |
-| Obesity | `population.places_county` (via healthsim_query_reference) | OBESITY_CrudePrev |
-| Hypertension | `population.places_county` (via healthsim_query_reference) | BPHIGH_CrudePrev |
-| High Cholesterol | `population.places_county` (via healthsim_query_reference) | HIGHCHOL_CrudePrev |
-| CHD | `population.places_county` (via healthsim_query_reference) | CHD_CrudePrev |
-| Stroke | `population.places_county` (via healthsim_query_reference) | STROKE_CrudePrev |
-| COPD | `population.places_county` (via healthsim_query_reference) | COPD_CrudePrev |
-| Asthma | `population.places_county` (via healthsim_query_reference) | CASTHMA_CrudePrev |
-| CKD | `population.places_county` (via healthsim_query_reference) | KIDNEY_CrudePrev |
-| Arthritis | `population.places_county` (via healthsim_query_reference) | ARTHRITIS_CrudePrev |
-| Depression | `population.places_county` (via healthsim_query_reference) | DEPRESSION_CrudePrev |
-| Cancer | `population.places_county` (via healthsim_query_reference) | CANCER_CrudePrev |
+| Condition        | Table                                                      | Column               |
+| ---------------- | ---------------------------------------------------------- | -------------------- |
+| Diabetes         | `population.places_county` (via healthsim_query_reference) | DIABETES_CrudePrev   |
+| Obesity          | `population.places_county` (via healthsim_query_reference) | OBESITY_CrudePrev    |
+| Hypertension     | `population.places_county` (via healthsim_query_reference) | BPHIGH_CrudePrev     |
+| High Cholesterol | `population.places_county` (via healthsim_query_reference) | HIGHCHOL_CrudePrev   |
+| CHD              | `population.places_county` (via healthsim_query_reference) | CHD_CrudePrev        |
+| Stroke           | `population.places_county` (via healthsim_query_reference) | STROKE_CrudePrev     |
+| COPD             | `population.places_county` (via healthsim_query_reference) | COPD_CrudePrev       |
+| Asthma           | `population.places_county` (via healthsim_query_reference) | CASTHMA_CrudePrev    |
+| CKD              | `population.places_county` (via healthsim_query_reference) | KIDNEY_CrudePrev     |
+| Arthritis        | `population.places_county` (via healthsim_query_reference) | ARTHRITIS_CrudePrev  |
+| Depression       | `population.places_county` (via healthsim_query_reference) | DEPRESSION_CrudePrev |
+| Cancer           | `population.places_county` (via healthsim_query_reference) | CANCER_CrudePrev     |
 
 ### Data-First Clinical Profile Pattern
 

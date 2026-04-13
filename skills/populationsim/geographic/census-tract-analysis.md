@@ -55,13 +55,13 @@ The census-tract-analysis skill provides granular neighborhood-level population 
 
 ## Data Sources (Embedded v2.0)
 
-This skill reads from PopulationSim's embedded tract-level data:
+This skill reads from PopulationSim's tract-level reference data:
 
-| Data Type | File | Records | Key Columns |
-|-----------|------|---------|-------------|
-| Health Indicators | `population.places_tract` (via healthsim_query_reference) | 83,522 | LocationID, [MEASURE]_CrudePrev |
-| SVI Full Dataset | `population.svi_tract` (via healthsim_query_reference) | 84,120 | FIPS, RPL_THEMES, E_TOTPOP, EP_* |
-| ADI Rankings | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | FIPS (12-digit), ADI_NATRANK |
+| Data Type         | Table                                                       | Records | Key Columns                      |
+| ----------------- | ----------------------------------------------------------- | ------- | -------------------------------- |
+| Health Indicators | `population.places_tract` (via healthsim_query_reference)   | 83,522  | LocationID, [MEASURE]_CrudePrev  |
+| SVI Full Dataset  | `population.svi_tract` (via healthsim_query_reference)      | 84,120  | FIPS, RPL_THEMES, E_TOTPOP, EP_* |
+| ADI Rankings      | `population.adi_blockgroup` (via healthsim_query_reference) | 242,336 | FIPS (12-digit), ADI_NATRANK     |
 
 ### Key Column Reference
 

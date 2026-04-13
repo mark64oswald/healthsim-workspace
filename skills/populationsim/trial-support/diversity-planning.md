@@ -2,7 +2,7 @@
 name: diversity-planning
 description: >
   Plan for diverse clinical trial enrollment meeting FDA requirements and
-  reflecting disease epidemiology. Uses PopulationSim v2.0 embedded CDC SVI data
+  reflecting disease epidemiology. Uses PopulationSim v2.0 CDC SVI reference data
   for minority population % by geography. Triggers: "diversity requirements",
   "minority enrollment", "representative sample", "diversity action plan".
 version: "2.0"
@@ -47,12 +47,12 @@ The diversity-planning skill supports development of FDA-compliant diversity act
 
 Diversity planning uses SVI and PLACES data for evidence-based demographic targeting:
 
-| Data Source | File | Application |
-|-------------|------|-------------|
-| CDC SVI (County) | `population.svi_county` (via healthsim_query_reference) | EP_MINRTY (minority %), demographic breakdown |
-| CDC SVI (Tract) | `population.svi_tract` (via healthsim_query_reference) | Granular minority population for site catchment |
-| CDC PLACES (County) | `population.places_county` (via healthsim_query_reference) | Disease prevalence by geography |
-| Geography Crosswalks | geography crosswalks (via healthsim_query) | FIPS to metro area mapping |
+| Data Source          | Table                                                      | Application                                     |
+| -------------------- | ---------------------------------------------------------- | ----------------------------------------------- |
+| CDC SVI (County)     | `population.svi_county` (via healthsim_query_reference)    | EP_MINRTY (minority %), demographic breakdown   |
+| CDC SVI (Tract)      | `population.svi_tract` (via healthsim_query_reference)     | Granular minority population for site catchment |
+| CDC PLACES (County)  | `population.places_county` (via healthsim_query_reference) | Disease prevalence by geography                 |
+| Geography Crosswalks | geography crosswalks (via healthsim_query)                 | FIPS to metro area mapping                      |
 
 ### Data-Driven Diversity Targeting
 

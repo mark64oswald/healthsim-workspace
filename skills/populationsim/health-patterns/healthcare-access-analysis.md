@@ -48,17 +48,17 @@ The healthcare-access-analysis skill evaluates healthcare access across geograph
 
 ## Data Sources (Embedded v2.0)
 
-Healthcare access data comes from multiple embedded sources:
+Healthcare access data comes from multiple reference sources:
 
-| Metric | File | Key Columns |
-|--------|------|-------------|
-| Uninsured Rate | `population.svi_county` (via healthsim_query_reference) | EP_UNINSUR |
-| Uninsured Rate (tract) | `population.svi_tract` (via healthsim_query_reference) | EP_UNINSUR, E_UNINSUR |
-| Annual Checkup | `population.places_county` (via healthsim_query_reference) | CHECKUP_CrudePrev |
-| Dental Visit | `population.places_county` (via healthsim_query_reference) | DENTAL_CrudePrev |
-| Cholesterol Screening | `population.places_county` (via healthsim_query_reference) | CHOLSCREEN_CrudePrev |
-| Colorectal Screening | `population.places_county` (via healthsim_query_reference) | COLON_SCREEN_CrudePrev |
-| Mammography | `population.places_county` (via healthsim_query_reference) | MAMMOUSE_CrudePrev |
+| Metric                 | Table                                                      | Key Columns            |
+| ---------------------- | ---------------------------------------------------------- | ---------------------- |
+| Uninsured Rate         | `population.svi_county` (via healthsim_query_reference)    | EP_UNINSUR             |
+| Uninsured Rate (tract) | `population.svi_tract` (via healthsim_query_reference)     | EP_UNINSUR, E_UNINSUR  |
+| Annual Checkup         | `population.places_county` (via healthsim_query_reference) | CHECKUP_CrudePrev      |
+| Dental Visit           | `population.places_county` (via healthsim_query_reference) | DENTAL_CrudePrev       |
+| Cholesterol Screening  | `population.places_county` (via healthsim_query_reference) | CHOLSCREEN_CrudePrev   |
+| Colorectal Screening   | `population.places_county` (via healthsim_query_reference) | COLON_SCREEN_CrudePrev |
+| Mammography            | `population.places_county` (via healthsim_query_reference) | MAMMOUSE_CrudePrev     |
 
 ### Data Lookup Pattern
 
@@ -70,7 +70,7 @@ Healthcare access data comes from multiple embedded sources:
 5. Return with source citations
 ```
 
-**Note**: Provider ratios require external data (AHRF, NPPES) not included in embedded package.
+**Note**: Provider ratios require external data (AHRF, NPPES) not included in the reference dataset.
 
 ---
 

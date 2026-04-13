@@ -4,7 +4,7 @@
 
 ## What PopulationSim Does
 
-PopulationSim is the **population intelligence** engine of HealthSim. Unlike other products that generate synthetic data, PopulationSim v2.0 provides **access to real embedded data**—148 MB of CDC PLACES, SVI, and ADI data covering every US county, tract, and block group.
+PopulationSim is the **population intelligence** engine of HealthSim. Unlike other products that generate synthetic data, PopulationSim v2.0 provides **access to real reference data**—148 MB of CDC PLACES, SVI, and ADI data covering every US county, tract, and block group.
 
 This data grounds all HealthSim products in reality. When you generate diabetic patients in Harris County, TX, they reflect the actual 12.1% prevalence rate, not a generic national average.
 
@@ -34,7 +34,7 @@ See [hello-healthsim examples](../../hello-healthsim/examples/populationsim-exam
 
 | Capability | Description | Skill Reference |
 |------------|-------------|-----------------|
-| **Data Lookup** | Query embedded CDC/Census data | [data-access/data-lookup.md](data-access/data-lookup.md) |
+| **Data Lookup** | Query CDC/Census reference data | [data-access/data-lookup.md](data-access/data-lookup.md) |
 | **Geographic Profiles** | County, tract, metro area analysis | [geographic/](geographic/) |
 | **Health Patterns** | Chronic disease prevalence, behaviors | [health-patterns/](health-patterns/) |
 | **SDOH Analysis** | SVI, ADI, economic indicators | [sdoh/](sdoh/) |
@@ -49,7 +49,7 @@ See [hello-healthsim examples](../../hello-healthsim/examples/populationsim-exam
 | CDC SVI 2022 | 100% US counties + tracts | 87,264 | 16 vulnerability indicators |
 | HRSA ADI 2023 | 100% US block groups | 242,336 | Area deprivation index |
 
-**Total**: 148 MB embedded data, 416,265 geographic records
+**Total**: 148 MB reference data, 416,265 geographic records
 
 ## "I Want To..." Quick Reference
 
