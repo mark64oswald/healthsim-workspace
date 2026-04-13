@@ -150,7 +150,7 @@ def create_session(client: anthropic.Anthropic, ids: dict) -> str:
 
 def stream_response(client: anthropic.Anthropic, session_id: str):
     """Stream events from the session until idle or terminated."""
-    with client.beta.sessions.stream(session_id=session_id) as stream:
+    with client.beta.sessions.events.stream(session_id=session_id) as stream:
         for event in stream:
             t = event.type
 
