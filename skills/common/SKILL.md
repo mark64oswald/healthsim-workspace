@@ -1,3 +1,8 @@
+---
+name: common
+description: Cross-product infrastructure for HealthSim — persistence (cohort save/load), identity correlation (SSN-based cross-product linking), and DuckDB database operations. Use when saving/loading cohorts, linking entities across products, or querying the database directly.
+---
+
 # Common Skills - Master Reference
 
 Cross-product infrastructure skills that enable persistence, identity correlation, and database operations across all HealthSim products.
