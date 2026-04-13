@@ -142,7 +142,7 @@ def create_session(client: anthropic.Anthropic, ids: dict) -> str:
         },
         environment_id=ids["environment_id"],
         vault_ids=[ids["vault_id"]],
-        title="Phase 0 Spike",
+        title="HealthSim Session",
     )
     print(f"  Session: {session.id} (status: {session.status})")
     return session.id
@@ -210,11 +210,15 @@ def interactive_loop(client: anthropic.Anthropic, session_id: str):
 
         if not user_input:
             continue
+
+        # Built-in commands
         if user_input.lower() in ("quit", "exit"):
             break
+        if user_input.lower() == "session":
+            print(f"  Session ID: {session_id}")
+            continue
 
-        # Stream-first: open stream before sending
-        # Send the message, then stream
+        # Send and stream
         client.beta.sessions.events.send(
             session_id,
             events=[{
@@ -234,20 +238,28 @@ def main():
 
     parser = argparse.ArgumentParser(description="HealthSim Managed Agent session")
     parser.add_argument("--fresh", action="store_true", help="Recreate agent/env/vault")
+    parser.add_argument("--session", metavar="SESSION_ID", help="Resume existing session")
     args = parser.parse_args()
 
     client = anthropic.Anthropic()
 
-    print("=== HealthSim Managed Agent — Phase 0 Spike ===\n")
+    print("=== HealthSim Managed Agent ===\n")
 
-    ids = setup(client, fresh=args.fresh)
-    session_id = create_session(client, ids)
+    if args.session:
+        session_id = args.session
+        print(f"  Resuming session: {session_id}\n")
+    else:
+        ids = setup(client, fresh=args.fresh)
+        session_id = create_session(client, ids)
+        print()
 
-    print("\nSession ready. Type a message (or 'quit' to exit).\n")
+    print(f"Session: {session_id}")
+    print("Commands: 'session' (show ID), 'quit' (exit)")
+    print("Resume later: .venv/bin/python3 deploy/start-session.py "
+          f"--session {session_id}\n")
     interactive_loop(client, session_id)
 
     print(f"\nSession ID: {session_id}")
-    print("You can reconnect to this session later using its ID.")
 
 
 if __name__ == "__main__":
