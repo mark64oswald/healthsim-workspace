@@ -10,15 +10,16 @@ RUN pip install --no-cache-dir \
     "pydantic-settings>=2.0.0" \
     "uvicorn>=0.30.0" \
     "starlette>=0.40.0" \
-    "anyio>=3.5.0" \
-    "pandas>=2.0.0" \
-    "faker>=20.0.0" \
-    "pyyaml>=6.0" \
-    "python-dateutil>=2.8.0" \
-    "scipy>=1.10.0"
+    "anyio>=3.5.0"
 
 # Copy healthsim core library
 COPY packages/core/src/healthsim/ /app/healthsim/
+
+# Replace __init__.py with minimal version for MCP server
+# The full __init__.py eagerly imports all submodules (generation, skills,
+# benefits, dimensional) which pull in heavy deps not needed by the server.
+# The MCP server only needs healthsim.db and healthsim.state.
+RUN echo '__version__ = "1.0.0"' > /app/healthsim/__init__.py
 
 # Copy MCP server
 COPY packages/mcp-server/healthsim_mcp.py /app/
