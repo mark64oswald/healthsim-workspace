@@ -64,7 +64,8 @@ from pydantic import BaseModel, Field, ConfigDict
 # =============================================================================
 
 MCP_TRANSPORT = os.environ.get("MCP_TRANSPORT", "stdio")
-MCP_PORT = int(os.environ.get("MCP_PORT", "8000"))
+# Railway sets PORT; MCP_PORT overrides; fallback 8000
+MCP_PORT = int(os.environ.get("MCP_PORT", os.environ.get("PORT", "8000")))
 MCP_TOKEN = os.environ.get("HEALTHSIM_MCP_TOKEN")
 
 # Add healthsim to path
