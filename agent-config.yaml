@@ -6,7 +6,7 @@ name: healthsim
 model: claude-sonnet-4-6
 description: Synthetic healthcare data generation platform with CDISC-compliant output formats
 
-system_prompt_source: ./.claude/CLAUDE.md
+system_prompt_source: ./deploy/system-prompt.md
 
 skills:
   - path: ./skills/patientsim/SKILL.md
