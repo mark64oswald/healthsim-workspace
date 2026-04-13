@@ -24,11 +24,11 @@ PatientSim accesses these files directly for data-driven generation:
 
 | Data Source | File Path | Records | Key Columns |
 |-------------|-----------|---------|-------------|
-| CDC PLACES (County) | `populationsim/population.places_county (via healthsim_query_reference)` | 3,144 | CountyFIPS, DIABETES_CrudePrev, OBESITY_CrudePrev, etc. |
-| CDC PLACES (Tract) | `populationsim/population.places_tract (via healthsim_query_reference)` | 83,522 | TractFIPS, all health measures |
-| CDC SVI (County) | `populationsim/population.svi_county (via healthsim_query_reference)` | 3,144 | FIPS, RPL_THEMES, EP_UNINSUR, etc. |
-| CDC SVI (Tract) | `populationsim/population.svi_tract (via healthsim_query_reference)` | 84,120 | FIPS, all SVI themes |
-| ADI (Block Group) | `populationsim/population.adi_blockgroup (via healthsim_query_reference)` | 242,335 | FIPS, ADI_NATRANK, ADI_STAESSION |
+| CDC PLACES (County) | `population.places_county (via healthsim_query_reference)` | 3,144 | CountyFIPS, DIABETES_CrudePrev, OBESITY_CrudePrev, etc. |
+| CDC PLACES (Tract) | `population.places_tract (via healthsim_query_reference)` | 83,522 | TractFIPS, all health measures |
+| CDC SVI (County) | `population.svi_county (via healthsim_query_reference)` | 3,144 | FIPS, RPL_THEMES, EP_UNINSUR, etc. |
+| CDC SVI (Tract) | `population.svi_tract (via healthsim_query_reference)` | 84,120 | FIPS, all SVI themes |
+| ADI (Block Group) | `population.adi_blockgroup (via healthsim_query_reference)` | 242,335 | FIPS, ADI_NATRANK, ADI_STAESSION |
 
 ---
 
@@ -477,7 +477,7 @@ Data-driven generation includes complete provenance in output metadata:
           "extension": [
             {"url": "source", "valueCode": "CDC_PLACES_2024"},
             {"url": "dataYear", "valueInteger": 2022},
-            {"url": "file", "valueString": "populationsim/population.places_county (via healthsim_query_reference)"},
+            {"url": "file", "valueString": "population.places_county (via healthsim_query_reference)"},
             {"url": "fieldsUsed", "valueString": "DIABETES_CrudePrev,OBESITY_CrudePrev"}
           ]
         },
@@ -486,7 +486,7 @@ Data-driven generation includes complete provenance in output metadata:
           "extension": [
             {"url": "source", "valueCode": "CDC_SVI_2022"},
             {"url": "dataYear", "valueInteger": 2022},
-            {"url": "file", "valueString": "populationsim/population.svi_county (via healthsim_query_reference)"},
+            {"url": "file", "valueString": "population.svi_county (via healthsim_query_reference)"},
             {"url": "fieldsUsed", "valueString": "RPL_THEMES,EP_UNINSUR"}
           ]
         }

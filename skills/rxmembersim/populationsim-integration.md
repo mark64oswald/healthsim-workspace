@@ -50,11 +50,11 @@ Read from: population.svi_county (via healthsim_query_reference)
 
 | Source | File | Use in RxMemberSim |
 |--------|------|-------------------|
-| CDC PLACES County | `populationsim/population.places_county (via healthsim_query_reference)` | Medication class utilization (BPMED, etc.) |
-| CDC PLACES Tract | `populationsim/population.places_tract (via healthsim_query_reference)` | Neighborhood prescribing patterns |
-| SVI County | `populationsim/population.svi_county (via healthsim_query_reference)` | Adherence modeling, generic preference |
-| SVI Tract | `populationsim/population.svi_tract (via healthsim_query_reference)` | Pharmacy access patterns |
-| ADI Block Group | `populationsim/population.adi_blockgroup (via healthsim_query_reference)` | Deprivation -> adherence correlation |
+| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Medication class utilization (BPMED, etc.) |
+| CDC PLACES Tract | `population.places_tract (via healthsim_query_reference)` | Neighborhood prescribing patterns |
+| SVI County | `population.svi_county (via healthsim_query_reference)` | Adherence modeling, generic preference |
+| SVI Tract | `population.svi_tract (via healthsim_query_reference)` | Pharmacy access patterns |
+| ADI Block Group | `population.adi_blockgroup (via healthsim_query_reference)` | Deprivation -> adherence correlation |
 
 ## SDOH Impact on Pharmacy Utilization
 

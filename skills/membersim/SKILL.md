@@ -302,7 +302,7 @@ Medical and pharmacy benefits are often coordinated:
 
 ### Cross-Product: PopulationSim (Demographics & SDOH)
 
-PopulationSim provides **embedded real-world data** (CDC PLACES, SVI, ADI) for actuarially realistic member generation. When geography is specified, look up actual prevalence rates and demographics to ground synthetic member panels.
+PopulationSim provides **real-world reference data** (CDC PLACES, SVI, ADI) for actuarially realistic member generation. When geography is specified, look up actual prevalence rates and demographics to ground synthetic member panels.
 
 **Pattern:** (1) Look up county/tract data by FIPS code, (2) apply prevalence rates to member generation, (3) include data provenance in output.
 

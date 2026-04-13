@@ -89,7 +89,7 @@ for county in candidate_counties:
       "source": "CDC_PLACES_2024",
       "geography": "Harris County (48201)",
       "prevalence_rate": 0.121,
-      "file": "populationsim/population.places_county (via healthsim_query_reference)"
+      "file": "population.places_county (via healthsim_query_reference)"
     }
   }
 }

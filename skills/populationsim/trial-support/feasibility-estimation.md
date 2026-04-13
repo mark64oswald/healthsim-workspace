@@ -83,7 +83,7 @@ Feasibility outputs include data source attribution:
     "prevalence_year": 2022,
     "svi_source": "CDC_SVI_2022",
     "geography_level": "county",
-    "file_reference": "populationsim/population.places_county (via healthsim_query_reference)"
+    "file_reference": "population.places_county (via healthsim_query_reference)"
   }
 }
 ```

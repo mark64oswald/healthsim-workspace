@@ -220,14 +220,14 @@ When using data-driven generation, include provenance in output:
         "data_year": 2022,
         "release_version": "2024 Release",
         "methodology": "model_based_estimate",
-        "file_reference": "populationsim/population.places_county (via healthsim_query_reference)",
+        "file_reference": "population.places_county (via healthsim_query_reference)",
         "fields_used": ["DIABETES_CrudePrev", "OBESITY_CrudePrev"]
       },
       {
         "source": "CDC_SVI_2022",
         "data_year": 2022,
         "methodology": "direct_lookup",
-        "file_reference": "populationsim/population.svi_county (via healthsim_query_reference)",
+        "file_reference": "population.svi_county (via healthsim_query_reference)",
         "fields_used": ["RPL_THEMES", "EP_UNINSUR"]
       }
     ],

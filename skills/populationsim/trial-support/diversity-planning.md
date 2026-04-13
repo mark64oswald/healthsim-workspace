@@ -82,8 +82,8 @@ for county in us_counties:
       "prevalence_source": "CDC_PLACES_2024",
       "methodology": "Population-weighted minority disease burden",
       "file_references": [
-        "populationsim/population.svi_county (via healthsim_query_reference)",
-        "populationsim/population.places_county (via healthsim_query_reference)"
+        "population.svi_county (via healthsim_query_reference)",
+        "population.places_county (via healthsim_query_reference)"
       ]
     }
   }

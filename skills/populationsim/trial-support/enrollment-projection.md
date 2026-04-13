@@ -90,7 +90,7 @@ adjusted_retention = base_retention * retention_modifier
       "source": "CDC_SVI_2022",
       "mean_svi": 0.62,
       "retention_modifier": 0.95,
-      "file": "populationsim/population.svi_county (via healthsim_query_reference)"
+      "file": "population.svi_county (via healthsim_query_reference)"
     }
   }
 }

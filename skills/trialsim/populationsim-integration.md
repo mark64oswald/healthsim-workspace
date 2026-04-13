@@ -54,10 +54,10 @@ Read from: population.svi_county (via healthsim_query_reference)
 
 | Source | File | Use in TrialSim |
 |--------|------|-----------------|
-| CDC PLACES County | `populationsim/population.places_county (via healthsim_query_reference)` | Disease prevalence for feasibility |
-| CDC PLACES Tract | `populationsim/population.places_tract (via healthsim_query_reference)` | Catchment area analysis |
-| SVI County | `populationsim/population.svi_county (via healthsim_query_reference)` | Diversity planning, access barriers |
-| SVI Tract | `populationsim/population.svi_tract (via healthsim_query_reference)` | Site-level vulnerability context |
+| CDC PLACES County | `population.places_county (via healthsim_query_reference)` | Disease prevalence for feasibility |
+| CDC PLACES Tract | `population.places_tract (via healthsim_query_reference)` | Catchment area analysis |
+| SVI County | `population.svi_county (via healthsim_query_reference)` | Diversity planning, access barriers |
+| SVI Tract | `population.svi_tract (via healthsim_query_reference)` | Site-level vulnerability context |
 | Geography Crosswalk | CBSA crosswalk (via healthsim_query) | Metro area site clustering |
 
 ## Trial-Specific Applications

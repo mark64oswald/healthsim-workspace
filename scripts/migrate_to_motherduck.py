@@ -159,6 +159,36 @@ def migrate_sample(local, md):
             migrate_table(local, md, source, dest)
 
 
+def verify_match(local, md):
+    """Compare local and MotherDuck row counts. Exit 1 on mismatch."""
+    print("\n--- Verify: Local vs MotherDuck ---")
+    tables = local.execute("""
+        SELECT table_schema, table_name
+        FROM information_schema.tables
+        WHERE table_schema NOT IN ('information_schema', 'pg_catalog')
+        ORDER BY table_schema, table_name
+    """).fetchall()
+
+    all_match = True
+    for schema, table in tables:
+        local_count = local.execute(f"SELECT COUNT(*) FROM {schema}.{table}").fetchone()[0]
+        try:
+            md_count = md.execute(f"SELECT COUNT(*) FROM {schema}.{table}").fetchone()[0]
+        except Exception:
+            md_count = -1  # table missing
+        match = local_count == md_count
+        icon = "✓" if match else "✗"
+        if not match:
+            all_match = False
+        print(f"  {icon} {schema}.{table:40s} local={local_count:>12,}  md={md_count:>12,}")
+
+    if all_match:
+        print("\nAll tables match.")
+    else:
+        print("\nMISMATCH DETECTED — re-run migration.")
+        sys.exit(1)
+
+
 def verify(md):
     """Print verification summary of what's in MotherDuck."""
     print("\n--- Verification ---")
@@ -193,7 +223,19 @@ def main():
         "--clean", action="store_true",
         help="Drop old schemas (reference/cohort/runtime) before migrating"
     )
+    parser.add_argument(
+        "--verify", action="store_true",
+        help="Verify MotherDuck data matches local (no migration)"
+    )
     args = parser.parse_args()
+
+    if args.verify:
+        md = connect_motherduck()
+        local = duckdb.connect(str(LOCAL_DB), read_only=True)
+        verify_match(local, md)
+        local.close()
+        md.close()
+        return
 
     if not LOCAL_DB.exists():
         print(f"ERROR: Local database not found at {LOCAL_DB}", file=sys.stderr)
