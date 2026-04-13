@@ -317,11 +317,11 @@ signal.signal(signal.SIGINT, _signal_handler)
 
 def _ensure_sequences():
     """Ensure required sequences exist (for databases created before sequences were added)."""
-    if IS_MOTHERDUCK:
-        # MotherDuck: sequences are created during migration, skip here
-        return
     try:
-        conn = duckdb.connect(str(DB_PATH))
+        if IS_MOTHERDUCK:
+            conn = duckdb.connect(DB_PATH)
+        else:
+            conn = duckdb.connect(str(DB_PATH))
         conn.execute("CREATE SEQUENCE IF NOT EXISTS cohort_tags_seq START 1")
         conn.execute("CREATE SEQUENCE IF NOT EXISTS cohort_entities_seq START 1")
         conn.close()

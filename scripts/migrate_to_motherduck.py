@@ -29,28 +29,11 @@ load_dotenv(WORKSPACE_ROOT / ".env")
 MOTHERDUCK_TOKEN = os.environ.get("MOTHERDUCK_TOKEN")
 LOCAL_DB = WORKSPACE_ROOT / "healthsim.duckdb"
 
-# MotherDuck schema mapping: local schema → MotherDuck schema
-# network.* and population.* → reference.*  (read-only reference data)
-# main.* cohort/scenario tables → cohort.*   (runtime synthetic data)
-# main.schema_migrations → runtime.*         (system metadata)
-SCHEMA_MAP = {
-    "network": "reference",
-    "population": "reference",
-}
-
-# Tables that go into 'cohort' schema (runtime synthetic data structures)
-COHORT_TABLES = {
-    "cohorts", "cohort_entities", "cohort_tags",
-    "scenarios", "scenario_entities", "scenario_tags",
-    "patients", "members", "claims", "claim_lines",
-    "encounters", "diagnoses", "lab_results", "medications",
-    "vital_signs", "prescriptions", "pharmacy_claims",
-    "clinical_notes", "orders", "subjects", "trial_visits",
-    "adverse_events", "exposures",
-}
-
-# Tables that go into 'runtime' schema (system metadata)
-RUNTIME_TABLES = {"schema_migrations"}
+# Schema mapping: identity — MotherDuck uses the SAME schema names as local.
+# This ensures MCP server queries work identically in both environments.
+# local main.*       → MotherDuck main.*
+# local network.*    → MotherDuck network.*
+# local population.* → MotherDuck population.*
 
 
 def connect_motherduck():
@@ -65,7 +48,8 @@ def connect_motherduck():
     md.execute("USE healthsim_ref")
     print("  Database 'healthsim_ref' ready")
 
-    for schema in ("reference", "cohort", "runtime"):
+    # Create same schemas as local DuckDB
+    for schema in ("main", "network", "population"):
         md.execute(f"CREATE SCHEMA IF NOT EXISTS {schema}")
         print(f"  Schema '{schema}' ready")
 
@@ -122,15 +106,11 @@ def migrate_table(local, md, source_table, dest_table, batch_size=500_000):
 
 
 def resolve_dest(schema, table):
-    """Map a local schema.table to the MotherDuck destination."""
-    if schema in SCHEMA_MAP:
-        return f"{SCHEMA_MAP[schema]}.{table}"
-    if table in COHORT_TABLES:
-        return f"cohort.{table}"
-    if table in RUNTIME_TABLES:
-        return f"runtime.{table}"
-    # Fallback: put in runtime
-    return f"runtime.{table}"
+    """Map a local schema.table to the MotherDuck destination.
+
+    Identity mapping — same schema names in both environments.
+    """
+    return f"{schema}.{table}"
 
 
 def migrate_full(local, md):
@@ -162,9 +142,9 @@ def migrate_full(local, md):
 def migrate_sample(local, md):
     """Migrate a small sample for connectivity testing."""
     samples = [
-        ("network.providers", "reference.nppes_sample", 1000),
-        ("population.svi_county", "reference.svi_county", None),
-        ("network.hospital_quality", "reference.hospital_quality", None),
+        ("network.providers", "network.providers_sample", 1000),
+        ("population.svi_county", "population.svi_county", None),
+        ("network.hospital_quality", "network.hospital_quality", None),
     ]
     print(f"\nMigrating sample ({len(samples)} tables)...\n")
     for source, dest, limit in samples:
@@ -182,20 +162,21 @@ def migrate_sample(local, md):
 def verify(md):
     """Print verification summary of what's in MotherDuck."""
     print("\n--- Verification ---")
-    for schema in ("reference", "cohort", "runtime"):
-        tables = md.execute(f"""
-            SELECT table_name FROM information_schema.tables
-            WHERE table_schema = '{schema}'
-            ORDER BY table_name
-        """).fetchall()
-        if not tables:
-            print(f"  {schema}: (empty)")
-            continue
-        for (table,) in tables:
+    # Get only tables we migrated (exclude MotherDuck internal tables)
+    all_migrated = md.execute("""
+        SELECT table_schema, table_name FROM information_schema.tables
+        WHERE table_schema IN ('main', 'network', 'population')
+          AND table_catalog = 'healthsim_ref'
+        ORDER BY table_schema, table_name
+    """).fetchall()
+    for schema, table in all_migrated:
+        try:
             count = md.execute(
                 f"SELECT COUNT(*) FROM {schema}.{table}"
             ).fetchone()[0]
             print(f"  {schema}.{table:40s} {count:>12,}")
+        except Exception:
+            print(f"  {schema}.{table:40s}  (skip — internal)")
 
     print("\nVerify at https://app.motherduck.com")
 
@@ -208,6 +189,10 @@ def main():
         "--sample", action="store_true",
         help="Migrate only a small sample (quick connectivity test)"
     )
+    parser.add_argument(
+        "--clean", action="store_true",
+        help="Drop old schemas (reference/cohort/runtime) before migrating"
+    )
     args = parser.parse_args()
 
     if not LOCAL_DB.exists():
@@ -216,6 +201,15 @@ def main():
 
     local = duckdb.connect(str(LOCAL_DB), read_only=True)
     md = connect_motherduck()
+
+    if args.clean:
+        print("\nCleaning old schemas...")
+        for old_schema in ("reference", "cohort", "runtime"):
+            try:
+                md.execute(f"DROP SCHEMA IF EXISTS {old_schema} CASCADE")
+                print(f"  Dropped {old_schema}")
+            except Exception as e:
+                print(f"  Could not drop {old_schema}: {e}")
 
     if args.sample:
         migrate_sample(local, md)
