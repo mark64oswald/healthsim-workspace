@@ -58,6 +58,15 @@ import duckdb
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel, Field, ConfigDict
 
+
+# =============================================================================
+# HTTP Transport Configuration
+# =============================================================================
+
+MCP_TRANSPORT = os.environ.get("MCP_TRANSPORT", "stdio")
+MCP_PORT = int(os.environ.get("MCP_PORT", "8000"))
+MCP_TOKEN = os.environ.get("HEALTHSIM_MCP_TOKEN")
+
 # Add healthsim to path
 WORKSPACE_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "core" / "src"))
@@ -322,7 +331,7 @@ _ensure_sequences()
 
 
 # Initialize the MCP server
-mcp = FastMCP("healthsim_mcp")
+mcp = FastMCP("healthsim_mcp", host="0.0.0.0", port=MCP_PORT)
 
 
 # =============================================================================
@@ -1469,4 +1478,30 @@ def delete_cohort(params: DeleteCohortInput) -> str:
 # =============================================================================
 
 if __name__ == "__main__":
-    mcp.run()
+    if MCP_TRANSPORT == "http":
+        import uvicorn
+        from starlette.requests import Request
+        from starlette.responses import JSONResponse
+
+        app = mcp.streamable_http_app()
+
+        if MCP_TOKEN:
+            from starlette.middleware.base import BaseHTTPMiddleware
+
+            class BearerAuthMiddleware(BaseHTTPMiddleware):
+                async def dispatch(self, request: Request, call_next):
+                    auth = request.headers.get("authorization", "")
+                    if not auth.startswith("Bearer ") or auth[7:] != MCP_TOKEN:
+                        return JSONResponse(
+                            {"error": "Unauthorized"}, status_code=401
+                        )
+                    return await call_next(request)
+
+            app.add_middleware(BearerAuthMiddleware)
+
+        config = uvicorn.Config(app, host="0.0.0.0", port=MCP_PORT, log_level="info")
+        server = uvicorn.Server(config)
+        import anyio
+        anyio.run(server.serve)
+    else:
+        mcp.run(transport="stdio")
