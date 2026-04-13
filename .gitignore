@@ -44,6 +44,16 @@ htmlcov/
 # ruff
 .ruff_cache/
 
+# Environment variables
+.env
+.env.local
+
+# Deploy artifacts (contain IDs and URLs, not secrets, but env-specific)
+deploy/skill-ids.json
+deploy/agent-ids.json
+deploy/railway-url.txt
+deploy/spike-results.md
+
 # OS
 .DS_Store
 Thumbs.db
