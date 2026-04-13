@@ -149,15 +149,15 @@ def test_canonical_insert_end_to_end():
         
         # Verify data in canonical tables
         print("\n=== Verifying Canonical Tables ===")
-        
+
         patient_check = conn.execute(
-            "SELECT id, given_name, family_name, city, cohort_id FROM patients WHERE id = ?",
+            "SELECT id, given_name, family_name, city, cohort_id FROM patients WHERE cohort_id = ?",
             [test_cohort_id]
         ).fetchall()
         print(f"Patients in canonical table: {patient_check}")
-        
+
         member_check = conn.execute(
-            "SELECT id, member_id, given_name, family_name, plan_code, cohort_id FROM members WHERE id = ?",
+            "SELECT id, member_id, given_name, family_name, plan_code, cohort_id FROM members WHERE cohort_id = ?",
             [test_cohort_id]
         ).fetchall()
         print(f"Members in canonical table: {member_check}")
@@ -172,18 +172,11 @@ def test_canonical_insert_end_to_end():
         assert member_check[0][4] == "TEST-PLAN", f"Expected plan_code 'TEST-PLAN', got {member_check[0][4]}"
         
         print("\n✅ All assertions passed!")
-        return True
-        
-    except Exception as e:
-        print(f"\n❌ Test failed: {e}")
-        import traceback
-        traceback.print_exc()
-        return False
+
     finally:
         conn.close()
         shutil.rmtree(temp_dir)
 
 
 if __name__ == "__main__":
-    success = test_canonical_insert_end_to_end()
-    sys.exit(0 if success else 1)
+    test_canonical_insert_end_to_end()

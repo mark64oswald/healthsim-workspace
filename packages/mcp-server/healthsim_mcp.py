@@ -46,6 +46,7 @@ Environment Variables:
 import atexit
 import json
 import os
+import re
 import signal
 import sys
 from contextlib import contextmanager
@@ -133,8 +134,9 @@ else:
     DB_PATH = Path(_db_env)
 
 # Log startup configuration (to stderr so it doesn't interfere with MCP protocol)
+_display_path = re.sub(r'motherduck_token=[^&\s]+', 'motherduck_token=***', str(DB_PATH))
 print(f"HealthSim MCP Server starting...", file=sys.stderr)
-print(f"  Database: {DB_PATH}", file=sys.stderr)
+print(f"  Database: {_display_path}", file=sys.stderr)
 if IS_MOTHERDUCK:
     print(f"  Connection mode: MotherDuck (cloud)", file=sys.stderr)
 else:
@@ -315,6 +317,9 @@ signal.signal(signal.SIGINT, _signal_handler)
 
 def _ensure_sequences():
     """Ensure required sequences exist (for databases created before sequences were added)."""
+    if IS_MOTHERDUCK:
+        # MotherDuck: sequences are created during migration, skip here
+        return
     try:
         conn = duckdb.connect(str(DB_PATH))
         conn.execute("CREATE SEQUENCE IF NOT EXISTS cohort_tags_seq START 1")
