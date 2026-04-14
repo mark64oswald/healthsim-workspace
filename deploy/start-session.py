@@ -163,6 +163,8 @@ def _extract_text(content_blocks) -> str:
 
 def stream_response_from(client: anthropic.Anthropic, session_id: str, stream):
     """Consume an already-opened event stream until idle or terminated."""
+    showed_tool = False  # Track if we need a newline before text
+
     with stream:
         for event in stream:
             t = event.type
@@ -170,30 +172,41 @@ def stream_response_from(client: anthropic.Anthropic, session_id: str, stream):
             if t == "agent.message":
                 text = _extract_text(getattr(event, "content", []))
                 if text:
+                    if showed_tool:
+                        print()  # newline after tool activity before text
+                        showed_tool = False
                     print(text, end="", flush=True)
 
             elif t == "agent.thinking":
-                pass
+                if not showed_tool:
+                    print("\n  thinking...", end="", flush=True)
+                    showed_tool = True
 
             elif t == "agent.tool_use":
                 name = getattr(event, "name", "unknown")
-                print(f"\n  [tool: {name}]", flush=True)
+                print(f"\n  [tool: {name}]", end="", flush=True)
+                showed_tool = True
 
             elif t == "agent.tool_result":
-                pass  # tool results feed back to the agent, not the user
+                print(" done.", end="", flush=True)
 
             elif t == "agent.mcp_tool_use":
                 name = getattr(event, "name", "unknown")
-                print(f"\n  [mcp: {name}]", flush=True)
+                print(f"\n  [mcp: {name}]", end="", flush=True)
+                showed_tool = True
 
             elif t == "agent.mcp_tool_result":
-                pass  # MCP results feed back to the agent
+                print(" done.", end="", flush=True)
+
+            elif t == "span.model_request_start":
+                if showed_tool:
+                    print("\n  processing...", end="", flush=True)
 
             elif t == "session.status_idle":
                 stop = getattr(event, "stop_reason", None)
                 if stop and getattr(stop, "type", "") == "requires_action":
                     continue
-                print()  # newline after agent finishes
+                print()
                 break
 
             elif t == "session.status_terminated":
