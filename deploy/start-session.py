@@ -148,44 +148,52 @@ def create_session(client: anthropic.Anthropic, ids: dict) -> str:
     return session.id
 
 
-def stream_response(client: anthropic.Anthropic, session_id: str):
-    """Stream events from the session until idle or terminated."""
-    with client.beta.sessions.events.stream(session_id=session_id) as stream:
+def _extract_text(content_blocks) -> str:
+    """Extract text from content blocks (handles SDK objects and dicts)."""
+    parts = []
+    if not content_blocks:
+        return ""
+    for block in content_blocks:
+        if hasattr(block, "text"):
+            parts.append(block.text)
+        elif hasattr(block, "type") and block.type == "text":
+            parts.append(getattr(block, "text", ""))
+    return "".join(parts)
+
+
+def stream_response_from(client: anthropic.Anthropic, session_id: str, stream):
+    """Consume an already-opened event stream until idle or terminated."""
+    with stream:
         for event in stream:
             t = event.type
 
             if t == "agent.message":
-                for block in event.content:
-                    if block.type == "text":
-                        print(block.text, end="", flush=True)
-                print()
+                text = _extract_text(getattr(event, "content", []))
+                if text:
+                    print(text, end="", flush=True)
 
             elif t == "agent.thinking":
-                pass  # skip thinking blocks in terminal output
+                pass
 
             elif t == "agent.tool_use":
-                print(f"\n  [tool] {event.name}", flush=True)
+                name = getattr(event, "name", "unknown")
+                print(f"\n  [tool: {name}]", flush=True)
 
             elif t == "agent.tool_result":
-                # Summarize tool result (truncate if long)
-                content = str(getattr(event, "content", ""))
-                if len(content) > 200:
-                    content = content[:200] + "..."
-                print(f"  [result] {content}", flush=True)
+                pass  # tool results feed back to the agent, not the user
 
             elif t == "agent.mcp_tool_use":
-                print(f"\n  [mcp] {event.name}", flush=True)
+                name = getattr(event, "name", "unknown")
+                print(f"\n  [mcp: {name}]", flush=True)
 
             elif t == "agent.mcp_tool_result":
-                content = str(getattr(event, "content", ""))
-                if len(content) > 200:
-                    content = content[:200] + "..."
-                print(f"  [mcp result] {content}", flush=True)
+                pass  # MCP results feed back to the agent
 
             elif t == "session.status_idle":
                 stop = getattr(event, "stop_reason", None)
                 if stop and getattr(stop, "type", "") == "requires_action":
-                    continue  # waiting on tool confirmation, keep streaming
+                    continue
+                print()  # newline after agent finishes
                 break
 
             elif t == "session.status_terminated":
@@ -196,7 +204,7 @@ def stream_response(client: anthropic.Anthropic, session_id: str):
                 msg = getattr(event, "message", str(event))
                 print(f"\n  [error] {msg}", flush=True)
 
-    return True  # session still alive
+    return True
 
 
 def interactive_loop(client: anthropic.Anthropic, session_id: str):
@@ -218,7 +226,9 @@ def interactive_loop(client: anthropic.Anthropic, session_id: str):
             print(f"  Session ID: {session_id}")
             continue
 
-        # Send and stream
+        # Stream-first: open stream before sending so no events are missed
+        stream_handle = client.beta.sessions.events.stream(session_id=session_id)
+
         client.beta.sessions.events.send(
             session_id,
             events=[{
@@ -228,7 +238,7 @@ def interactive_loop(client: anthropic.Anthropic, session_id: str):
         )
 
         print()
-        alive = stream_response(client, session_id)
+        alive = stream_response_from(client, session_id, stream_handle)
         if not alive:
             break
 
