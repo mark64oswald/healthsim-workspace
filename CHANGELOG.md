@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Managed Agent Deployment
+
+- **Managed Agent support** via Anthropic Managed Agents API (`managed-agents-2026-04-01` beta)
+- `agent-config.yaml` — deployment manifest defining skills, MCP servers, environment, and storage
+- `deploy/` directory with deployment scripts:
+  - `push-skills.py` — uploads SKILL.md files to Anthropic Skills API
+  - `push-agent.py` — creates/updates agent definition (system prompt, skill IDs, MCP URLs)
+  - `push-environment.py` — creates/updates container environment (pip packages, networking)
+  - `start-session.py` — interactive CLI for chatting with the Managed Agent
+  - `run.sh` — convenience wrapper
+- `build-prompts/` — Phase 0-3 migration execution prompts (21 prompts)
+- `docs/MANAGED-AGENT-GUIDE.md` — comprehensive Managed Agent operations guide
+- `deploy/system-prompt.md` — cloud-adapted system prompt derived from CLAUDE.md
+- HTTP transport support for MCP server (alongside existing stdio)
+- Bearer token authentication for MCP server in HTTP mode
+- MotherDuck integration for cloud-hosted reference data
+- Dual connection manager: auto-selects local DuckDB or MotherDuck based on `MOTHERDUCK_TOKEN` env var
+- `scripts/migrate_to_motherduck.py` — data migration script with `--full` and `--verify` flags
+- Skills adapted for Skills API upload (embedded data references → MCP tool calls, output format sections added)
+
+### Changed
+
+- MCP server now supports both `stdio` and `http` transports via `MCP_TRANSPORT` environment variable
+- Connection manager auto-selects local DuckDB or MotherDuck based on environment
+- Skills reference MCP tools for data access instead of embedded file paths
+- Repository structure updated with `deploy/`, `build-prompts/`, and `agent-config.yaml`
+
+### Unchanged
+
+- All local Claude Code workflows continue to work exactly as before
+- Local DuckDB file still used for development when `MOTHERDUCK_TOKEN` is not set
+- All existing tests pass without modification
+- `.claude/CLAUDE.md` unchanged — local development instructions are not affected
+
 ---
 
 ## [2.0.0-generation] - 2026-01-04

@@ -39,6 +39,23 @@ The examples folder contains ready-to-use prompts organized by product:
 
 ---
 
+## Deployment Modes
+
+HealthSim runs in two modes from the same codebase:
+
+| Mode | Infrastructure | Data | Best For |
+|------|---------------|------|----------|
+| **Local (Claude Code)** | stdio MCP, local DuckDB | Local `.duckdb` file | Development, testing, skill editing |
+| **Managed Agent (Cloud)** | Railway MCP (HTTP), MotherDuck | Cloud-hosted | Hosted access via Console, CLI, or web app |
+
+**Local mode** is the development environment. You edit skills, test MCP tools, run generation workflows, and iterate. Everything runs on your machine.
+
+**Managed Agent mode** is the deployment target. The same skills, MCP server code, and Python modules run on Anthropic's infrastructure (agent runtime), Railway (MCP server), and MotherDuck (data). Users access it through the Anthropic Console UI, a CLI tool, or the Rewire web application.
+
+The two modes coexist — deploying to Managed Agent does not affect your local Claude Code workflow. See the [Managed Agent Guide](docs/MANAGED-AGENT-GUIDE.md) for full deployment instructions.
+
+---
+
 ## Generative Framework
 
 For large-scale data generation, HealthSim provides a **specification-driven framework** that separates what you want from how it's generated:
@@ -248,7 +265,9 @@ See [State Management Skill](skills/common/state-management.md) | [Auto-Persist 
 healthsim-workspace/
 ├── SKILL.md                    # Master skill file (Claude entry point)
 ├── README.md                   # This file
+├── agent-config.yaml           # Managed Agent deployment manifest
 ├── healthsim.duckdb            # Unified database (~1.7 GB via Git LFS)
+├── .env                        # API keys and tokens (gitignored)
 │
 ├── hello-healthsim/            # Getting started (tutorials, setup)
 │   ├── README.md              # Quick start guide
@@ -265,12 +284,21 @@ healthsim-workspace/
 ├── formats/                    # Output transformations (12 formats)
 ├── references/                 # Shared terminology, code systems
 ├── docs/                       # Architecture, guides, processes
+│   └── MANAGED-AGENT-GUIDE.md # Managed Agent operations guide
 ├── packages/                   # Python infrastructure
 │   ├── core/                  # Shared healthsim-core library
+│   ├── mcp-server/            # FastMCP server (stdio + HTTP transport)
 │   ├── patientsim/            # PatientSim package
 │   ├── membersim/             # MemberSim package
 │   └── rxmembersim/           # RxMemberSim package
-└── scripts/                    # Utility scripts and tests
+├── deploy/                     # Managed Agent deploy scripts
+│   ├── push-skills.py         # Upload skills to Anthropic Skills API
+│   ├── push-agent.py          # Create/update agent definition
+│   ├── push-environment.py    # Create/update container environment
+│   ├── start-session.py       # Interactive CLI for Managed Agent
+│   └── run.sh                 # Convenience wrapper
+├── build-prompts/              # Migration execution prompts (Phases 0-3)
+└── scripts/                    # Utility and migration scripts
 ```
 
 ---
@@ -346,6 +374,10 @@ claude
 
 See [hello-healthsim/](hello-healthsim/) for detailed setup instructions.
 
+### Managed Agent Deployment
+
+To deploy HealthSim as a cloud-hosted Managed Agent (accessible via Console UI, CLI, or web app), see the [Managed Agent Guide](docs/MANAGED-AGENT-GUIDE.md). This requires accounts on Railway, MotherDuck, and Anthropic Platform.
+
 ---
 
 ## Use Cases
@@ -369,6 +401,8 @@ See [hello-healthsim/](hello-healthsim/) for detailed setup instructions.
 | Quick Start | [hello-healthsim/](hello-healthsim/README.md) |
 | Master Skill Reference | [SKILL.md](SKILL.md) |
 | Architecture Guide | [docs/HEALTHSIM-ARCHITECTURE-GUIDE.md](docs/HEALTHSIM-ARCHITECTURE-GUIDE.md) |
+| Managed Agent Guide | [docs/MANAGED-AGENT-GUIDE.md](docs/MANAGED-AGENT-GUIDE.md) |
+| Deploy Scripts | [deploy/README.md](deploy/README.md) |
 | Data Architecture | [docs/data-architecture.md](docs/data-architecture.md) |
 | State Management | [skills/common/state-management.md](skills/common/state-management.md) |
 | Extension Guide | [hello-healthsim/EXTENDING.md](hello-healthsim/EXTENDING.md) |

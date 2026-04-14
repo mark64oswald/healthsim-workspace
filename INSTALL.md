@@ -385,6 +385,66 @@ Query the population schema for counties with high obesity rates
 
 ---
 
+## Managed Agent Infrastructure (Cloud Deployment)
+
+To deploy HealthSim as a cloud-hosted Managed Agent, you need three additional services alongside the local setup above. The local setup remains your development environment — these services are deployment targets.
+
+### Railway (MCP Server Hosting)
+
+Railway hosts the HealthSim MCP server as an HTTP service that the Managed Agent calls.
+
+```bash
+# Install Railway CLI
+brew install railway
+
+# Login
+railway login
+
+# Deploy (from project root — uses the Dockerfile)
+railway up
+```
+
+Set these environment variables in the Railway dashboard:
+- `MCP_TRANSPORT=http`
+- `MCP_PORT=8001`
+- `HEALTHSIM_MCP_TOKEN` — a shared secret (generate with `openssl rand -hex 32`)
+- `MOTHERDUCK_TOKEN` — your MotherDuck access token
+
+### MotherDuck (Cloud DuckDB)
+
+MotherDuck hosts the reference data (NPPES providers, CDC PLACES, SVI) and generated cohort data.
+
+1. Create an account at [motherduck.com](https://motherduck.com)
+2. Go to Settings → Access Tokens → Create Token
+3. Add the token to `.env` as `MOTHERDUCK_TOKEN`
+4. Run the migration script:
+
+```bash
+source .env
+.venv/bin/python scripts/migrate_to_motherduck.py --full
+.venv/bin/python scripts/migrate_to_motherduck.py --verify
+```
+
+### Anthropic Platform (Agent Runtime)
+
+1. Get an API key from [platform.claude.com/settings/keys](https://platform.claude.com/settings/keys)
+2. Add to `.env` as `ANTHROPIC_API_KEY`
+3. Run the deploy scripts:
+
+```bash
+source .env
+.venv/bin/python deploy/push-skills.py --all
+.venv/bin/python deploy/push-agent.py
+.venv/bin/python deploy/push-environment.py
+```
+
+4. Test with the CLI: `./deploy/run.sh`
+5. Or test via the Console UI at [platform.claude.com](https://platform.claude.com) → Managed Agents
+
+For the full operations guide, see [docs/MANAGED-AGENT-GUIDE.md](docs/MANAGED-AGENT-GUIDE.md).
+
+---
+
 ## Verification
 
 ### 1. Check Python Installation
