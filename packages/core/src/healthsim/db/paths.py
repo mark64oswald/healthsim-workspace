@@ -22,8 +22,9 @@ Resolution order (first match wins):
    separate reference file.
 2. ``$HEALTHSIM_HOME/reference.duckdb`` is a real database file: split
    layout under ``$HEALTHSIM_HOME`` (default ``~/.healthsim``).
-3. ``<repo root>/healthsim.duckdb`` is a real database file (not a Git LFS
-   pointer): single database, the developer layout.
+3. ``HEALTHSIM_HOME`` is not set and ``<repo root>/healthsim.duckdb`` is a
+   real database file (not a Git LFS pointer): single database, the
+   developer layout. Setting ``HEALTHSIM_HOME`` opts out of this fallback.
 4. Otherwise: split layout under ``$HEALTHSIM_HOME`` with no reference data
    yet. Cohort tools still work; reference tools report how to install data.
 """
@@ -132,7 +133,7 @@ def resolve_layout() -> DataLayout:
     if is_valid_duckdb(home_ref):
         return DataLayout("split", home / COHORTS_FILENAME, home_ref, f"{home_ref}")
 
-    repo = get_repo_root()
+    repo = None if os.environ.get("HEALTHSIM_HOME", "").strip() else get_repo_root()
     if repo is not None and is_valid_duckdb(repo / LEGACY_FILENAME):
         return DataLayout("single", repo / LEGACY_FILENAME, None, "repo-root healthsim.duckdb")
 

@@ -313,7 +313,7 @@ The server resolves its data location at startup (`healthsim.db.paths`):
 
 1. `HEALTHSIM_DB_PATH`, when set
 2. `~/.healthsim/reference.duckdb` and `~/.healthsim/cohorts.duckdb`, when reference data is installed there (the plugin layout)
-3. The repo-root `healthsim.duckdb`, when it's a real file and not a Git LFS pointer
+3. The repo-root `healthsim.duckdb`, when `HEALTHSIM_HOME` isn't set and the file is real, not a Git LFS pointer
 4. Otherwise `~/.healthsim/cohorts.duckdb`, with reference tools returning a setup hint
 
 In the plugin layout, `reference.duckdb` is attached read-only and its `network` and `population` schemas are on the DuckDB search path, so queries such as `SELECT * FROM network.providers` work the same in every layout. Call `healthsim_data_status` to see the active layout.

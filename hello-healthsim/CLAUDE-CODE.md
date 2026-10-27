@@ -101,7 +101,7 @@ The location is resolved in this order:
 
 1. `HEALTHSIM_DB_PATH`: one database at that path, or MotherDuck when it starts with `md:`
 2. `~/.healthsim/reference.duckdb` exists: the plugin layout above (`HEALTHSIM_HOME` changes the folder)
-3. The repo-root `healthsim.duckdb` is a real file: the developer layout in a checkout
+3. `HEALTHSIM_HOME` isn't set and the repo-root `healthsim.duckdb` is a real file: the developer layout in a checkout
 4. Otherwise: the plugin layout, with no reference data yet
 
 To set an environment variable for HealthSim, add it to `~/.claude/settings.json`:

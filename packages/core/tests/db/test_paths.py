@@ -72,14 +72,25 @@ class TestResolveLayout:
         assert layout.reference_path == home / "reference.duckdb"
         assert layout.has_reference
 
-    def test_repo_root_database_for_developers(self, clean_env):
+    def test_repo_root_database_for_developers(self, clean_env, monkeypatch, tmp_path):
         _, repo = clean_env
         con = duckdb.connect(str(repo / "healthsim.duckdb"))
         con.execute("CREATE TABLE t (x INT)")
         con.close()
+        monkeypatch.delenv("HEALTHSIM_HOME")
+        monkeypatch.setenv("HOME", str(tmp_path / "user"))
         layout = resolve_layout()
         assert layout.mode == "single"
         assert layout.db_path == repo / "healthsim.duckdb"
+
+    def test_explicit_home_skips_repo_root_database(self, clean_env):
+        home, repo = clean_env
+        con = duckdb.connect(str(repo / "healthsim.duckdb"))
+        con.execute("CREATE TABLE t (x INT)")
+        con.close()
+        layout = resolve_layout()
+        assert layout.mode == "split"
+        assert layout.db_path == home / "cohorts.duckdb"
 
     def test_lfs_pointer_is_ignored(self, clean_env):
         home, repo = clean_env
