@@ -22,6 +22,14 @@ from healthsim.db.reference.populationsim import (
 )
 
 
+# The source CSVs are gitignored (skills/populationsim/data/**/*.csv) and only
+# exist on machines that downloaded them, so the import tests skip elsewhere.
+pytestmark = pytest.mark.skipif(
+    not (get_populationsim_data_path() / "tract" / "places_tract_2024.csv").exists(),
+    reason="PopulationSim source CSVs not present (gitignored, local download only)",
+)
+
+
 @pytest.fixture
 def test_db():
     """Create a temporary test database."""

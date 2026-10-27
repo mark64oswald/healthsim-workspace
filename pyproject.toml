@@ -8,3 +8,11 @@ requires-python = ">=3.11"
 
 [tool.uv.workspace]
 members = ["packages/*"]
+
+[tool.uv.sources]
+healthsim-core = { workspace = true }
+healthsim-mcp = { workspace = true }
+membersim = { workspace = true }
+patientsim = { workspace = true }
+rxmembersim = { workspace = true }
+trialsim = { workspace = true }

@@ -209,8 +209,15 @@ def get_healthsim_db_path() -> Path:
     - population schema: CDC PLACES and SVI reference data
     - network schema: NPPES provider and facility data
     
-    Note: healthsim.duckdb is tracked in Git LFS (~1.7GB).
+    Note: healthsim.duckdb is tracked in Git LFS (~1.7GB). When HealthSim
+    runs as a plugin, reference data lives in ~/.healthsim/reference.duckdb
+    instead; see healthsim.db.paths for the resolution order.
     """
+    from healthsim.db.paths import reference_db_path
+
+    found = reference_db_path()
+    if found is not None:
+        return found
     module_path = Path(__file__).resolve()
     workspace_root = module_path.parent.parent.parent.parent.parent.parent
     return workspace_root / "healthsim.duckdb"

@@ -24,7 +24,11 @@ from pathlib import Path
 from typing import Optional, Union
 import duckdb
 
-# Default database location - unified database with schema organization:
+from .paths import DataLayout, attach_reference, ensure_database, resolve_layout
+
+# Developer default: the unified database at the repo root (Git LFS). The
+# plugin layout keeps data under ~/.healthsim instead; see healthsim.db.paths
+# for the full resolution order.
 #   - main schema: Entity tables (patients, members, etc.)
 #   - population schema: PopulationSim reference data
 #   - network schema: NetworkSim provider/facility data
@@ -38,11 +42,7 @@ IS_MOTHERDUCK = _db_env.startswith("md:")
 
 def _resolve_db_path() -> Union[str, Path]:
     """Resolve the database path from environment or default."""
-    if IS_MOTHERDUCK:
-        return _db_env  # MotherDuck connection string
-    if _db_env:
-        return Path(_db_env)
-    return DEFAULT_DB_PATH
+    return resolve_layout().db_path
 
 
 class DatabaseConnection:
@@ -67,7 +67,9 @@ class DatabaseConnection:
             read_only: If True, open database in read-only mode (local only;
                        ignored for MotherDuck).
         """
-        self.db_path = db_path or _resolve_db_path()
+        layout: Optional[DataLayout] = None if db_path else resolve_layout()
+        self.db_path = db_path or layout.db_path
+        self.reference_path = layout.reference_path if layout else None
         self.is_motherduck = str(self.db_path).startswith("md:")
         self._read_only = read_only if not self.is_motherduck else False
         if not read_only and not self.is_motherduck:
@@ -88,10 +90,13 @@ class DatabaseConnection:
             if self.is_motherduck:
                 self._connection = duckdb.connect(str(self.db_path))
             elif self._read_only:
+                if not Path(self.db_path).exists():
+                    ensure_database(self.db_path)
                 self._connection = duckdb.connect(str(self.db_path), read_only=True)
             else:
                 self._connection = duckdb.connect(str(self.db_path))
                 self._initialize_if_needed()
+            attach_reference(self._connection, self.reference_path)
         return self._connection
 
     def _initialize_if_needed(self) -> None:
@@ -172,10 +177,13 @@ def get_read_only_connection(db_path=None) -> duckdb.DuckDBPyConnection:
     Returns:
         Read-only DuckDB connection.
     """
-    path = db_path or _resolve_db_path()
-    if str(path).startswith("md:"):
-        return duckdb.connect(str(path))
-    return duckdb.connect(str(path), read_only=True)
+    if db_path is None:
+        from .paths import connect
+
+        return connect(read_only=True)
+    if str(db_path).startswith("md:"):
+        return duckdb.connect(str(db_path))
+    return duckdb.connect(str(db_path), read_only=True)
 
 
 def _cleanup_singleton():

@@ -28,12 +28,13 @@ sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "core" / "src"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "mcp-server"))
 
 from healthsim.db import DEFAULT_DB_PATH
+from healthsim.db.paths import is_valid_duckdb
 
 
 def check_db_accessible(db_path=DEFAULT_DB_PATH):
     """Check if database is accessible. Skip test if old MCP server holds exclusive lock."""
-    if not db_path.exists():
-        pytest.skip(f"Database not found: {db_path}")
+    if not is_valid_duckdb(db_path):
+        pytest.skip(f"Database not available (missing or Git LFS pointer): {db_path}")
     
     try:
         conn = duckdb.connect(str(db_path), read_only=True)

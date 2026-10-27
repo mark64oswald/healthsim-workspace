@@ -17,6 +17,16 @@ from .connection import (
     get_read_only_connection,
     DEFAULT_DB_PATH,
 )
+from .paths import (
+    DataLayout,
+    resolve_layout,
+    reference_db_path,
+    get_healthsim_home,
+    attach_reference,
+    ensure_database,
+    connect as connect_layout,
+    REFERENCE_ALIAS,
+)
 from .schema import (
     apply_schema,
     SCHEMA_VERSION,
@@ -60,6 +70,16 @@ __all__ = [
     'get_connection',
     'get_read_only_connection',
     'DEFAULT_DB_PATH',
+
+    # Data locations
+    'DataLayout',
+    'resolve_layout',
+    'reference_db_path',
+    'get_healthsim_home',
+    'attach_reference',
+    'ensure_database',
+    'connect_layout',
+    'REFERENCE_ALIAS',
     
     # Schema
     'apply_schema',
