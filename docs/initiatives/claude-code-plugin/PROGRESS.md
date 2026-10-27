@@ -15,17 +15,16 @@
 | 1 | Decouple data paths, split reference vs cohort data | ✅ Complete |
 | 2 | Make the MCP server installable (uv workspace, pinned deps) | ✅ Complete |
 | 3 | Plugin scaffold (manifest, marketplace, MCP config, router skill, commands) | ✅ Complete |
-| 4 | Reference data distribution (publish script, setup command) | ✅ Complete (first release still to publish) |
-| 5 | End-to-end test on a Mac with real data | ⬜ Pending (needs Mark) |
+| 4 | Reference data distribution (publish script, setup command) | ✅ Complete (`data-2026.10` published) |
+| 5 | End-to-end test on a Mac with real data | ✅ Complete |
 | 6 | Documentation, link check, pull request | ✅ Complete |
 
-## Remaining steps (on Mark's Mac)
+## Follow-ups
 
-1. `git lfs pull` in the checkout so `healthsim.duckdb` is the real file
-2. `uv run --package healthsim-core python scripts/publish_reference_data.py` to publish the `data-YYYY.MM` release
-3. `/plugin marketplace add mark64oswald/healthsim-workspace#feature/claude-code-plugin`, then `/plugin install healthsim@healthsim` (after merge, drop the `#branch`)
-4. `/healthsim:setup ~/Developer/projects/healthsim-workspace/healthsim.duckdb` with cohort import, or `/healthsim:setup download`
-5. Open an unrelated project, run the Hello HealthSim examples, save a cohort, and reload it in a new session
+- `healthsim_search_providers` stops at 200 rows and returns no `total_count`, so it can't answer "how many" on its own
+- `filters_applied` in that tool's output leaves out `county_fips`
+- "Primary taxonomy" means `taxonomy_1`; the NPPES primary-taxonomy switch isn't used
+- Archive the `healthsim-agent` repository
 
 ---
 
@@ -90,3 +89,11 @@ Before this work, core had 37 failures and 28 errors, and mcp-server had 26 fail
 **Phase 6** (docs): `hello-healthsim/CLAUDE-CODE.md` rewritten for the plugin. The old version referenced the retired `healthsim-common` repository and an `npx` filesystem server. README, INSTALL, Hello HealthSim, MCP server README, and CHANGELOG were updated. `scripts/validate_links.py` reports no new broken links (170 existed before, mostly in `docs/archive/`).
 
 **Test results**: core 1,627 passed, 109 skipped; mcp-server 119 passed, 21 skipped; product packages unchanged; `scripts/smoke_test.py` 37 passed.
+
+### 2026-10-27: Phase 5 and release
+
+**Release**: [`data-2026.10`](https://github.com/mark64oswald/healthsim-workspace/releases/tag/data-2026.10), with `reference.duckdb.gz` (516 MB, 10 tables, 8,925,672 providers) and `reference-manifest.json`. A fresh `/healthsim:setup download` into an empty `HEALTHSIM_HOME` verified both checksums and answered provider and population queries.
+
+**Mac test** (Claude Code 2.1.278): installed from the marketplace, installed reference data from a local file, and confirmed from an unrelated folder that the MCP server connects and finds 1,784 family medicine providers in San Diego County.
+
+**Fix**: with the real database present, the plugin layout tests fell back to the repo-root `healthsim.duckdb` and saved test cohorts into it. An explicitly set `HEALTHSIM_HOME` now skips that fallback. All suites pass against the real database: core 1,713 passed, mcp-server 140 passed.

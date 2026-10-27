@@ -28,10 +28,10 @@ Use HealthSim from any project in Claude Code:
 ```
 /plugin marketplace add mark64oswald/healthsim-workspace
 /plugin install healthsim@healthsim
-/healthsim:setup
+/healthsim:setup download
 ```
 
-The last command installs the reference data (NPPES providers, CDC PLACES, SVI, ADI) into `~/.healthsim`. You need [uv](https://docs.astral.sh/uv/) on your machine; no clone or Git LFS is required. See the [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md) for details.
+The last command downloads the reference data (NPPES providers, CDC PLACES, SVI, ADI) into `~/.healthsim`. You need [uv](https://docs.astral.sh/uv/) on your machine; no clone or Git LFS is required. See the [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md) for details.
 
 ### Learn HealthSim
 
@@ -333,54 +333,60 @@ healthsim-workspace/
 
 ## Setup
 
-**📖 [Complete Installation Guide](INSTALL.md)** - Detailed instructions for Git LFS, Python, DuckDB, and Claude integration.
+There are three ways to run HealthSim. Most people only need the first.
 
-### Quick Setup
+| Path | Who it's for | Needs |
+|------|--------------|-------|
+| **[Claude Code plugin](#claude-code-plugin-recommended)** | Using HealthSim from any project | Claude Code, [uv](https://docs.astral.sh/uv/) |
+| **[Development checkout](#development-checkout)** | Editing skills, packages, or data | Git, Git LFS, Python 3.11+, uv |
+| **[Managed Agent](#managed-agent-deployment)** | Cloud-hosted agent | Railway, MotherDuck, Anthropic Platform |
+
+### Claude Code Plugin (Recommended)
+
+1. Install uv if you don't have it: `brew install uv` (macOS) or `curl -LsSf https://astral.sh/uv/install.sh | sh`
+2. In any Claude Code session:
+
+   ```
+   /plugin marketplace add mark64oswald/healthsim-workspace
+   /plugin install healthsim@healthsim
+   /healthsim:setup download
+   ```
+
+3. Check it with `/healthsim:status`, then try a request such as *"Find 5 family medicine providers in San Diego County"*.
+
+`/healthsim:setup download` fetches the latest [reference data release](https://github.com/mark64oswald/healthsim-workspace/releases) (about 516 MB) into `~/.healthsim`. Your saved cohorts live there too, so they're shared across projects and survive plugin updates. To update the plugin later, run `/plugin marketplace update healthsim`.
+
+The [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md) covers the other data sources (a local file or MotherDuck), environment variables, and troubleshooting.
+
+### Development Checkout
+
+**📖 [Complete Installation Guide](INSTALL.md)** covers Git LFS, Python, DuckDB, and Claude integration in detail.
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| **Git LFS** | 3.0+ | **Required** for database files |
 | Git | 2.0+ | Clone repository |
-| Python | 3.10+ | For healthsim-core package |
-| Claude Desktop or Claude Code | Latest | AI conversation interface |
-
-### Git LFS (Required)
-
-HealthSim uses Git Large File Storage for the database. Install before cloning:
+| **Git LFS** | 3.0+ | **Required** for `healthsim.duckdb` |
+| Python | 3.11+ | uv installs it for you if needed |
+| uv | Latest | Manages the Python workspace |
 
 ```bash
-# macOS
-brew install git-lfs && git lfs install
+# Install Git LFS before cloning
+brew install git-lfs && git lfs install      # macOS
+# sudo apt-get install git-lfs && git lfs install   # Linux
 
-# Linux (Ubuntu/Debian)
-sudo apt-get install git-lfs && git lfs install
-
-# See INSTALL.md for Windows and troubleshooting
-```
-
-### Python Environment
-
-```bash
-# Clone and setup (Git LFS downloads database automatically)
 git clone https://github.com/mark64oswald/healthsim-workspace.git
 cd healthsim-workspace
-
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-
-# Install healthsim-core (includes DuckDB)
-cd packages/core
-pip install -e .
+uv sync --all-packages
+claude
 ```
 
-**DuckDB** is bundled with healthsim-core - no separate installation required. The database (`healthsim.duckdb`, ~1.7 GB) is automatically downloaded via Git LFS and ready to use.
+The database (`healthsim.duckdb`, ~1.7 GB) downloads through Git LFS. If the file is tiny (~130 bytes), it's an LFS pointer: run `git lfs pull`. In a checkout, Claude Code uses the repo-root database and `.claude/CLAUDE.md` routes requests to the skills.
 
-**Important:** If the database file is missing or tiny (~500 bytes), Git LFS didn't download it. Run `git lfs pull` to download manually. See [INSTALL.md](INSTALL.md) for details.
+To try your changes as a plugin, run `claude --plugin-dir /path/to/healthsim-workspace`. See [Developing HealthSim](hello-healthsim/CLAUDE-CODE.md#developing-healthsim) for regenerating the router skill and publishing reference data.
 
-### Claude Desktop (Recommended)
+### Claude Desktop
 
-Add to a Claude Project or configure as MCP server:
+Claude Desktop can read the skills from a checkout through the filesystem MCP server:
 
 ```json
 {
@@ -392,17 +398,6 @@ Add to a Claude Project or configure as MCP server:
   }
 }
 ```
-
-### Claude Code
-
-To use HealthSim from any project, install the plugin (see [Getting Started](#getting-started)). To work on HealthSim itself, run Claude Code in the checkout:
-
-```bash
-cd healthsim-workspace
-claude
-```
-
-See [Claude Code Setup](hello-healthsim/CLAUDE-CODE.md) for both.
 
 ### Managed Agent Deployment
 

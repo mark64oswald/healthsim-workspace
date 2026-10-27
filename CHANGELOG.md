@@ -13,9 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; the MCP server starts through `uv` with its Python environment in the plugin data directory
 - `skills/healthsim/SKILL.md` router skill, generated from the root `SKILL.md` by `scripts/build_plugin_router.py`
 - `/healthsim:setup` installs reference data into `~/.healthsim` from a GitHub Release, a local `healthsim.duckdb`, or MotherDuck; `/healthsim:status` shows where data lives
-- `healthsim.db.paths`: one resolution order for data (`HEALTHSIM_DB_PATH`, `~/.healthsim`, repo-root `healthsim.duckdb`). The plugin layout keeps cohorts in `cohorts.duckdb` and attaches `reference.duckdb` read-only
+- `healthsim.db.paths`: one resolution order for data (`HEALTHSIM_DB_PATH`, `~/.healthsim`, repo-root `healthsim.duckdb` unless `HEALTHSIM_HOME` is set). The plugin layout keeps cohorts in `cohorts.duckdb` and attaches `reference.duckdb` read-only
 - `healthsim.db.install`: package, download, verify and install reference data, and import cohorts from an existing database
 - `scripts/publish_reference_data.py` publishes reference data as a `data-YYYY.MM` GitHub Release
+- First reference data release: [`data-2026.10`](https://github.com/mark64oswald/healthsim-workspace/releases/tag/data-2026.10)
 - `healthsim_data_status` MCP tool
 - [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md), rewritten for the plugin
 

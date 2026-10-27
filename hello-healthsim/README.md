@@ -45,7 +45,7 @@ Before starting, ensure you have:
 | Requirement | Version | Check Command |
 |-------------|---------|---------------|
 | Git | 2.0+ | `git --version` |
-| Python | 3.10+ | `python3 --version` |
+| Python | 3.11+ | `python3 --version` |
 | Claude Desktop **or** Claude Code | Latest | See installation links below |
 | Anthropic API Key (for Claude Code) | - | [Get API Key](https://console.anthropic.com/) |
 

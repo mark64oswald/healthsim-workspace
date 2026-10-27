@@ -25,7 +25,7 @@ Complete installation instructions for HealthSim workspace including all depende
 |-------------|---------|-------|
 | **Git** | 2.0+ | For repository cloning |
 | **Git LFS** | 3.0+ | For large database files (required) |
-| **Python** | 3.10+ | For healthsim-core package |
+| **Python** | 3.11+ | For the HealthSim packages |
 | **Claude Desktop or Code** | Latest | AI conversation interface |
 
 ### Operating System Support
@@ -163,13 +163,13 @@ git lfs pull --include="healthsim.duckdb"
 
 ## Python Environment
 
-HealthSim requires Python 3.10 or newer.
+HealthSim requires Python 3.11 or newer.
 
 ### Check Python Version
 
 ```bash
 python3 --version
-# Should output: Python 3.10.x or higher
+# Should output: Python 3.11.x or higher
 ```
 
 ### Create Virtual Environment
@@ -371,7 +371,7 @@ To use HealthSim from any project, install the plugin:
 ```
 /plugin marketplace add mark64oswald/healthsim-workspace
 /plugin install healthsim@healthsim
-/healthsim:setup
+/healthsim:setup download
 ```
 
 To develop HealthSim, run Claude Code in the checkout:
@@ -579,8 +579,8 @@ pip install -e .
 # Check version
 python --version
 
-# Use Python 3.10+ explicitly
-python3.10 -m venv .venv
+# Use Python 3.11+ explicitly
+python3.11 -m venv .venv
 ```
 
 ### Git LFS Issues
