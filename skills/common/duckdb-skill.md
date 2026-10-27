@@ -17,7 +17,7 @@ The HealthSim DuckDB skill provides persistent storage and query capabilities fo
 
 **Status**: Active  
 **Schema Version**: 1.2  
-**Database**: Local `healthsim.duckdb` or MotherDuck `healthsim_ref` (via HEALTHSIM_DB_PATH)
+**Database**: `~/.healthsim/` when installed as a Claude Code plugin (`reference.duckdb` + `cohorts.duckdb`), the repo-root `healthsim.duckdb` in a development checkout, or MotherDuck `healthsim_ref` (via HEALTHSIM_DB_PATH). The `healthsim_data_status` tool reports which one is in use.
 
 ## Trigger Phrases
 
@@ -42,6 +42,8 @@ The HealthSim DuckDB skill provides persistent storage and query capabilities fo
 ## Git LFS Requirement
 
 **IMPORTANT**: The `healthsim.duckdb` file is stored using Git LFS due to its size. 
+
+When HealthSim runs as a Claude Code plugin, the LFS file is never downloaded. Reference data is installed into `~/.healthsim` with the `/healthsim:setup` command instead. If a reference tool reports missing data, suggest that command.
 
 ### Detecting LFS Issues
 

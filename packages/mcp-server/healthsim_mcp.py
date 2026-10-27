@@ -189,6 +189,7 @@ class ConnectionManager:
         self.db_path = db_path
         self.is_motherduck = is_motherduck
         self.reference_path = reference_path
+        self._reference_attached = False
         self._read_conn: Optional[duckdb.DuckDBPyConnection] = None
         self._read_manager: Optional[StateManager] = None
 
@@ -201,6 +202,16 @@ class ConnectionManager:
         """
         import time
 
+        # Reference data installed while the server was running (e.g. by
+        # /healthsim:setup): reopen so the new file gets attached
+        if (
+            self._read_conn is not None
+            and self.reference_path is not None
+            and not self._reference_attached
+            and LAYOUT.has_reference
+        ):
+            self._close_read_connection()
+
         if self._read_conn is None:
             if self.is_motherduck:
                 self._read_conn = duckdb.connect(self.db_path)
@@ -211,7 +222,7 @@ class ConnectionManager:
                 for attempt in range(max_retries):
                     try:
                         self._read_conn = duckdb.connect(str(self.db_path), read_only=True)
-                        attach_reference(self._read_conn, self.reference_path)
+                        self._reference_attached = attach_reference(self._read_conn, self.reference_path)
                         print(f"  Opened read-only connection to {self.db_path}", file=sys.stderr)
                         break
                     except Exception as e:
@@ -240,6 +251,7 @@ class ConnectionManager:
             self._read_conn.close()
             self._read_conn = None
             self._read_manager = None
+            self._reference_attached = False
             print(f"  Closed read-only connection (preparing for write)", file=sys.stderr)
     
     @contextmanager

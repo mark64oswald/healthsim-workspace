@@ -130,6 +130,25 @@ async def test_missing_reference_gives_setup_hint(tmp_path):
     assert "/healthsim:setup" in result["error"]
 
 
+@pytest.mark.anyio
+async def test_reference_installed_while_running(tmp_path):
+    home = tmp_path / "late-home"
+    source = build_reference_fixture(tmp_path / "source" / "healthsim.duckdb")
+
+    async def steps(session):
+        before = await _call(session, "healthsim_list_cohorts", {"params": {}})
+        from healthsim.db.install import install_reference_from_file
+
+        install_reference_from_file(source, home=home)
+        after = await _call(session, "healthsim_search_providers", {"params": {"state": "TX"}})
+        return before, after
+
+    before, after = await _run(home, tmp_path, steps)
+    assert "error" not in json.dumps(before)
+    assert "error" not in after, after
+    assert len(after["providers"]) == 2
+
+
 @pytest.fixture
 def anyio_backend():
     return "asyncio"

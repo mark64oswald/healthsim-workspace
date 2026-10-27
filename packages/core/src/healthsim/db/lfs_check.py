@@ -115,6 +115,13 @@ def check_duckdb_file(db_path: str | Path | None = None) -> dict:
 
 def _find_default_db_path() -> Path:
     """Find the default database path by searching up from current location."""
+    # The resolved data layout (healthsim.db.paths) knows about ~/.healthsim
+    from .paths import reference_db_path
+
+    resolved = reference_db_path()
+    if resolved is not None:
+        return resolved
+
     # Try common locations
     candidates = [
         Path.cwd() / "healthsim.duckdb",

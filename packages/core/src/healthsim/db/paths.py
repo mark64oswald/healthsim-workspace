@@ -140,7 +140,7 @@ def resolve_layout() -> DataLayout:
         "split",
         home / COHORTS_FILENAME,
         home_ref,
-        "no reference data installed (run the healthsim setup command)",
+        "no reference data installed (run /healthsim:setup)",
     )
 
 
