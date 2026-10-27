@@ -2,6 +2,8 @@
 
 Complete installation instructions for HealthSim workspace including all dependencies.
 
+> **Just want to use HealthSim?** Install the Claude Code plugin instead. It needs only Claude Code and [uv](https://docs.astral.sh/uv/), with no clone or Git LFS. See [Claude Code Setup](hello-healthsim/CLAUDE-CODE.md). This guide covers a full development checkout.
+
 ---
 
 ## Table of Contents
@@ -222,10 +224,12 @@ DuckDB is an embedded database (like SQLite) - there's no separate server to ins
 
 ### Database Location
 
-The HealthSim database is located at:
+In a development checkout, the HealthSim database is located at:
 ```
 healthsim-workspace/healthsim.duckdb
 ```
+
+When HealthSim runs as a Claude Code plugin, data lives in `~/.healthsim` instead (`reference.duckdb` and `cohorts.duckdb`). `healthsim.db.paths` resolves the location; see [Where Your Data Lives](hello-healthsim/CLAUDE-CODE.md#where-your-data-lives).
 
 This file contains three schemas:
 - **main**: Entity tables (patients, members, encounters, claims)
@@ -362,10 +366,22 @@ Add HealthSim to a Claude Project:
 
 ### Option 2: Claude Code
 
+To use HealthSim from any project, install the plugin:
+
+```
+/plugin marketplace add mark64oswald/healthsim-workspace
+/plugin install healthsim@healthsim
+/healthsim:setup
+```
+
+To develop HealthSim, run Claude Code in the checkout:
+
 ```bash
 cd healthsim-workspace
 claude
 ```
+
+See [Claude Code Setup](hello-healthsim/CLAUDE-CODE.md) for both.
 
 ### Initial Test
 

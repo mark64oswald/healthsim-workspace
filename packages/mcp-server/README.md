@@ -8,40 +8,44 @@ This server provides a **single connection holder** to the HealthSim DuckDB data
 
 ## Installation
 
-```bash
-cd /Users/markoswald/Developer/projects/healthsim-workspace/packages/mcp-server
-pip install -e .
-```
+**As part of the Claude Code plugin** (recommended): nothing to install. The plugin's `.claude-plugin/plugin.json` starts this server with `uv`. See [Claude Code Setup](../../hello-healthsim/CLAUDE-CODE.md).
 
-Or install dependencies directly:
+**From a checkout**, run it with uv from the repository root:
 
 ```bash
-pip install mcp pydantic duckdb
+uv run --directory packages/mcp-server healthsim-mcp
 ```
+
+`healthsim-core` is a workspace dependency, so uv installs it automatically. `mcp` is pinned below 2.0 because mcp 2.x renamed `FastMCP`.
 
 ## Configuration
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
+For Claude Desktop, add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
   "mcpServers": {
     "healthsim-mcp": {
-      "command": "/Users/markoswald/anaconda3/bin/python",
+      "command": "uv",
       "args": [
-        "/Users/markoswald/Developer/projects/healthsim-workspace/packages/mcp-server/healthsim_mcp.py"
-      ],
-      "env": {
-        "PYTHONPATH": "/Users/markoswald/Developer/projects/healthsim-workspace/packages/core/src:/Users/markoswald/Developer/projects/healthsim-workspace/packages/mcp-server"
-      }
+        "run",
+        "--directory",
+        "/absolute/path/to/healthsim-workspace/packages/mcp-server",
+        "healthsim-mcp"
+      ]
     }
   }
 }
 ```
 
-**Important**: 
-1. Remove the old `healthsim-duckdb` entry to avoid conflicts
-2. Adjust the Python path to match your environment (`which python3`)
+### Environment Variables
+
+| Variable | Effect |
+|----------|--------|
+| `HEALTHSIM_DB_PATH` | Use one database at this path, or MotherDuck when it starts with `md:` |
+| `HEALTHSIM_HOME` | Data folder for the plugin layout (default `~/.healthsim`) |
+| `HEALTHSIM_REFERENCE_PATH` | Use this reference database instead of `$HEALTHSIM_HOME/reference.duckdb` |
+| `MCP_TRANSPORT` | `stdio` (default) or `http` for the hosted server |
 
 ## Available Tools
 
@@ -63,7 +67,8 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json`:
 | `healthsim_query` | Execute read-only SQL queries |
 | `healthsim_query_reference` | Query PopulationSim reference data |
 | `healthsim_search_providers` | Search REAL NPPES provider data (8.9M records) |
-| `healthsim_tables` | List all database tables |
+| `healthsim_tables` | List all database tables, including the `network` and `population` reference tables |
+| `healthsim_data_status` | Show where data lives and whether reference data is installed |
 
 ## Real vs Synthetic Data Decision
 
@@ -304,7 +309,14 @@ Use healthsim_query with:
 
 ## Database Location
 
-The HealthSim database is stored at: `~/.healthsim/healthsim.duckdb`
+The server resolves its data location at startup (`healthsim.db.paths`):
+
+1. `HEALTHSIM_DB_PATH`, when set
+2. `~/.healthsim/reference.duckdb` and `~/.healthsim/cohorts.duckdb`, when reference data is installed there (the plugin layout)
+3. The repo-root `healthsim.duckdb`, when it's a real file and not a Git LFS pointer
+4. Otherwise `~/.healthsim/cohorts.duckdb`, with reference tools returning a setup hint
+
+In the plugin layout, `reference.duckdb` is attached read-only and its `network` and `population` schemas are on the DuckDB search path, so queries such as `SELECT * FROM network.providers` work the same in every layout. Call `healthsim_data_status` to see the active layout.
 
 ## Troubleshooting
 
@@ -315,11 +327,9 @@ If you see "Could not set lock on file", ensure:
 3. Restart Claude Desktop after config changes
 
 ### Module not found
-Ensure the healthsim core package is importable:
+Run the server through uv so `healthsim-core` is installed with it:
 ```bash
-cd /Users/markoswald/Developer/projects/healthsim-workspace
-source .venv/bin/activate
-python -c "from healthsim.state import StateManager; print('OK')"
+uv run --directory packages/mcp-server python -c "from healthsim.state import StateManager; print('OK')"
 ```
 
 ### Batch truncation issues

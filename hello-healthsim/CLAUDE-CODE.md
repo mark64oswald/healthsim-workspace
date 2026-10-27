@@ -1,430 +1,204 @@
-# Claude Code Configuration
+# Claude Code Setup
 
-Configure Claude Code CLI to use HealthSim for synthetic healthcare data generation.
+Use HealthSim from any project in Claude Code by installing it as a plugin. Install it once and it works in every folder you open.
+
+---
 
 ## Prerequisites
 
-- Claude Code installed
-- Anthropic API key
-- HealthSim repository cloned locally
+| Requirement | Check | Install |
+|-------------|-------|---------|
+| Claude Code | `claude --version` | [Claude Code docs](https://code.claude.com/docs) |
+| uv (runs the HealthSim MCP server) | `uv --version` | `brew install uv`, or `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| Git | `git --version` | Needed to add the plugin marketplace |
 
-## Installation
+You don't need to clone the repository, install Git LFS, or set up a Python environment. uv downloads the right Python and packages the first time the plugin's MCP server starts.
 
-### Step 1: Install Claude Code
+---
 
-**Via npm:**
-```bash
-npm install -g @anthropic-ai/claude-code
+## Step 1: Install the Plugin
+
+In a Claude Code session:
+
+```
+/plugin marketplace add mark64oswald/healthsim-workspace
+/plugin install healthsim@healthsim
 ```
 
-**Via Homebrew (macOS):**
+Or from your shell:
+
 ```bash
-brew install claude-code
+claude plugin marketplace add mark64oswald/healthsim-workspace
+claude plugin install healthsim@healthsim
 ```
 
-**Verify installation:**
-```bash
-claude --version
+The plugin adds:
+
+| Component | Name | What it does |
+|-----------|------|--------------|
+| Router skill | `healthsim:healthsim` | Routes requests to the right product |
+| Product skills | `healthsim:patientsim`, `healthsim:membersim`, `healthsim:rxmembersim`, `healthsim:trialsim`, `healthsim:populationsim`, `healthsim:networksim`, `healthsim:generation`, `healthsim:common` | Domain knowledge for each product |
+| MCP server | `healthsim` | Cohort storage, reference data queries, NPPES provider search |
+| Commands | `/healthsim:setup`, `/healthsim:status` | Install reference data; show where data lives |
+
+---
+
+## Step 2: Install Reference Data
+
+Synthetic generation works right away. PopulationSim and NetworkSim also use real reference data (8.9M NPPES providers, CDC PLACES, SVI, ADI), which you install once per machine:
+
+```
+/healthsim:setup
 ```
 
-### Step 2: Set Up API Key
+The command offers three sources:
 
-```bash
-# Set your Anthropic API key
-export ANTHROPIC_API_KEY="your-api-key-here"
+| Source | Command | When to use it |
+|--------|---------|----------------|
+| **Download** (recommended) | `/healthsim:setup download` | Fetches the latest published release into `~/.healthsim` |
+| **Local file** | `/healthsim:setup ~/Developer/projects/healthsim-workspace/healthsim.duckdb` | You already have a checkout with `git lfs pull` done. It can also import the cohorts saved in that file |
+| **MotherDuck** | `/healthsim:setup motherduck` | Cloud data with no download; needs a MotherDuck token |
 
-# Or add to your shell profile (~/.zshrc, ~/.bashrc)
-echo 'export ANTHROPIC_API_KEY="your-api-key-here"' >> ~/.zshrc
-source ~/.zshrc
+---
+
+## Step 3: Verify
+
+From any folder:
+
+```
+/healthsim:status
 ```
 
-### Step 3: Clone HealthSim
+Then try a few requests:
 
-```bash
-git clone https://github.com/mark64oswald/healthsim-common.git
-cd healthsim-common
+```
+Generate a 65-year-old diabetic patient with hypertension in Houston, TX
+```
+
+```
+Find 5 family medicine providers in San Diego County
+```
+
+```
+What is the diabetes rate and SVI for Harris County, Texas?
 ```
 
 ---
 
-## Configuration Methods
+## Where Your Data Lives
 
-### Method 1: Run from HealthSim Directory (Simplest)
+HealthSim keeps data outside your projects, in `~/.healthsim`:
 
-Claude Code automatically has access to files in your current directory.
+| File | Contents | Written by |
+|------|----------|------------|
+| `~/.healthsim/reference.duckdb` | Reference data (read-only) | `/healthsim:setup` |
+| `~/.healthsim/cohorts.duckdb` | Your saved cohorts | The MCP server, when you save a cohort |
+| `~/.healthsim/reference-manifest.json` | Installed release and checksums | `/healthsim:setup download` |
 
-```bash
-# Navigate to HealthSim
-cd /path/to/healthsim-common
+Cohorts you save in one project are available in every other project. Reinstalling or updating the plugin doesn't touch this folder.
 
-# Start Claude Code
-claude
+The location is resolved in this order:
 
-# Claude can now read all skill files directly
-```
+1. `HEALTHSIM_DB_PATH`: one database at that path, or MotherDuck when it starts with `md:`
+2. `~/.healthsim/reference.duckdb` exists: the plugin layout above (`HEALTHSIM_HOME` changes the folder)
+3. The repo-root `healthsim.duckdb` is a real file: the developer layout in a checkout
+4. Otherwise: the plugin layout, with no reference data yet
 
-### Method 2: MCP Server Configuration (Recommended)
-
-Configure HealthSim as an MCP server for access from any directory.
-
-#### Create/Edit Claude Code Settings
-
-**Location:**
-- macOS/Linux: `~/.claude/settings.json`
-- Windows: `%USERPROFILE%\.claude\settings.json`
+To set an environment variable for HealthSim, add it to `~/.claude/settings.json`:
 
 ```json
 {
-  "mcpServers": {
-    "healthsim": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/healthsim-common"
-      ]
-    }
+  "env": {
+    "HEALTHSIM_HOME": "/Volumes/Data/healthsim"
   }
 }
-```
-
-**Replace the path** with your actual HealthSim location.
-
-#### Project-Level Configuration
-
-For project-specific settings, create `.claude/settings.json` in any project:
-
-```bash
-mkdir -p .claude
-cat > .claude/settings.json << 'EOF'
-{
-  "mcpServers": {
-    "healthsim": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/path/to/your/healthsim-common"
-      ]
-    }
-  }
-}
-EOF
-```
-
-### Method 3: Using Custom Instructions
-
-Create a `.claude/instructions.md` file in your project:
-
-```markdown
-# Project Instructions
-
-This project uses HealthSim for synthetic healthcare data generation.
-
-When generating healthcare data:
-1. Read SKILL.md from the healthsim-common directory for guidance
-2. Follow the data models in references/data-models.md
-3. Use appropriate code systems from references/code-systems.md
-4. Apply clinical rules from references/clinical-rules.md
-
-Available products:
-- PatientSim: Clinical/EMR data (patients, encounters, labs)
-- MemberSim: Claims/payer data (professional, facility claims)
-- RxMemberSim: Pharmacy/PBM data (prescriptions, DUR alerts)
 ```
 
 ---
 
-## Quick Start
+## Updating
 
-### Interactive Mode
+```
+/plugin marketplace update healthsim
+```
+
+The plugin tracks the repository's main branch, so an update picks up the latest skills and server code. Reference data updates separately: run `/healthsim:setup download` when a new data release is announced.
+
+---
+
+## Developing HealthSim
+
+To work on HealthSim itself, use a checkout:
 
 ```bash
-cd healthsim-common
+git lfs install
+git clone https://github.com/mark64oswald/healthsim-workspace.git
+cd healthsim-workspace
+uv sync --all-packages
 claude
 ```
 
-Then in the Claude Code session:
+In a checkout, the repo-root `healthsim.duckdb` is used, and `.claude/CLAUDE.md` routes requests to the skills, as before.
 
-```
-Generate a 65-year-old diabetic patient with recent labs
-```
-
-### Single Command Mode
+To try your changes as a plugin before pushing them, load the checkout directly:
 
 ```bash
-# Generate and output to stdout
-claude -p "Generate a patient with hypertension as JSON"
-
-# Generate and save to file
-claude -p "Generate a FHIR Patient resource" > patient.json
+claude --plugin-dir /path/to/healthsim-workspace
 ```
 
-### With Print Mode (Non-Interactive)
+After editing the root `SKILL.md`, regenerate the plugin's router skill:
 
 ```bash
-# Quick generation without entering interactive mode
-claude --print "Generate a pharmacy claim for metformin"
+python scripts/build_plugin_router.py
+```
+
+To publish new reference data from a checkout with the real database:
+
+```bash
+uv run --package healthsim-core python scripts/publish_reference_data.py
 ```
 
 ---
 
-## Automation Examples
+## Automation
 
-### Generate Test Data File
-
-```bash
-#!/bin/bash
-# generate-test-patients.sh
-
-cd /path/to/healthsim-common
-
-claude --print "Generate 5 patients with various chronic conditions as a JSON array" \
-  > test-patients.json
-```
-
-### Integration with Scripts
+HealthSim works in non-interactive mode too:
 
 ```bash
-#!/bin/bash
-# generate-claims-batch.sh
-
-SCENARIOS=("office visit" "emergency room" "inpatient admission")
-
-for scenario in "${SCENARIOS[@]}"; do
-  echo "Generating: $scenario"
-  claude --print "Generate a professional claim for $scenario" \
-    > "claim-${scenario// /-}.json"
-done
+claude -p "Generate 10 Medicare members with Type 2 diabetes as CSV" > members.csv
 ```
-
-### CI/CD Integration
-
-```yaml
-# .github/workflows/generate-test-data.yml
-name: Generate Test Data
-
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 0'  # Weekly
-
-jobs:
-  generate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Claude Code
-        run: npm install -g @anthropic-ai/claude-code
-
-      - name: Clone HealthSim
-        run: git clone https://github.com/mark64oswald/healthsim-common.git
-
-      - name: Generate Test Data
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: |
-          cd healthsim-common
-          claude --print "Generate 10 diverse patients with chronic conditions" \
-            > ../test-data/patients.json
-          claude --print "Generate 10 professional claims" \
-            > ../test-data/claims.json
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-data
-          path: test-data/
-```
-
----
-
-## Slash Commands
-
-Create custom slash commands for common HealthSim operations.
-
-### Setup Slash Commands
-
-Create `.claude/commands/` directory:
 
 ```bash
-mkdir -p .claude/commands
+claude -p "Generate an X12 837P claim for a 99214 office visit" > claim.837
 ```
-
-### Example: Patient Generator
-
-```bash
-# .claude/commands/patient.md
-cat > .claude/commands/patient.md << 'EOF'
-Generate a patient based on the provided description.
-
-Read the SKILL.md file and relevant scenario from skills/patientsim/
-to generate appropriate clinical data including:
-- Demographics
-- Diagnoses (ICD-10)
-- Medications (with RxNorm codes)
-- Recent lab results (with LOINC codes)
-
-Patient request: $ARGUMENTS
-EOF
-```
-
-**Usage:**
-```
-/patient 72-year-old male with COPD and heart failure
-```
-
-### Example: Claim Generator
-
-```bash
-# .claude/commands/claim.md
-cat > .claude/commands/claim.md << 'EOF'
-Generate a healthcare claim based on the provided description.
-
-Read skills/membersim/SKILL.md to generate appropriate claim data.
-Include:
-- Claim header with proper codes
-- Service lines with CPT/HCPCS
-- Adjudication with realistic amounts
-
-Claim request: $ARGUMENTS
-EOF
-```
-
-**Usage:**
-```
-/claim denied MRI claim requiring prior authorization
-```
-
-### Example: FHIR Export
-
-```bash
-# .claude/commands/fhir.md
-cat > .claude/commands/fhir.md << 'EOF'
-Generate FHIR R4 resources based on the provided description.
-
-Read formats/fhir-r4.md for transformation rules.
-Output as a valid FHIR Bundle.
-
-Request: $ARGUMENTS
-EOF
-```
-
-**Usage:**
-```
-/fhir Bundle with Patient, Condition, and MedicationRequest for a diabetic
-```
-
----
-
-## Verification
-
-### Test Basic Generation
-
-```bash
-cd healthsim-common
-claude --print "Generate a patient with Type 2 diabetes"
-```
-
-**Expected:** JSON with patient, E11.x diagnoses, metformin medication.
-
-### Test File Access
-
-```bash
-claude --print "Read SKILL.md and list the available products"
-```
-
-**Expected:** Summary of PatientSim, MemberSim, RxMemberSim.
-
-### Test Format Output
-
-```bash
-claude --print "Generate a FHIR R4 Patient resource for a 45-year-old male"
-```
-
-**Expected:** Valid FHIR Patient resource with demographics.
 
 ---
 
 ## Troubleshooting
 
-### "API key not found"
+### The HealthSim tools aren't available
 
-```bash
-# Check if key is set
-echo $ANTHROPIC_API_KEY
+Run `/mcp` and look for `plugin:healthsim:healthsim`.
 
-# Set it if missing
-export ANTHROPIC_API_KEY="your-key"
-```
+- **Failed**: check `uv --version`. If uv was just installed, restart Claude Code.
+- **Timed out on first start**: the first start downloads Python packages. Run `/healthsim:setup`, which prepares the environment, then reconnect from `/mcp`.
 
-### "Cannot read skill files"
+### "Reference data is not installed"
 
-1. Verify you're in the healthsim-common directory
-2. Check MCP server configuration path
-3. Ensure files exist: `ls SKILL.md`
+Run `/healthsim:setup`. Generation and cohort tools work without reference data; provider search and population queries need it.
 
-### "MCP server not connecting"
+### A checkout shows a ~130-byte `healthsim.duckdb`
 
-```bash
-# Test MCP server manually
-npx -y @modelcontextprotocol/server-filesystem /path/to/healthsim-common
+That file is a Git LFS pointer. Run `git lfs pull` in the checkout, or install reference data with `/healthsim:setup` instead. The plugin ignores pointer files.
 
-# Check for Node.js
-node --version  # Should be 18+
-```
+### Two HealthSim skills appear
 
-### "Rate limiting errors"
-
-- Reduce request frequency
-- Use `--print` mode for single outputs
-- Consider batching requests
-
-### "Incomplete or malformed output"
-
-- Be more specific in your requests
-- Add "as valid JSON" to requests
-- Try: "Generate a complete, valid..."
-
----
-
-## Performance Tips
-
-1. **Use `--print` for automation** - Avoids interactive overhead
-
-2. **Be specific** - More detail = better output
-   ```bash
-   # Good
-   claude --print "Generate a 65-year-old male diabetic with A1C 8.5, on metformin and glipizide"
-
-   # Less good
-   claude --print "Generate a patient"
-   ```
-
-3. **Request format upfront** - Faster than converting after
-   ```bash
-   claude --print "Generate as FHIR R4 Bundle: patient with heart failure"
-   ```
-
-4. **Cache common outputs** - Save and reuse test data
-
-5. **Use local models** - If available, for faster iteration during development
+If you also uploaded HealthSim's `SKILL.md` to claude.ai, it syncs into Claude Code as a separate skill. Turn it off in claude.ai settings so the plugin's skills are the only ones in use.
 
 ---
 
 ## Next Steps
 
-- Explore [examples/](examples/) for detailed use cases
-- Create custom [slash commands](#slash-commands) for your workflow
-- Learn to [extend HealthSim](EXTENDING.md) with new scenarios
-- Integrate with your [CI/CD pipeline](#cicd-integration)
-
----
-
-*Questions? Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md) or open a GitHub issue.*
+- [Hello HealthSim](README.md): first steps and examples
+- [Examples by Product](examples/): ready-to-use prompts
+- [Extending HealthSim](EXTENDING.md): add cohorts, skills, and formats

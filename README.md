@@ -21,10 +21,25 @@ HealthSim generates realistic, clinically coherent healthcare data for testing, 
 
 ## Getting Started
 
+### Install as a Claude Code plugin
+
+Use HealthSim from any project in Claude Code:
+
+```
+/plugin marketplace add mark64oswald/healthsim-workspace
+/plugin install healthsim@healthsim
+/healthsim:setup
+```
+
+The last command installs the reference data (NPPES providers, CDC PLACES, SVI, ADI) into `~/.healthsim`. You need [uv](https://docs.astral.sh/uv/) on your machine; no clone or Git LFS is required. See the [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md) for details.
+
+### Learn HealthSim
+
 New to HealthSim? Start here:
 
 | Resource | Description |
 |----------|-------------|
+| **[Claude Code Setup](hello-healthsim/CLAUDE-CODE.md)** | Install the plugin, set up reference data, and verify |
 | **[Hello HealthSim](hello-healthsim/README.md)** | Quick start guide with setup instructions and first steps |
 | **[Examples by Product](hello-healthsim/examples/)** | Detailed examples with expected outputs for each product |
 | **[Extending HealthSim](hello-healthsim/EXTENDING.md)** | How to add new clinical cohorts, skills, and output formats |
@@ -41,18 +56,21 @@ The examples folder contains ready-to-use prompts organized by product:
 
 ## Deployment Modes
 
-HealthSim runs in two modes from the same codebase:
+HealthSim runs in three modes from the same codebase:
 
 | Mode | Infrastructure | Data | Best For |
 |------|---------------|------|----------|
-| **Local (Claude Code)** | stdio MCP, local DuckDB | Local `.duckdb` file | Development, testing, skill editing |
+| **Plugin (Claude Code)** | Plugin skills, stdio MCP via uv | `~/.healthsim` (or MotherDuck) | Using HealthSim from any project |
+| **Local checkout (Claude Code)** | stdio MCP, local DuckDB | Repo-root `healthsim.duckdb` (Git LFS) | Development, testing, skill editing |
 | **Managed Agent (Cloud)** | Railway MCP (HTTP), MotherDuck | Cloud-hosted | Hosted access via Console, CLI, or web app |
+
+**Plugin mode** is how you use HealthSim day to day. Install it once and it's available in every Claude Code session, with your cohorts and reference data in `~/.healthsim`. See [Claude Code Setup](hello-healthsim/CLAUDE-CODE.md).
 
 **Local mode** is the development environment. You edit skills, test MCP tools, run generation workflows, and iterate. Everything runs on your machine.
 
 **Managed Agent mode** is the deployment target. The same skills, MCP server code, and Python modules run on Anthropic's infrastructure (agent runtime), Railway (MCP server), and MotherDuck (data). Users access it through the Anthropic Console UI, a CLI tool, or the Rewire web application.
 
-The two modes coexist — deploying to Managed Agent does not affect your local Claude Code workflow. See the [Managed Agent Guide](docs/MANAGED-AGENT-GUIDE.md) for full deployment instructions.
+The modes coexist — deploying to Managed Agent does not affect your local Claude Code workflow. See the [Managed Agent Guide](docs/MANAGED-AGENT-GUIDE.md) for full deployment instructions.
 
 ---
 
@@ -267,13 +285,22 @@ healthsim-workspace/
 ├── README.md                   # This file
 ├── agent-config.yaml           # Managed Agent deployment manifest
 ├── healthsim.duckdb            # Unified database (~1.7 GB via Git LFS)
+├── uv.lock                     # Locked Python dependencies (uv workspace)
 ├── .env                        # API keys and tokens (gitignored)
+│
+├── .claude-plugin/             # Claude Code plugin
+│   ├── plugin.json            # Plugin manifest (skills, MCP server)
+│   └── marketplace.json       # This repo is its own plugin marketplace
+├── commands/                   # Plugin commands (/healthsim:setup, /healthsim:status)
 │
 ├── hello-healthsim/            # Getting started (tutorials, setup)
 │   ├── README.md              # Quick start guide
 │   └── examples/              # Detailed examples by product
 │
 ├── skills/                     # Product skills (domain knowledge)
+│   ├── healthsim/             # Plugin router skill (generated from SKILL.md)
+│   ├── common/                # Persistence, identity correlation, DuckDB
+│   ├── generation/            # Profiles, journeys, generative framework
 │   ├── patientsim/            # Clinical/EMR (12 cohorts)
 │   ├── membersim/             # Claims/payer (8 cohorts)
 │   ├── rxmembersim/           # Pharmacy/PBM (8 cohorts)
@@ -290,7 +317,8 @@ healthsim-workspace/
 │   ├── mcp-server/            # FastMCP server (stdio + HTTP transport)
 │   ├── patientsim/            # PatientSim package
 │   ├── membersim/             # MemberSim package
-│   └── rxmembersim/           # RxMemberSim package
+│   ├── rxmembersim/           # RxMemberSim package
+│   └── trialsim/              # TrialSim package
 ├── deploy/                     # Managed Agent deploy scripts
 │   ├── push-skills.py         # Upload skills to Anthropic Skills API
 │   ├── push-agent.py          # Create/update agent definition
@@ -367,12 +395,14 @@ Add to a Claude Project or configure as MCP server:
 
 ### Claude Code
 
+To use HealthSim from any project, install the plugin (see [Getting Started](#getting-started)). To work on HealthSim itself, run Claude Code in the checkout:
+
 ```bash
 cd healthsim-workspace
 claude
 ```
 
-See [hello-healthsim/](hello-healthsim/) for detailed setup instructions.
+See [Claude Code Setup](hello-healthsim/CLAUDE-CODE.md) for both.
 
 ### Managed Agent Deployment
 
@@ -399,6 +429,7 @@ To deploy HealthSim as a cloud-hosted Managed Agent (accessible via Console UI, 
 | Topic | Location |
 |-------|----------|
 | Quick Start | [hello-healthsim/](hello-healthsim/README.md) |
+| Claude Code Plugin Setup | [hello-healthsim/CLAUDE-CODE.md](hello-healthsim/CLAUDE-CODE.md) |
 | Master Skill Reference | [SKILL.md](SKILL.md) |
 | Architecture Guide | [docs/HEALTHSIM-ARCHITECTURE-GUIDE.md](docs/HEALTHSIM-ARCHITECTURE-GUIDE.md) |
 | Managed Agent Guide | [docs/MANAGED-AGENT-GUIDE.md](docs/MANAGED-AGENT-GUIDE.md) |
@@ -407,6 +438,7 @@ To deploy HealthSim as a cloud-hosted Managed Agent (accessible via Console UI, 
 | State Management | [skills/common/state-management.md](skills/common/state-management.md) |
 | Extension Guide | [hello-healthsim/EXTENDING.md](hello-healthsim/EXTENDING.md) |
 | Contributing | [docs/contributing.md](docs/contributing.md) |
+| Plugin Initiative (plan and progress) | [docs/initiatives/claude-code-plugin/](docs/initiatives/claude-code-plugin/PROGRESS.md) |
 
 ---
 

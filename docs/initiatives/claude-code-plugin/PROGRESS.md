@@ -14,10 +14,18 @@
 | 0 | Verify plugin spec, set up branch | ✅ Complete |
 | 1 | Decouple data paths, split reference vs cohort data | ✅ Complete |
 | 2 | Make the MCP server installable (uv workspace, pinned deps) | ✅ Complete |
-| 3 | Plugin scaffold (manifest, marketplace, MCP config, router skill, commands) | ⬜ Pending |
-| 4 | Reference data distribution (publish script, setup command) | ⬜ Pending |
+| 3 | Plugin scaffold (manifest, marketplace, MCP config, router skill, commands) | ✅ Complete |
+| 4 | Reference data distribution (publish script, setup command) | ✅ Complete (first release still to publish) |
 | 5 | End-to-end test on a Mac with real data | ⬜ Pending (needs Mark) |
-| 6 | Documentation, link check, pull request | ⬜ Pending |
+| 6 | Documentation, link check, pull request | ✅ Complete |
+
+## Remaining steps (on Mark's Mac)
+
+1. `git lfs pull` in the checkout so `healthsim.duckdb` is the real file
+2. `uv run --package healthsim-core python scripts/publish_reference_data.py` to publish the `data-YYYY.MM` release
+3. `/plugin marketplace add mark64oswald/healthsim-workspace#feature/claude-code-plugin`, then `/plugin install healthsim@healthsim` (after merge, drop the `#branch`)
+4. `/healthsim:setup ~/Developer/projects/healthsim-workspace/healthsim.duckdb` with cohort import, or `/healthsim:setup download`
+5. Open an unrelated project, run the Hello HealthSim examples, save a cohort, and reload it in a new session
 
 ---
 
@@ -56,3 +64,29 @@
 | trialsim | 110 | 0 | 0 |
 
 Before this work, core had 37 failures and 28 errors, and mcp-server had 26 failures, all caused by the LFS pointer or a missing install.
+
+### 2026-10-27: Phases 3, 4 and 6
+
+**Phase 4** (`packages/core/src/healthsim/db/install.py`):
+- `package`: extracts the `network` and `population` schemas from the unified database (cohort tables stay behind), gzips them, and writes `reference-manifest.json` with SHA-256 checksums.
+- `download`: finds the newest `data-*` release, downloads it, verifies both checksums, and installs it atomically into `~/.healthsim`.
+- `from-file`: installs from a local `healthsim.duckdb`, optionally importing its cohorts (`import-cohorts` copies rows by column name and advances id sequences).
+- `scripts/publish_reference_data.py` wraps `package` and creates the GitHub Release with `gh`.
+
+**Phase 3** (plugin scaffold):
+- `.claude-plugin/plugin.json` declares the MCP server inline rather than in a root `.mcp.json`, which would also load as project config in a checkout where `${CLAUDE_PLUGIN_ROOT}` doesn't resolve.
+- The server runs with `uv run --frozen` from `${CLAUDE_PLUGIN_ROOT}/packages/mcp-server`, and its virtual environment lives in `${CLAUDE_PLUGIN_DATA}/venv`, so it survives plugin updates.
+- `plugin.json` has no `version`, so installs track commits; `claude plugin validate` warns about this by design.
+- `skills/healthsim/SKILL.md` is generated from the root `SKILL.md` by `scripts/build_plugin_router.py`, and a test fails if it's out of date.
+- `commands/setup.md` and `commands/status.md` provide `/healthsim:setup` and `/healthsim:status`.
+- The server re-attaches reference data installed while it's running, so setup needs no restart.
+
+**Verified with the Claude Code CLI** (v2.1.311, clean config directory, cloud container):
+- `claude plugin validate .` passed with two expected warnings: no `version` and no icon.
+- `claude plugin marketplace add mark64oswald/healthsim-workspace#feature/claude-code-plugin` and `claude plugin install healthsim@healthsim` succeeded. Claude Code reported the LFS pointer and skipped it, as the docs describe.
+- `claude mcp list` from an unrelated folder: `plugin:healthsim:healthsim ... Connected`.
+- `claude -p` from that folder called `healthsim_search_providers` against a fixture reference database and listed the `healthsim:*` skills.
+
+**Phase 6** (docs): `hello-healthsim/CLAUDE-CODE.md` rewritten for the plugin. The old version referenced the retired `healthsim-common` repository and an `npx` filesystem server. README, INSTALL, Hello HealthSim, MCP server README, and CHANGELOG were updated. `scripts/validate_links.py` reports no new broken links (170 existed before, mostly in `docs/archive/`).
+
+**Test results**: core 1,627 passed, 109 skipped; mcp-server 119 passed, 21 skipped; product packages unchanged; `scripts/smoke_test.py` 37 passed.

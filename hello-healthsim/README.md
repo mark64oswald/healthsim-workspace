@@ -24,16 +24,17 @@ All through simple natural language requests like:
 
 ## Access Methods
 
-HealthSim can be accessed in four ways:
+HealthSim can be accessed in five ways:
 
 | Method | Best For | Setup |
 |--------|----------|-------|
-| **Claude Code** (local) | Development, testing, skill editing | [Setup below](#prerequisites) |
+| **Claude Code plugin** (local) | Using HealthSim from any project | [Claude Code Setup](CLAUDE-CODE.md) |
+| **Claude Code checkout** (local) | Development, testing, skill editing | [Setup below](#prerequisites) |
 | **Console UI** (cloud) | Quick testing, ad-hoc queries | [Managed Agent Guide](../docs/MANAGED-AGENT-GUIDE.md) |
 | **CLI** (cloud) | Scripted access, terminal-based chat | [Deploy README](../deploy/README.md) |
 | **Web App** (cloud) | End users, team access | Coming soon via Rewire |
 
-This guide focuses on **Claude Code** (local development). For cloud deployment and access, see the [Managed Agent Guide](../docs/MANAGED-AGENT-GUIDE.md).
+This guide focuses on a **Claude Code checkout** (local development). To use HealthSim without a checkout, install the plugin: see [Claude Code Setup](CLAUDE-CODE.md). For cloud deployment and access, see the [Managed Agent Guide](../docs/MANAGED-AGENT-GUIDE.md).
 
 ---
 
