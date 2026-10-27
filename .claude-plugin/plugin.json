@@ -1,0 +1,29 @@
+{
+  "name": "healthsim",
+  "displayName": "HealthSim",
+  "description": "Generate realistic synthetic healthcare data through conversation: patients, claims, pharmacy, clinical trials, populations and provider networks, in FHIR, HL7v2, C-CDA, X12, NCPDP and CDISC formats.",
+  "author": {
+    "name": "Mark Oswald",
+    "url": "https://github.com/mark64oswald"
+  },
+  "homepage": "https://github.com/mark64oswald/healthsim-workspace",
+  "repository": "https://github.com/mark64oswald/healthsim-workspace",
+  "license": "Apache-2.0",
+  "keywords": ["healthcare", "synthetic-data", "fhir", "hl7", "x12", "ncpdp", "cdisc", "duckdb"],
+  "mcpServers": {
+    "healthsim": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--frozen",
+        "--quiet",
+        "--directory",
+        "${CLAUDE_PLUGIN_ROOT}/packages/mcp-server",
+        "healthsim-mcp"
+      ],
+      "env": {
+        "UV_PROJECT_ENVIRONMENT": "${CLAUDE_PLUGIN_DATA}/venv"
+      }
+    }
+  }
+}

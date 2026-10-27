@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install Python dependencies
 RUN pip install --no-cache-dir \
-    "mcp>=1.0.0" \
+    "mcp>=1.0.0,<2" \
     "duckdb>=0.9.0,<1.5.2" \
     "pydantic>=2.0.0" \
     "pydantic-settings>=2.0.0" \

@@ -22,8 +22,10 @@ def conn():
     # Use the canonical healthsim.duckdb database
     # Path: packages/core/tests/test_reference_profiles.py
     # tests -> core -> packages -> healthsim-workspace (3 parents)
-    from pathlib import Path
-    db_path = Path(__file__).parent.parent.parent.parent / "healthsim.duckdb"
+    from healthsim.db.paths import reference_db_path
+    db_path = reference_db_path()
+    if db_path is None:
+        pytest.skip("HealthSim reference database not available (Git LFS pointer or not installed)")
     return duckdb.connect(str(db_path), read_only=True)
 
 
@@ -316,10 +318,10 @@ class TestNetworkSimIntegration:
     def conn(self):
         """Create connection to canonical healthsim.duckdb."""
         import duckdb
-        from pathlib import Path
-        # Path: packages/core/tests/test_reference_profiles.py
-        # tests -> core -> packages -> healthsim-workspace (4 parents)
-        db_path = Path(__file__).parent.parent.parent.parent / "healthsim.duckdb"
+        from healthsim.db.paths import reference_db_path
+        db_path = reference_db_path()
+        if db_path is None:
+            pytest.skip("HealthSim reference database not available (Git LFS pointer or not installed)")
         conn = duckdb.connect(str(db_path), read_only=True)
         yield conn
         conn.close()

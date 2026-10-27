@@ -25,9 +25,11 @@ class TestDatabaseConnection:
         DatabaseConnection.reset()
     
     def test_default_path(self):
-        """Test that default path is set correctly."""
+        """Default path follows the resolved data layout (see healthsim.db.paths)."""
+        from healthsim.db.paths import resolve_layout
+
         conn = DatabaseConnection()
-        assert conn.db_path == DEFAULT_DB_PATH
+        assert conn.db_path == resolve_layout().db_path
     
     def test_custom_path(self):
         """Test that custom path can be specified."""

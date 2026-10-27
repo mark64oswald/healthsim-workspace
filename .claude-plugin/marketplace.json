@@ -1,0 +1,16 @@
+{
+  "name": "healthsim",
+  "description": "HealthSim synthetic healthcare data generation for Claude Code",
+  "owner": {
+    "name": "Mark Oswald",
+    "url": "https://github.com/mark64oswald"
+  },
+  "plugins": [
+    {
+      "name": "healthsim",
+      "source": ".",
+      "description": "Synthetic healthcare data through conversation: PatientSim, MemberSim, RxMemberSim, TrialSim, PopulationSim and NetworkSim, with real NPPES, CDC PLACES and SVI reference data.",
+      "category": "healthcare"
+    }
+  ]
+}

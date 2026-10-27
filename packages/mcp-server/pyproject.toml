@@ -1,18 +1,23 @@
 [project]
 name = "healthsim-mcp"
-version = "0.1.0"
+version = "0.2.0"
 description = "MCP Server for HealthSim - Healthcare Data Simulation Platform"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
-    "mcp>=1.0.0",
+    "healthsim-core",
+    # FastMCP moved in mcp 2.x; pin to 1.x until the server is migrated
+    "mcp>=1.0.0,<2",
     "pydantic>=2.0.0",
     "duckdb>=0.9.0,<1.5.2",
 ]
 
 [project.scripts]
-healthsim-mcp = "healthsim_mcp:mcp.run"
+healthsim-mcp = "healthsim_mcp:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+only-include = ["healthsim_mcp.py"]

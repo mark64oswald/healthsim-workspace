@@ -7,6 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — Claude Code Plugin
+
+- **HealthSim installs as a Claude Code plugin** and works from any project: `/plugin marketplace add mark64oswald/healthsim-workspace`, then `/plugin install healthsim@healthsim`
+- `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`; the MCP server starts through `uv` with its Python environment in the plugin data directory
+- `skills/healthsim/SKILL.md` router skill, generated from the root `SKILL.md` by `scripts/build_plugin_router.py`
+- `/healthsim:setup` installs reference data into `~/.healthsim` from a GitHub Release, a local `healthsim.duckdb`, or MotherDuck; `/healthsim:status` shows where data lives
+- `healthsim.db.paths`: one resolution order for data (`HEALTHSIM_DB_PATH`, `~/.healthsim`, repo-root `healthsim.duckdb` unless `HEALTHSIM_HOME` is set). The plugin layout keeps cohorts in `cohorts.duckdb` and attaches `reference.duckdb` read-only
+- `healthsim.db.install`: package, download, verify and install reference data, and import cohorts from an existing database
+- `scripts/publish_reference_data.py` publishes reference data as a `data-YYYY.MM` GitHub Release
+- First reference data release: [`data-2026.10`](https://github.com/mark64oswald/healthsim-workspace/releases/tag/data-2026.10)
+- `healthsim_data_status` MCP tool
+- [Claude Code Setup guide](hello-healthsim/CLAUDE-CODE.md), rewritten for the plugin
+
+### Fixed
+
+- Pinned `mcp<2`: mcp 2.x renamed `FastMCP` and broke fresh installs of the MCP server
+- uv workspace: added the missing `[tool.uv.sources]` entries and committed `uv.lock`
+- Tests that need the real database now skip when `healthsim.duckdb` is a Git LFS pointer instead of failing
+
 ### Added — Managed Agent Deployment
 
 - **Managed Agent support** via Anthropic Managed Agents API (`managed-agents-2026-04-01` beta)

@@ -31,16 +31,17 @@ DATA SOURCE DECISION GUIDE:
 - Reference data (demographics, health indicators): Use healthsim_query_reference for real CDC/SVI data
 
 Usage:
-    python healthsim_mcp.py
-    
-Configuration in claude_desktop_config.json:
-    "healthsim-mcp": {
-        "command": "python",
-        "args": ["/path/to/healthsim_mcp.py"]
-    }
+    uv run --directory packages/mcp-server healthsim-mcp
+
+When installed as the HealthSim Claude Code plugin, the server is started by
+the plugin's .mcp.json and needs no manual configuration.
 
 Environment Variables:
-    HEALTHSIM_DB_PATH: Override default database path
+    HEALTHSIM_DB_PATH: Use one database at this path (or md:... for MotherDuck)
+    HEALTHSIM_HOME: Data directory for the plugin layout (default ~/.healthsim)
+    HEALTHSIM_REFERENCE_PATH: Override the reference database location
+
+See healthsim.db.paths for how the data location is resolved.
 """
 
 import atexit
@@ -69,11 +70,15 @@ MCP_TRANSPORT = os.environ.get("MCP_TRANSPORT", "stdio")
 MCP_PORT = int(os.environ.get("MCP_PORT", os.environ.get("PORT", "8000")))
 MCP_TOKEN = os.environ.get("HEALTHSIM_MCP_TOKEN")
 
-# Add healthsim to path
+# healthsim-core is a declared dependency. The path fallback keeps
+# `python healthsim_mcp.py` working from a checkout without an install.
 WORKSPACE_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "core" / "src"))
+try:
+    import healthsim  # noqa: F401
+except ImportError:
+    sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "core" / "src"))
 
-from healthsim.db import DEFAULT_DB_PATH
+from healthsim.db import attach_reference, ensure_database, resolve_layout
 from healthsim.state import StateManager
 from healthsim.state.auto_persist import AutoPersistService
 from healthsim.state.serializers import get_serializer, get_table_info
@@ -123,25 +128,44 @@ ALLOWED_ENTITY_TYPES = SCENARIO_ENTITY_TYPES | RELATIONSHIP_ENTITY_TYPES
 # Configuration from Environment
 # =============================================================================
 
-# Allow override via environment variable
-# Supports local file paths OR MotherDuck connection strings (md:database_name)
-_db_env = os.environ.get("HEALTHSIM_DB_PATH", str(DEFAULT_DB_PATH))
-IS_MOTHERDUCK = _db_env.startswith("md:")
+# Resolve where data lives: HEALTHSIM_DB_PATH, ~/.healthsim (plugin layout),
+# or the repo-root healthsim.duckdb (developer layout).
+LAYOUT = resolve_layout()
+IS_MOTHERDUCK = LAYOUT.is_motherduck
+DB_PATH = LAYOUT.db_path
+REFERENCE_PATH = LAYOUT.reference_path
 
-if IS_MOTHERDUCK:
-    DB_PATH = _db_env  # MotherDuck connection string, not a file path
-else:
-    DB_PATH = Path(_db_env)
+if not IS_MOTHERDUCK:
+    # A fresh plugin install has no cohorts database yet
+    try:
+        ensure_database(DB_PATH)
+    except Exception as e:
+        print(f"  Warning: could not initialize {DB_PATH}: {e}", file=sys.stderr)
+
+REFERENCE_MISSING_MESSAGE = (
+    "HealthSim reference data (NPPES providers, CDC PLACES, SVI, ADI) is not installed. "
+    "Run /healthsim:setup to download it to ~/.healthsim, or set HEALTHSIM_DB_PATH. "
+    "Synthetic generation and cohort tools still work without it."
+)
+
+
+def _reference_missing() -> Optional[str]:
+    """Return a JSON error when reference data isn't available, else None."""
+    if LAYOUT.has_reference:
+        return None
+    return json.dumps({"error": REFERENCE_MISSING_MESSAGE, "layout": LAYOUT.describe()})
 
 # Log startup configuration (to stderr so it doesn't interfere with MCP protocol)
-_display_path = re.sub(r'motherduck_token=[^&\s]+', 'motherduck_token=***', str(DB_PATH))
+_layout_info = LAYOUT.describe()
 print(f"HealthSim MCP Server starting...", file=sys.stderr)
-print(f"  Database: {_display_path}", file=sys.stderr)
+print(f"  Layout: {_layout_info['mode']} ({_layout_info['source']})", file=sys.stderr)
+print(f"  Database: {_layout_info['db_path']}", file=sys.stderr)
+if REFERENCE_PATH:
+    print(f"  Reference: {REFERENCE_PATH} (available: {LAYOUT.has_reference})", file=sys.stderr)
 if IS_MOTHERDUCK:
     print(f"  Connection mode: MotherDuck (cloud)", file=sys.stderr)
 else:
     print(f"  Connection mode: dual (read-only persistent + on-demand write)", file=sys.stderr)
-    print(f"  DB exists: {DB_PATH.exists()}", file=sys.stderr)
 
 
 # =============================================================================
@@ -161,9 +185,11 @@ class ConnectionManager:
       Single persistent connection (MotherDuck handles concurrency server-side).
     """
 
-    def __init__(self, db_path, is_motherduck: bool = False):
+    def __init__(self, db_path, is_motherduck: bool = False, reference_path=None):
         self.db_path = db_path
         self.is_motherduck = is_motherduck
+        self.reference_path = reference_path
+        self._reference_attached = False
         self._read_conn: Optional[duckdb.DuckDBPyConnection] = None
         self._read_manager: Optional[StateManager] = None
 
@@ -176,6 +202,16 @@ class ConnectionManager:
         """
         import time
 
+        # Reference data installed while the server was running (e.g. by
+        # /healthsim:setup): reopen so the new file gets attached
+        if (
+            self._read_conn is not None
+            and self.reference_path is not None
+            and not self._reference_attached
+            and LAYOUT.has_reference
+        ):
+            self._close_read_connection()
+
         if self._read_conn is None:
             if self.is_motherduck:
                 self._read_conn = duckdb.connect(self.db_path)
@@ -186,6 +222,7 @@ class ConnectionManager:
                 for attempt in range(max_retries):
                     try:
                         self._read_conn = duckdb.connect(str(self.db_path), read_only=True)
+                        self._reference_attached = attach_reference(self._read_conn, self.reference_path)
                         print(f"  Opened read-only connection to {self.db_path}", file=sys.stderr)
                         break
                     except Exception as e:
@@ -214,6 +251,7 @@ class ConnectionManager:
             self._read_conn.close()
             self._read_conn = None
             self._read_manager = None
+            self._reference_attached = False
             print(f"  Closed read-only connection (preparing for write)", file=sys.stderr)
     
     @contextmanager
@@ -234,6 +272,7 @@ class ConnectionManager:
             time.sleep(0.05)
 
             conn = duckdb.connect(str(self.db_path))
+            attach_reference(conn, self.reference_path)
             print(f"  Opened read-write connection for write operation", file=sys.stderr)
             try:
                 yield conn
@@ -288,7 +327,9 @@ def _get_manager() -> ConnectionManager:
     """Get or create the connection manager."""
     global _manager
     if _manager is None:
-        _manager = ConnectionManager(DB_PATH, is_motherduck=IS_MOTHERDUCK)
+        _manager = ConnectionManager(
+            DB_PATH, is_motherduck=IS_MOTHERDUCK, reference_path=REFERENCE_PATH
+        )
     return _manager
 
 
@@ -831,6 +872,8 @@ def query_reference(params: QueryReferenceInput) -> str:
     Returns:
         JSON with columns and filtered rows
     """
+    if missing := _reference_missing():
+        return missing
     conn = _get_manager().get_read_connection()
     
     # Map short names to full schema-qualified table names
@@ -959,8 +1002,18 @@ def list_tables() -> str:
     system = ["cohorts", "cohort_entities", "cohort_tags", "schema_migrations"]
     entity = [t for t in tables if t not in reference and t not in system]
     
+    # Reference schemas (network, population) live in the same database or in
+    # the attached reference database, depending on the data layout
+    ref_rows = conn.execute("""
+        SELECT schema_name || '.' || table_name
+        FROM duckdb_tables()
+        WHERE schema_name IN ('network', 'population')
+        ORDER BY 1
+    """).fetchall()
+
     return json.dumps({
         "reference_tables": reference,
+        "reference_schema_tables": [r[0] for r in ref_rows],
         "entity_tables": entity,
         "system_tables": [t for t in system if t in tables],
         "total": len(tables),
@@ -1000,6 +1053,8 @@ def search_providers(params: SearchProvidersInput) -> str:
     Returns:
         JSON with provider records including NPI, name, specialty, location
     """
+    if missing := _reference_missing():
+        return missing
     conn = _get_manager().get_read_connection()
     
     # Check if network.providers table exists
@@ -1475,11 +1530,48 @@ def delete_cohort(params: DeleteCohortInput) -> str:
         return json.dumps({"error": f"Delete failed: {str(e)}"})
 
 
+@mcp.tool(
+    name="healthsim_data_status",
+    annotations={
+        "title": "Show HealthSim Data Location",
+        "readOnlyHint": True,
+        "destructiveHint": False,
+        "idempotentHint": True,
+    }
+)
+def data_status() -> str:
+    """Show where HealthSim data lives and whether reference data is installed.
+
+    Use this when reference tools report missing data, or when the user asks
+    where their cohorts are stored.
+
+    Returns:
+        JSON with the data layout, reference availability, and table counts
+    """
+    info = LAYOUT.describe()
+    try:
+        conn = _get_manager().get_read_connection()
+        counts = conn.execute("""
+            SELECT schema_name, count(*)
+            FROM duckdb_tables()
+            WHERE schema_name IN ('main', 'network', 'population')
+            GROUP BY 1 ORDER BY 1
+        """).fetchall()
+        info["tables_by_schema"] = {schema: n for schema, n in counts}
+        info["cohort_count"] = conn.execute("SELECT count(*) FROM cohorts").fetchone()[0]
+    except Exception as e:
+        info["error"] = str(e)
+    if not LAYOUT.has_reference:
+        info["next_step"] = REFERENCE_MISSING_MESSAGE
+    return json.dumps(info, indent=2, default=str)
+
+
 # =============================================================================
 # Main Entry Point
 # =============================================================================
 
-if __name__ == "__main__":
+def main() -> None:
+    """Run the server over stdio (default) or HTTP (MCP_TRANSPORT=http)."""
     if MCP_TRANSPORT == "http":
         import uvicorn
         from starlette.requests import Request
@@ -1507,3 +1599,7 @@ if __name__ == "__main__":
         anyio.run(server.serve)
     else:
         mcp.run(transport="stdio")
+
+
+if __name__ == "__main__":
+    main()

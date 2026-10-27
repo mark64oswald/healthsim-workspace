@@ -36,6 +36,7 @@ sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "core" / "src"))
 sys.path.insert(0, str(WORKSPACE_ROOT / "packages" / "mcp-server"))
 
 from healthsim.db import DEFAULT_DB_PATH
+from healthsim.db.paths import is_valid_duckdb
 
 
 class TestDuckDBConcurrency:
@@ -419,7 +420,7 @@ class TestConcurrentAccessWithProduction:
     @pytest.fixture
     def production_db(self):
         """Get path to production database if it exists."""
-        if not DEFAULT_DB_PATH.exists():
+        if not is_valid_duckdb(DEFAULT_DB_PATH):
             pytest.skip("Production database not found")
         return DEFAULT_DB_PATH
     
@@ -509,7 +510,7 @@ class TestNetworkSimConcurrentAccess:
     @pytest.fixture
     def production_db(self):
         """Get production database path."""
-        if not DEFAULT_DB_PATH.exists():
+        if not is_valid_duckdb(DEFAULT_DB_PATH):
             pytest.skip("Production database not found")
         return DEFAULT_DB_PATH
     
@@ -571,7 +572,7 @@ class TestPopulationSimConcurrentAccess:
     @pytest.fixture
     def production_db(self):
         """Get production database path."""
-        if not DEFAULT_DB_PATH.exists():
+        if not is_valid_duckdb(DEFAULT_DB_PATH):
             pytest.skip("Production database not found")
         return DEFAULT_DB_PATH
     
@@ -661,7 +662,7 @@ class TestMultiProcessConcurrency:
     @pytest.fixture
     def production_db(self):
         """Get production database path."""
-        if not DEFAULT_DB_PATH.exists():
+        if not is_valid_duckdb(DEFAULT_DB_PATH):
             pytest.skip("Production database not found")
         return DEFAULT_DB_PATH
     

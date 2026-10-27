@@ -210,7 +210,7 @@ See `reference/network-adequacy.md` for full CMS MA ratios, time/distance tables
 - NCQA requires coverage across 13 specialties
 - Time/distance varies by urban/suburban/rural designation
 
-**Database**: healthsim.duckdb (1.7 GB), indexed on county_fips, taxonomy_1, practice_state
+**Database**: `network` schema of the HealthSim reference data (`~/.healthsim/reference.duckdb` for the plugin, `healthsim.duckdb` in a checkout), indexed on county_fips, taxonomy_1, practice_state
 
 ---
 

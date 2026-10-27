@@ -327,8 +327,10 @@ class TestIntegration:
         """Get connection to real database if available."""
         import duckdb
         
+        from healthsim.db.paths import is_valid_duckdb
+
         db_path = get_networksim_db_path()
-        if not db_path.exists():
+        if not is_valid_duckdb(db_path):
             pytest.skip(f"HealthSim database not found: {db_path}")
         
         conn = duckdb.connect(str(db_path), read_only=True)
